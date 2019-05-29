@@ -24,5 +24,31 @@ namespace bi_dev.sql.mssql.extensions.@string
                 return Common.ThrowIfNeeded<long?>(e, nullWhenError);
             }
         }
+        [SqlFunction]
+        public static string UrlDecode(string value, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value)) return null;
+                else return Uri.UnescapeDataString(value);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        [SqlFunction]
+        public static string SplitString(string value, string separator, int index, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(value)) return null;
+                else return value.Split(new string[] { separator }, StringSplitOptions.None)[index];
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
     }
 }
