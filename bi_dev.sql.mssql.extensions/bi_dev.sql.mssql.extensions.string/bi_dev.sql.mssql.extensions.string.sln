@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.cnsl", "..\bi_dev.sql.mssql.cnsl\bi_dev.sql.mssql.cnsl.csproj", "{DD888490-F50A-489C-B54C-650502F10A44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.web", "bi_dev.sql.mssql.extensions.web\bi_dev.sql.mssql.extensions.web.csproj", "{A24F2682-F277-46FE-9E71-3121913642E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.web", "..\bi_dev.sql.mssql.extensions.web\bi_dev.sql.mssql.extensions.web.csproj", "{A24F2682-F277-46FE-9E71-3121913642E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
