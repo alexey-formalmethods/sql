@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DD888490-F50A-489C-B54C-650502F10A44}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>bi_dev.sql.mssql.cnsl</RootNamespace>
-    <AssemblyName>bi_dev.sql.mssql.cnsl</AssemblyName>
+    <ProjectGuid>{A24F2682-F277-46FE-9E71-3121913642E3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>bi_dev.sql.mssql.extensions.web</RootNamespace>
+    <AssemblyName>bi_dev.sql.mssql.extensions.web</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +23,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -35,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,16 +42,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.string\bi_dev.sql.mssql.extensions.web\bi_dev.sql.mssql.extensions.web.csproj">
-      <Project>{a24f2682-f277-46fe-9e71-3121913642e3}</Project>
-      <Name>bi_dev.sql.mssql.extensions.web</Name>
+    <ProjectReference Include="..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.csproj">
+      <Project>{f9f65fef-d614-44f0-8517-5383860b664e}</Project>
+      <Name>bi_dev.sql.mssql.extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
