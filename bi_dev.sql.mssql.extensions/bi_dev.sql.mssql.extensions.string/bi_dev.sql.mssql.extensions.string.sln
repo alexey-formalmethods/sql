@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.cnsl", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.web", "..\bi_dev.sql.mssql.extensions.web\bi_dev.sql.mssql.extensions.web.csproj", "{A24F2682-F277-46FE-9E71-3121913642E3}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "bi_dev.sql.mssql.db", "..\..\bi_dev.sql.mssql.db\bi_dev.sql.mssql.db.sqlproj", "{F3334742-680F-473D-AC00-0CA1921490F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,12 @@ Global
 		{A24F2682-F277-46FE-9E71-3121913642E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A24F2682-F277-46FE-9E71-3121913642E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A24F2682-F277-46FE-9E71-3121913642E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3334742-680F-473D-AC00-0CA1921490F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3334742-680F-473D-AC00-0CA1921490F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3334742-680F-473D-AC00-0CA1921490F8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F3334742-680F-473D-AC00-0CA1921490F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3334742-680F-473D-AC00-0CA1921490F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3334742-680F-473D-AC00-0CA1921490F8}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

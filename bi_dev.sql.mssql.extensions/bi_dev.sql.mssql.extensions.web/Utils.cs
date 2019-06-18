@@ -1,11 +1,11 @@
 ﻿using Microsoft.SqlServer.Server;
+using Mono.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace bi_dev.sql.mssql.extensions.web
 {
@@ -17,6 +17,8 @@ namespace bi_dev.sql.mssql.extensions.web
             try
             {
                 WebClient wc = new WebClient();
+                wc.Encoding = Encoding.UTF8;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
                 if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
                 return wc.DownloadString(url);
             }
@@ -31,6 +33,7 @@ namespace bi_dev.sql.mssql.extensions.web
             try
             {
                 WebClient wc = new WebClient();
+                wc.Encoding = Encoding.UTF8;
                 if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
                 return wc.UploadString(url, body);
             }

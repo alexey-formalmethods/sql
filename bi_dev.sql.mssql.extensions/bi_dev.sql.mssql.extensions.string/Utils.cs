@@ -50,5 +50,18 @@ namespace bi_dev.sql.mssql.extensions.@string
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+        [SqlFunction]
+        public static string UnicodeDecode(string value, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value)) return null;
+                else return System.Text.RegularExpressions.Regex.Unescape(value);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
     }
 }
