@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using bi_dev.sql.mssql.extensions;
-
+using System.Text.RegularExpressions;
 
 namespace bi_dev.sql.mssql.extensions.@string
 {
@@ -57,6 +57,22 @@ namespace bi_dev.sql.mssql.extensions.@string
             {
                 if (string.IsNullOrWhiteSpace(value)) return null;
                 else return System.Text.RegularExpressions.Regex.Unescape(value);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        [SqlFunction]
+        public static string RegexMatch(string value, string regexPattern, int groupNumber, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value)) return null;
+                else
+                {
+                    return new Regex(regexPattern).Match(value).Groups[groupNumber].Value;
+                }
             }
             catch (Exception e)
             {
