@@ -29,7 +29,7 @@ namespace bi_dev.sql.mssql.extensions.date
             try
             {
                 if (!value.HasValue) return null;
-                else return (includeMiliSeconds)? DateTimeOffset.FromUnixTimeMilliseconds(value.Value).DateTime:DateTimeOffset.FromUnixTimeSeconds(value).DateTime;
+                else return (includeMiliSeconds)? DateTimeOffset.FromUnixTimeMilliseconds(value.Value).DateTime:DateTimeOffset.FromUnixTimeSeconds(value.Value).DateTime;
             }
             catch (Exception e)
             {
