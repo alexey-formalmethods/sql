@@ -10,12 +10,26 @@ namespace bi_dev.sql.mssql.extensions.date
     {
         public static long DateToUnixTimestamp(DateTime value, bool includeMiliSeconds, bool nullWhenError)
         {
-            var dtValue = ((DateTimeOffset)value);
-            return (includeMiliSeconds)? dtValue.ToUnixTimeMilliseconds():dtValue.ToUnixTimeSeconds();
+            try
+            {
+                var dtValue = ((DateTimeOffset)value);
+                return (includeMiliSeconds)? dtValue.ToUnixTimeMilliseconds():dtValue.ToUnixTimeSeconds();
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<long>(e, nullWhenError);
+            }
         }
         public static DateTime UnixTimestampToDate(long value, bool includeMiliSeconds, bool nullWhenError)
         {
-            return (includeMiliSeconds)? DateTimeOffset.FromUnixTimeMilliseconds(value).DateTime:DateTimeOffset.FromUnixTimeSeconds(value).DateTime;
+            try
+            {
+                return (includeMiliSeconds)? DateTimeOffset.FromUnixTimeMilliseconds(value).DateTime:DateTimeOffset.FromUnixTimeSeconds(value).DateTime;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<DateTime>(e, nullWhenError);
+            }
         }
     }
 }
