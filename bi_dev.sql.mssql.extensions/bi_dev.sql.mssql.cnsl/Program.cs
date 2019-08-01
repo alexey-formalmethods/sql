@@ -1,4 +1,4 @@
-﻿using bi_dev.sql.mssql.extensions.@string;
+﻿using bi_dev.sql.mssql.extensions.date;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace bi_dev.sql.mssql.cnsl
         
         static void Main(string[] args)
         {
-            var e = Utils.RegexMatch(@"6189514040__v3||6189514040||14186393770||смарт+прайс+отзывы||1||premium||none||search||no", @"\|((?:[0-9]{6}|[0-9]{8}|[0-9]{11}))\|", 1, false);
+            var e = Utils.UnixTimestampToDate(1564599670000, true, false);
         }
     }
 }
