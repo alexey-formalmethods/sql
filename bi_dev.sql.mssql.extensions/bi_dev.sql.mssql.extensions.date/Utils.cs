@@ -8,27 +8,32 @@ namespace bi_dev.sql.mssql.extensions.date
 {
     public static class Utils
     {
-        public static long DateToUnixTimestamp(DateTime value, bool includeMiliSeconds, bool nullWhenError)
+        public static long? DateToUnixTimestamp(DateTime? value, bool includeMiliSeconds, bool nullWhenError)
         {
             try
             {
-                var dtValue = ((DateTimeOffset)value);
-                return (includeMiliSeconds)? dtValue.ToUnixTimeMilliseconds():dtValue.ToUnixTimeSeconds();
+                if (!value.HasValue) return null;
+                else
+                {
+                    var dtValue = ((DateTimeOffset)value.Value);
+                    return (includeMiliSeconds) ? dtValue.ToUnixTimeMilliseconds() : dtValue.ToUnixTimeSeconds();
+                }
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<long>(e, nullWhenError);
+                return Common.ThrowIfNeeded<long?>(e, nullWhenError);
             }
         }
-        public static DateTime UnixTimestampToDate(long value, bool includeMiliSeconds, bool nullWhenError)
+        public static DateTime? UnixTimestampToDate(long? value, bool includeMiliSeconds, bool nullWhenError)
         {
             try
             {
-                return (includeMiliSeconds)? DateTimeOffset.FromUnixTimeMilliseconds(value).DateTime:DateTimeOffset.FromUnixTimeSeconds(value).DateTime;
+                if (!value.HasValue) return null;
+                else return (includeMiliSeconds)? DateTimeOffset.FromUnixTimeMilliseconds(value.Value).DateTime:DateTimeOffset.FromUnixTimeSeconds(value).DateTime;
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<DateTime>(e, nullWhenError);
+                return Common.ThrowIfNeeded<DateTime?>(e, nullWhenError);
             }
         }
     }
