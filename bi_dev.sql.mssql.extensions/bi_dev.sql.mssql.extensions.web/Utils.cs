@@ -201,7 +201,7 @@ namespace bi_dev.sql.mssql.extensions.web
             l.Add(new TableType("codePage", res.CodePage.ToString()));
             foreach(Cookie cookie in res.Cookies)
             {
-                l.Add(new TableType("cookie", cookie.Name, cookie.Value);
+                l.Add(new TableType("cookie", cookie.Name, cookie.Value));
             }
             foreach (var header in res.ResponseHeaders.AllKeys)
             {
