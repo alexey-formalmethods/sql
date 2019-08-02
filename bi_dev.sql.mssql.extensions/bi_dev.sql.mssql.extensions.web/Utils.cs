@@ -3,6 +3,7 @@ using Mono.Web;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
@@ -55,9 +56,10 @@ namespace bi_dev.sql.mssql.extensions.web
             public HttpStatusCode StatusCode { get; set; } 
             public WebHeaderCollection ResponseHeaders { get; set; }
             public CookieCollection Cookies { get; set; }
+            public int CodePage { get; set; }
 
         }
-        private static WebRequestResult ProcessWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect)
+        private static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect)
         {
             WebRequestResult result = new WebRequestResult();
             result.Url = url;
@@ -93,9 +95,10 @@ namespace bi_dev.sql.mssql.extensions.web
                     }
                 }
                 int currentCodePage = (codePage.HasValue) ? codePage.Value : 65001; // Default Unicode;
+                result.CodePage = currentCodePage;
                 if (body != null)
                 {
-                    var encoding = Encoding.UTF8;//.GetEncoding(currentCodePage);
+                    var encoding = Encoding.GetEncoding(currentCodePage);
                     byte[] bytes = encoding.GetBytes(body);
                     //r.ContentLength = bytes.Length;
                     using (var stream = r.GetRequestStream())
@@ -116,7 +119,7 @@ namespace bi_dev.sql.mssql.extensions.web
                     result.ResponseHeaders = response.Headers;
                     using (var s = response.GetResponseStream())
                     {
-                        using (var reader = new StreamReader(s, Encoding.UTF8))
+                        using (var reader = new StreamReader(s, Encoding.GetEncoding(currentCodePage)))
                         {
                             responseText = reader.ReadToEnd();
                             result.ResponseText = responseText;
@@ -140,15 +143,70 @@ namespace bi_dev.sql.mssql.extensions.web
                 return result;
             }
         }
+        // -----------------
         public class TableType
         {
             public string RowType { get; set; }
+            public string RowKey { get; set; }
             public string RowValue { get; set; }
+            public TableType()
+            {
+
+            }
+            public TableType(string rowType, string rowValue)
+            {
+                this.RowType = rowType;
+                this.RowValue = rowValue;
+            }
+            public TableType(string rowType, string rowKey, string rowValue)
+            {
+                this.RowType = rowType;
+                this.RowKey = rowKey;
+                this.RowValue = rowValue;
+            }
         }
         [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable InitMethod(String logname)
+        public static IEnumerable ProcessWebRequest(string url, string method, string body, string contentType, int? codePage, string headersInUrlFormat, string cookiesInUrlFormat, bool allowAutoRedirect)
         {
-            List<TableType> l = new List<TableType> { new TableType { RowType = "a", RowValue = "b" }, new TableType { RowType = "a1", RowValue = "b2" } };
+            //if (!string.IsNullOrWhiteSpace(headersInUrlFormat))
+            Dictionary<string, string> headerDict = null;
+            Dictionary<string, string> cookieDict = null;
+            if (!string.IsNullOrWhiteSpace(headersInUrlFormat))
+            {
+                var headers = HttpUtility.ParseQueryString(headersInUrlFormat);
+                headerDict = headers.AllKeys.ToDictionary(x => x, y => headers[y]);
+            }
+            if (!string.IsNullOrWhiteSpace(cookiesInUrlFormat))
+            {
+                var cookies = HttpUtility.ParseQueryString(cookiesInUrlFormat);
+                cookieDict = cookies.AllKeys.ToDictionary(x => x, y => cookies[y]);
+            }
+
+            var res = processWebRequest(
+                url,
+                method,
+                body,
+                contentType,
+                codePage,
+                headerDict,
+                cookieDict,
+                allowAutoRedirect
+            );
+
+            List<TableType> l = new List<TableType>();
+            l.Add(new TableType("url", url));
+            l.Add(new TableType("method", method));
+            l.Add(new TableType("body", res.Body));
+            l.Add(new TableType("contentType", contentType));
+            l.Add(new TableType("codePage", res.CodePage.ToString()));
+            foreach(Cookie cookie in res.Cookies)
+            {
+                l.Add(new TableType("cookie", cookie.Name, cookie.Value);
+            }
+            foreach (var header in res.ResponseHeaders.AllKeys)
+            {
+                l.Add(new TableType("response_header", header, res.ResponseHeaders[header]));
+            }
             return l;
         }
         public static void FillRow(Object obj, out SqlChars rowType, out SqlChars value)
@@ -157,5 +215,6 @@ namespace bi_dev.sql.mssql.extensions.web
             rowType = new SqlChars(table.RowType);
             value = new SqlChars(table.RowValue);
         }
+        // -----------------
     }
 }
