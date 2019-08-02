@@ -209,10 +209,11 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             return l;
         }
-        public static void FillRow(Object obj, out SqlChars rowType, out SqlChars value)
+        public static void FillRow(Object obj, out SqlChars rowType, out SqlChars key, out SqlChars value)
         {
             TableType table = (TableType)obj;
             rowType = new SqlChars(table.RowType);
+            key = new SqlChars(table.RowKey);
             value = new SqlChars(table.RowValue);
         }
         // -----------------
