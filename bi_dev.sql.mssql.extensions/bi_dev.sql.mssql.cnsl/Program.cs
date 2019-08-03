@@ -13,17 +13,7 @@ namespace bi_dev.sql.mssql.cnsl
         static void Main(string[] args)
         {
 
-            var e = Utils.ProcessWebRequest(
-                "https://app.remonline.ru/login",
-                "GET",
-                null,
-                null,
-                null,
-                null,
-                null,
-                false,
-                false
-            );
+            
             
 
 

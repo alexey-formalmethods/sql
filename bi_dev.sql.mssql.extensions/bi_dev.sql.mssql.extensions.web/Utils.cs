@@ -61,10 +61,10 @@ namespace bi_dev.sql.mssql.extensions.web
             public WebHeaderCollection ResponseHeaders { get; set; }
             public CookieCollection ResponseCookies { get; set; }
             public int CodePage { get; set; }
-            public Exception Exception { get; set; }
+            public WebException WebException { get; set; }
 
         }
-        private static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect)
+        public static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect)
         {
             WebRequestResult result = new WebRequestResult();
             result.RequestCookies = cookies;
@@ -138,7 +138,7 @@ namespace bi_dev.sql.mssql.extensions.web
             catch (WebException e)
             {
                 var respone = (HttpWebResponse)e.Response;
-                result.Exception = e;
+                result.WebException = e;
                 using (var responseStream = respone.GetResponseStream())
                 {
                     result.ResponseCookies = respone.Cookies;
@@ -201,16 +201,14 @@ namespace bi_dev.sql.mssql.extensions.web
                     cookieDict,
                     allowAutoRedirect
                 );
-                if (res.Exception != null)
-                {
-                    throw res.Exception;
-                }
+                
                 List<TableType> l = new List<TableType>();
                 l.Add(new TableType("url", url));
                 l.Add(new TableType("method", method));
                 l.Add(new TableType("body", res.Body));
                 l.Add(new TableType("content_type", contentType));
                 l.Add(new TableType("code_page", res.CodePage.ToString()));
+                
                 if (res.RequestCookies != null)
                 {
                     foreach (var cookie in res.RequestCookies)
@@ -239,6 +237,7 @@ namespace bi_dev.sql.mssql.extensions.web
                         l.Add(new TableType("response_header", header, res.ResponseHeaders[header]));
                     }
                 }
+                
                 return l;
             }
             catch (Exception e)
