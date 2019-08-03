@@ -201,7 +201,7 @@ namespace bi_dev.sql.mssql.extensions.web
                     cookieDict,
                     allowAutoRedirect
                 );
-                if (res.Exception == null)
+                if (res.Exception != null)
                 {
                     throw res.Exception;
                 }
