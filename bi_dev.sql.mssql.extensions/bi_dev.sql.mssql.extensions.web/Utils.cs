@@ -208,7 +208,7 @@ namespace bi_dev.sql.mssql.extensions.web
                 l.Add(new TableType("body", res.Body));
                 l.Add(new TableType("content_type", contentType));
                 l.Add(new TableType("code_page", res.CodePage.ToString()));
-                
+                l.Add(new TableType("status_code", res.StatusCode.ToString()));
                 if (res.RequestCookies != null)
                 {
                     foreach (var cookie in res.RequestCookies)
