@@ -74,6 +74,7 @@ namespace bi_dev.sql.mssql.extensions.web
             try
             {
                 HttpWebRequest r = (HttpWebRequest)WebRequest.Create(url);
+                r.AllowAutoRedirect = allowAutoRedirect;
                 r.Method = method;
                 r.CookieContainer = new CookieContainer();
                 if (cookies != null)
@@ -118,10 +119,11 @@ namespace bi_dev.sql.mssql.extensions.web
                     r.ContentType = contentType;
                 }
                 string responseText;
-                r.AllowAutoRedirect = allowAutoRedirect;
+                
 
                 using (HttpWebResponse response = (HttpWebResponse)r.GetResponse())
                 {
+                    result.HttpStatusCode = response.StatusCode;
                     result.ResponseCookies = response.Cookies;
                     result.ResponseHeaders = response.Headers;
                     using (var s = response.GetResponseStream())
@@ -137,15 +139,15 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             catch (WebException e)
             {
-                var respone = (HttpWebResponse)e.Response;
+                var response = (HttpWebResponse)e.Response;
                 result.WebException = e;
-                using (var responseStream = respone.GetResponseStream())
+                using (var responseStream = response.GetResponseStream())
                 {
-                    result.ResponseCookies = respone.Cookies;
+                    result.ResponseCookies = response.Cookies;
                     using (var reader = new StreamReader(responseStream))
                     {
                         result.ResponseText = reader.ReadToEnd();
-                        result.HttpStatusCode = respone.StatusCode;
+                        result.HttpStatusCode = response.StatusCode;
                     }
                 }
                 return result;
