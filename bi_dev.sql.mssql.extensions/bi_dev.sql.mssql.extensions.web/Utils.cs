@@ -52,16 +52,23 @@ namespace bi_dev.sql.mssql.extensions.web
 
             public string Url { get; set; }
             public string Body { get; set; }
+            public Dictionary<string, string> RequestHeaders { get; set; }
+            public Dictionary<string, string> RequestCookies { get; set; }
+
             public string ResponseText { get; set; }
-            public HttpStatusCode StatusCode { get; set; } 
+            public HttpStatusCode HttpStatusCode { get; set; } 
+            public int StatusCode { get { return (int)this.HttpStatusCode; } }
             public WebHeaderCollection ResponseHeaders { get; set; }
-            public CookieCollection Cookies { get; set; }
+            public CookieCollection ResponseCookies { get; set; }
             public int CodePage { get; set; }
+            public Exception Exception { get; set; }
 
         }
         private static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect)
         {
             WebRequestResult result = new WebRequestResult();
+            result.RequestCookies = cookies;
+            result.RequestHeaders = headers;
             result.Url = url;
             result.Body = body;
             try
@@ -115,7 +122,7 @@ namespace bi_dev.sql.mssql.extensions.web
 
                 using (HttpWebResponse response = (HttpWebResponse)r.GetResponse())
                 {
-                    result.Cookies = response.Cookies;
+                    result.ResponseCookies = response.Cookies;
                     result.ResponseHeaders = response.Headers;
                     using (var s = response.GetResponseStream())
                     {
@@ -131,13 +138,14 @@ namespace bi_dev.sql.mssql.extensions.web
             catch (WebException e)
             {
                 var respone = (HttpWebResponse)e.Response;
+                result.Exception = e;
                 using (var responseStream = respone.GetResponseStream())
                 {
-                    result.Cookies = respone.Cookies;
+                    result.ResponseCookies = respone.Cookies;
                     using (var reader = new StreamReader(responseStream))
                     {
                         result.ResponseText = reader.ReadToEnd();
-                        result.StatusCode = respone.StatusCode;
+                        result.HttpStatusCode = respone.StatusCode;
                     }
                 }
                 return result;
@@ -166,48 +174,77 @@ namespace bi_dev.sql.mssql.extensions.web
             }
         }
         [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable ProcessWebRequest(string url, string method, string body, string contentType, int? codePage, string headersInUrlFormat, string cookiesInUrlFormat, bool allowAutoRedirect)
+        public static IEnumerable ProcessWebRequest(string url, string method, string body, string contentType, int? codePage, string headersInUrlFormat, string cookiesInUrlFormat, bool allowAutoRedirect, bool nullWhenError)
         {
-            //if (!string.IsNullOrWhiteSpace(headersInUrlFormat))
-            Dictionary<string, string> headerDict = null;
-            Dictionary<string, string> cookieDict = null;
-            if (!string.IsNullOrWhiteSpace(headersInUrlFormat))
+            try
             {
-                var headers = HttpUtility.ParseQueryString(headersInUrlFormat);
-                headerDict = headers.AllKeys.ToDictionary(x => x, y => headers[y]);
-            }
-            if (!string.IsNullOrWhiteSpace(cookiesInUrlFormat))
-            {
-                var cookies = HttpUtility.ParseQueryString(cookiesInUrlFormat);
-                cookieDict = cookies.AllKeys.ToDictionary(x => x, y => cookies[y]);
-            }
+                Dictionary<string, string> headerDict = null;
+                Dictionary<string, string> cookieDict = null;
+                if (!string.IsNullOrWhiteSpace(headersInUrlFormat))
+                {
+                    var headers = HttpUtility.ParseQueryString(headersInUrlFormat);
+                    headerDict = headers.AllKeys.ToDictionary(x => x, y => Uri.UnescapeDataString(headers[y]));
+                }
+                if (!string.IsNullOrWhiteSpace(cookiesInUrlFormat))
+                {
+                    var cookies = HttpUtility.ParseQueryString(cookiesInUrlFormat);
+                    cookieDict = cookies.AllKeys.ToDictionary(x => x, y => Uri.UnescapeDataString(cookies[y]));
+                }
 
-            var res = processWebRequest(
-                url,
-                method,
-                body,
-                contentType,
-                codePage,
-                headerDict,
-                cookieDict,
-                allowAutoRedirect
-            );
-
-            List<TableType> l = new List<TableType>();
-            l.Add(new TableType("url", url));
-            l.Add(new TableType("method", method));
-            l.Add(new TableType("body", res.Body));
-            l.Add(new TableType("contentType", contentType));
-            l.Add(new TableType("codePage", res.CodePage.ToString()));
-            foreach(Cookie cookie in res.Cookies)
-            {
-                l.Add(new TableType("cookie", cookie.Name, cookie.Value));
+                var res = processWebRequest(
+                    url,
+                    method,
+                    body,
+                    contentType,
+                    codePage,
+                    headerDict,
+                    cookieDict,
+                    allowAutoRedirect
+                );
+                if (res.Exception == null)
+                {
+                    throw res.Exception;
+                }
+                List<TableType> l = new List<TableType>();
+                l.Add(new TableType("url", url));
+                l.Add(new TableType("method", method));
+                l.Add(new TableType("body", res.Body));
+                l.Add(new TableType("content_type", contentType));
+                l.Add(new TableType("code_page", res.CodePage.ToString()));
+                if (res.RequestCookies != null)
+                {
+                    foreach (var cookie in res.RequestCookies)
+                    {
+                        l.Add(new TableType("request_cookie", cookie.Key, cookie.Value));
+                    }
+                }
+                if (res.ResponseCookies != null)
+                {
+                    foreach (Cookie cookie in res.ResponseCookies)
+                    {
+                        l.Add(new TableType("response_cookie", cookie.Name, cookie.Value));
+                    }
+                }
+                if (res.RequestHeaders != null)
+                {
+                    foreach (var header in res.RequestHeaders)
+                    {
+                        l.Add(new TableType("request_header", header.Key, header.Value));
+                    }
+                }
+                if (res.ResponseHeaders != null)
+                {
+                    foreach (var header in res.ResponseHeaders.AllKeys)
+                    {
+                        l.Add(new TableType("response_header", header, res.ResponseHeaders[header]));
+                    }
+                }
+                return l;
             }
-            foreach (var header in res.ResponseHeaders.AllKeys)
+            catch (Exception e)
             {
-                l.Add(new TableType("response_header", header, res.ResponseHeaders[header]));
+                return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
             }
-            return l;
         }
         public static void FillRow(Object obj, out SqlChars rowType, out SqlChars key, out SqlChars value)
         {
