@@ -14,8 +14,6 @@ namespace bi_dev.sql.mssql.cnsl
         {
 
             
-            
-
 
         }
     }
