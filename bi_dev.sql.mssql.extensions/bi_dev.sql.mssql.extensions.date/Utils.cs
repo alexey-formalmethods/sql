@@ -36,5 +36,17 @@ namespace bi_dev.sql.mssql.extensions.date
                 return Common.ThrowIfNeeded<DateTime?>(e, nullWhenError);
             }
         }
+        public static int? GetWeekDayNumRus(DateTime? value, bool nullWhenError)
+        {
+            try
+            {
+                if (!value.HasValue) return null;
+                else return (value.Value.DayOfWeek - DayOfWeek.Monday + 1);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<int?>(e, nullWhenError);
+            }
+        }
     }
 }
