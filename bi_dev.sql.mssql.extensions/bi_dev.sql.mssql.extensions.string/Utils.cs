@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using bi_dev.sql.mssql.extensions;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 
 namespace bi_dev.sql.mssql.extensions.@string
 {
@@ -73,6 +74,19 @@ namespace bi_dev.sql.mssql.extensions.@string
                 {
                     return new Regex(regexPattern).Match(value).Groups[groupNumber].Value;
                 }
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        public static string StringExceptHTML(string value, bool nullWhenError)
+        {
+            try
+            {
+                HtmlDocument htmlDoc = new HtmlDocument();
+                htmlDoc.LoadHtml(value);
+                return htmlDoc.DocumentNode.InnerText;
             }
             catch (Exception e)
             {
