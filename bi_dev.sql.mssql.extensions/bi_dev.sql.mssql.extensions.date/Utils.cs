@@ -48,5 +48,17 @@ namespace bi_dev.sql.mssql.extensions.date
                 return Common.ThrowIfNeeded<int?>(e, nullWhenError);
             }
         }
+        public static DateTime? UtcDateToLocalDate(DateTime? value, bool nullWhenError)
+        {
+            try
+            {
+                if (!value.HasValue) return null;
+                else return value.Value.ToLocalTime();
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<DateTime?>(e, nullWhenError);
+            }
+        }
     }
 }
