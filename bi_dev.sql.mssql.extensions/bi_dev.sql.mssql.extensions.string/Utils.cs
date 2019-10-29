@@ -84,9 +84,16 @@ namespace bi_dev.sql.mssql.extensions.@string
         {
             try
             {
-                HtmlDocument htmlDoc = new HtmlDocument();
-                htmlDoc.LoadHtml(value);
-                return htmlDoc.DocumentNode.InnerText;
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return null;
+                }
+                else
+                {
+                    HtmlDocument htmlDoc = new HtmlDocument();
+                    htmlDoc.LoadHtml(value);
+                    return htmlDoc.DocumentNode.InnerText;
+                }
             }
             catch (Exception e)
             {
