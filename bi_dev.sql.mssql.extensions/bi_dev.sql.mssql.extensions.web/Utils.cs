@@ -47,22 +47,6 @@ namespace bi_dev.sql.mssql.extensions.web
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-        [SqlFunction]
-        public static long DownloadFile(string url, string filePath, string headersInUrlFormat, bool nullWhenError)
-        {
-            try
-            {
-                WebClient wc = new WebClient();
-                wc.Encoding = Encoding.UTF8;
-                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
-                wc.DownloadFile(url, filePath);
-                return new FileInfo(filePath).Length;
-            }
-            catch (Exception e)
-            {
-                return Common.ThrowIfNeeded<long>(e, nullWhenError);
-            }
-        }
         public class WebRequestResult
         {
 
@@ -78,9 +62,10 @@ namespace bi_dev.sql.mssql.extensions.web
             public CookieCollection ResponseCookies { get; set; }
             public int CodePage { get; set; }
             public WebException WebException { get; set; }
+            public long? FileSize { get; set; }
 
         }
-        public static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect)
+        public static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect, string fileName)
         {
             WebRequestResult result = new WebRequestResult();
             result.RequestCookies = cookies;
@@ -150,6 +135,27 @@ namespace bi_dev.sql.mssql.extensions.web
                             responseText = reader.ReadToEnd();
                             result.ResponseText = responseText;
                         }
+                        if (!string.IsNullOrWhiteSpace(fileName))
+                        {
+                            if (File.Exists(fileName))
+                            {
+                                File.Delete(fileName);
+                            }
+                            using (FileStream os = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.Write))
+                            {
+                                byte[] buff = new byte[102400];
+                                int c = 0;
+                                while ((c = s.Read(buff, 0, 10400)) > 0)
+                                {
+                                    os.Write(buff, 0, c);
+                                    os.Flush();
+                                }
+                            }
+                            if (File.Exists(fileName))
+                            {
+                                result.FileSize = new FileInfo(fileName).Length;
+                            }
+                        }
                     }
                     return result;
                 }
@@ -193,7 +199,18 @@ namespace bi_dev.sql.mssql.extensions.web
             }
         }
         [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable ProcessWebRequest(string url, string method, string body, string contentType, int? codePage, string headersInUrlFormat, string cookiesInUrlFormat, bool allowAutoRedirect, bool nullWhenError)
+        public static IEnumerable ProcessWebRequest(
+            string url, 
+            string method, 
+            string body, 
+            string contentType, 
+            int? codePage, 
+            string headersInUrlFormat, 
+            string cookiesInUrlFormat, 
+            bool allowAutoRedirect, 
+            string fileName,
+            bool nullWhenError
+        )
         {
             try
             {
@@ -218,7 +235,8 @@ namespace bi_dev.sql.mssql.extensions.web
                     codePage,
                     headerDict,
                     cookieDict,
-                    allowAutoRedirect
+                    allowAutoRedirect,
+                    fileName
                 );
                 
                 List<TableType> l = new List<TableType>();
@@ -229,6 +247,7 @@ namespace bi_dev.sql.mssql.extensions.web
                 l.Add(new TableType("code_page", res.CodePage.ToString()));
                 l.Add(new TableType("status_code", res.StatusCode.ToString()));
                 l.Add(new TableType("response_text", res.ResponseText));
+                l.Add(new TableType("file_size", res.FileSize.ToString()));
                 if (res.RequestCookies != null)
                 {
                     foreach (var cookie in res.RequestCookies)
