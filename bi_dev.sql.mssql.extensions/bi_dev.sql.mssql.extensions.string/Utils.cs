@@ -39,6 +39,19 @@ namespace bi_dev.sql.mssql.extensions.@string
             }
         }
         [SqlFunction]
+        public static string UrlEnocde(string value, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value)) return null;
+                else return Uri.EscapeDataString(value);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        [SqlFunction]
         public static string SplitString(string value, string separator, int index, bool nullWhenError)
         {
             try

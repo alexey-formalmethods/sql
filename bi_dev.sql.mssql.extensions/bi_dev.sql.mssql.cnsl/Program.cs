@@ -12,10 +12,7 @@ namespace bi_dev.sql.mssql.cnsl
         
         static void Main(string[] args)
         {
-
-           
-
-
+            
         }
     }
 }
