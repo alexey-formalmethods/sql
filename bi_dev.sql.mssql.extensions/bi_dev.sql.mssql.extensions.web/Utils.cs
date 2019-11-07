@@ -84,7 +84,7 @@ namespace bi_dev.sql.mssql.extensions.web
                     Uri target = new Uri(url);
                     foreach (var cookie in cookies)
                     {
-                        r.CookieContainer.Add(new Cookie(cookie.Key, cookie.Value, "/", target.Host));
+                        r.CookieContainer.Add(new Cookie(cookie.Key, HttpUtility.UrlEncode(cookie.Value), "/", target.Host));
                     }
                 }
                 if (headers != null)
