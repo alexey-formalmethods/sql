@@ -39,7 +39,7 @@ namespace bi_dev.sql.mssql.extensions.@string
             }
         }
         [SqlFunction]
-        public static string UrlEnocde(string value, bool nullWhenError)
+        public static string UrlEncode(string value, bool nullWhenError)
         {
             try
             {
