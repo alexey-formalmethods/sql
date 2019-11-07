@@ -47,6 +47,22 @@ namespace bi_dev.sql.mssql.extensions.web
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+        [SqlFunction]
+        public static long DownloadFile(string url, string filePath, string headersInUrlFormat, bool nullWhenError)
+        {
+            try
+            {
+                WebClient wc = new WebClient();
+                wc.Encoding = Encoding.UTF8;
+                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
+                wc.DownloadFile(url, filePath);
+                return new FileInfo(filePath).Length;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<long>(e, nullWhenError);
+            }
+        }
         public class WebRequestResult
         {
 
