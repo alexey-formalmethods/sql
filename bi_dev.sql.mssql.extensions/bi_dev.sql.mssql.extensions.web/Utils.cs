@@ -130,11 +130,7 @@ namespace bi_dev.sql.mssql.extensions.web
                     result.ResponseHeaders = response.Headers;
                     using (var s = response.GetResponseStream())
                     {
-                        using (var reader = new StreamReader(s, Encoding.GetEncoding(currentCodePage)))
-                        {
-                            responseText = reader.ReadToEnd();
-                            result.ResponseText = responseText;
-                        }
+                        
                         if (!string.IsNullOrWhiteSpace(fileName))
                         {
                             if (File.Exists(fileName))
@@ -145,15 +141,26 @@ namespace bi_dev.sql.mssql.extensions.web
                             {
                                 byte[] buff = new byte[102400];
                                 int c = 0;
-                                while ((c = s.Read(buff, 0, 10400)) > 0)
+                                if (s.CanRead)
                                 {
-                                    os.Write(buff, 0, c);
-                                    os.Flush();
+                                    while ((c = s.Read(buff, 0, 10400)) > 0)
+                                    {
+                                        os.Write(buff, 0, c);
+                                        os.Flush();
+                                    }
                                 }
                             }
                             if (File.Exists(fileName))
                             {
                                 result.FileSize = new FileInfo(fileName).Length;
+                            }
+                        }
+                        else
+                        {
+                            using (var reader = new StreamReader(s, Encoding.GetEncoding(currentCodePage)))
+                            {
+                                responseText = reader.ReadToEnd();
+                                result.ResponseText = responseText;
                             }
                         }
                     }

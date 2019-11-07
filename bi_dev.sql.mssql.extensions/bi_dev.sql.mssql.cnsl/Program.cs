@@ -1,4 +1,4 @@
-﻿using bi_dev.sql.mssql.extensions.date;
+﻿using bi_dev.sql.mssql.extensions.web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,8 @@ namespace bi_dev.sql.mssql.cnsl
         static void Main(string[] args)
         {
 
-            var e = Utils.GetWeekDayNumRus(new DateTime(2019, 8, 13), false);
+           
+
 
         }
     }
