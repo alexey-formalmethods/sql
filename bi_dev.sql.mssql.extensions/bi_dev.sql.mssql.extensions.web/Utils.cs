@@ -56,14 +56,115 @@ namespace bi_dev.sql.mssql.extensions.web
             public Dictionary<string, string> RequestCookies { get; set; }
 
             public string ResponseText { get; set; }
-            public HttpStatusCode HttpStatusCode { get; set; } 
-            public int StatusCode { get { return (int)this.HttpStatusCode; } }
+            private HttpStatusCode httpStatusCode;
+            private bool isStatusCodeHttp = false;
+            public HttpStatusCode HttpStatusCode
+            {
+                get
+                {
+                    return this.httpStatusCode;
+                }
+                set
+                {
+                    this.isStatusCodeHttp = true;
+                    this.httpStatusCode = value;
+                }
+            }
+
+            private FtpStatusCode ftpStatusCode;
+            private bool isStatusCodeFtp = false;
+            public FtpStatusCode FtpStatusCode
+            {
+                get
+                {
+                    return this.ftpStatusCode;
+                }
+                set
+                {
+                    this.isStatusCodeFtp = true;
+                    this.ftpStatusCode = value;
+                }
+            }
+            public int StatusCode
+            {
+                get
+                {
+                    if (this.isStatusCodeHttp)
+                    {
+                        return (int)this.HttpStatusCode;
+                    }
+                    if (this.isStatusCodeFtp)
+                    {
+                        return (int)this.FtpStatusCode;
+                    }
+                    else return 0;
+                }
+            }
             public WebHeaderCollection ResponseHeaders { get; set; }
             public CookieCollection ResponseCookies { get; set; }
             public int CodePage { get; set; }
             public WebException WebException { get; set; }
             public long? FileSize { get; set; }
 
+        }
+        public static WebRequestResult processFtpRequest(string url, string method, string fileName, string username, string password)
+        {
+            WebRequestResult result = new WebRequestResult();
+            try
+            {
+                FtpWebRequest r = (FtpWebRequest)WebRequest.Create(url);
+                if (username != null)
+                {
+                    r.Credentials = new NetworkCredential(username, password);
+                }
+                if (method == WebRequestMethods.Ftp.DownloadFile)
+                {
+                    r.UseBinary = true;
+                    r.Method = method;
+                    using (FtpWebResponse response = (FtpWebResponse)r.GetResponse())
+                    {
+                        using (Stream responseStream = response.GetResponseStream())
+                        {
+                            using (StreamReader reader = new StreamReader(responseStream))
+                            {
+                                using (StreamWriter destination = new StreamWriter(fileName))
+                                {
+                                    destination.Write(reader.ReadToEnd());
+                                    destination.Flush();
+                                }
+                            }
+                        }
+                        result.FtpStatusCode = response.StatusCode;
+                    }
+                    if (File.Exists(fileName))
+                    {
+                        result.FileSize = new FileInfo(fileName).Length;
+                    }
+                }
+                if (method == WebRequestMethods.Ftp.Rename)
+                {
+                    r.UseBinary = true;
+                    r.Method = method;
+                    r.RenameTo = fileName;
+                    var response = (FtpWebResponse)r.GetResponse();
+                    result.FtpStatusCode = response.StatusCode;
+                }
+                return result;
+            }
+            catch (WebException e)
+            {
+                var response = (FtpWebResponse)e.Response;
+                result.WebException = e;
+                using (var responseStream = response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(responseStream))
+                    {
+                        result.ResponseText = reader.ReadToEnd();
+                        result.FtpStatusCode = response.StatusCode;
+                    }
+                }
+                return result;
+            }
         }
         public static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect, string fileName)
         {
@@ -206,15 +307,49 @@ namespace bi_dev.sql.mssql.extensions.web
             }
         }
         [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable ProcessWebRequest(
+        public static IEnumerable ProcessFtpRequest(
             string url, 
             string method, 
-            string body, 
-            string contentType, 
-            int? codePage, 
-            string headersInUrlFormat, 
-            string cookiesInUrlFormat, 
-            bool allowAutoRedirect, 
+            string fileName, 
+            string username, 
+            string password,
+            bool nullWhenError
+        )
+        {
+            try
+            {
+                var res = processFtpRequest(
+                    url,
+                    method,
+                    fileName,
+                    username,
+                    password
+                );
+                
+                List<TableType> l = new List<TableType>();
+                l.Add(new TableType("url", url));
+                l.Add(new TableType("method", method));
+                l.Add(new TableType("body", res.Body));
+                l.Add(new TableType("status_code", res.StatusCode.ToString()));
+                l.Add(new TableType("response_text", res.ResponseText));
+                l.Add(new TableType("file_size", res.FileSize.ToString()));
+                return l;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
+            }
+        }
+        [SqlFunction(FillRowMethodName = "FillRow")]
+        public static IEnumerable ProcessWebRequest(
+            string url,
+            string method,
+            string body,
+            string contentType,
+            int? codePage,
+            string headersInUrlFormat,
+            string cookiesInUrlFormat,
+            bool allowAutoRedirect,
             string fileName,
             bool nullWhenError
         )
@@ -245,7 +380,7 @@ namespace bi_dev.sql.mssql.extensions.web
                     allowAutoRedirect,
                     fileName
                 );
-                
+
                 List<TableType> l = new List<TableType>();
                 l.Add(new TableType("url", url));
                 l.Add(new TableType("method", method));
@@ -283,7 +418,7 @@ namespace bi_dev.sql.mssql.extensions.web
                         l.Add(new TableType("response_header", header, res.ResponseHeaders[header]));
                     }
                 }
-                
+
                 return l;
             }
             catch (Exception e)
