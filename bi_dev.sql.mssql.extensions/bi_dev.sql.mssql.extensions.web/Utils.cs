@@ -56,6 +56,7 @@ namespace bi_dev.sql.mssql.extensions.web
             public Dictionary<string, string> RequestCookies { get; set; }
 
             public string ResponseText { get; set; }
+            public IEnumerable<string> ResponseRows { get; set; }
             private HttpStatusCode httpStatusCode;
             private bool isStatusCodeHttp = false;
             public HttpStatusCode HttpStatusCode
@@ -146,8 +147,29 @@ namespace bi_dev.sql.mssql.extensions.web
                     r.UseBinary = true;
                     r.Method = method;
                     r.RenameTo = fileName;
-                    var response = (FtpWebResponse)r.GetResponse();
-                    result.FtpStatusCode = response.StatusCode;
+                    using (var response = (FtpWebResponse)r.GetResponse())
+                    {
+                        result.FtpStatusCode = response.StatusCode;
+                    }
+                }
+                if (method == WebRequestMethods.Ftp.ListDirectory)
+                {
+                    r.Method = method;
+                    using (var response = (FtpWebResponse)r.GetResponse())
+                    {
+                        using (StreamReader streamReader = new StreamReader(response.GetResponseStream()))
+                        {
+                            var rows = new List<string>();
+                            string line = streamReader.ReadLine();
+                            while (!string.IsNullOrEmpty(line))
+                            {
+                                rows.Add(line);
+                                line = streamReader.ReadLine();
+                            }
+                            result.ResponseRows = rows;
+                        }
+                        result.FtpStatusCode = response.StatusCode;
+                    }   
                 }
                 return result;
             }
@@ -333,6 +355,10 @@ namespace bi_dev.sql.mssql.extensions.web
                 l.Add(new TableType("status_code", res.StatusCode.ToString()));
                 l.Add(new TableType("response_text", res.ResponseText));
                 l.Add(new TableType("file_size", res.FileSize.ToString()));
+                if (res.ResponseRows != null)
+                {
+                    l.AddRange(res.ResponseRows.Select(x => new TableType("files", x)));
+                }
                 return l;
             }
             catch (Exception e)
