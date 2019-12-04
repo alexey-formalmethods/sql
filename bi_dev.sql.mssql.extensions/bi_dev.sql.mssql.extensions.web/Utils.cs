@@ -152,6 +152,21 @@ namespace bi_dev.sql.mssql.extensions.web
                         result.FtpStatusCode = response.StatusCode;
                     }
                 }
+                if (method == WebRequestMethods.Ftp.UploadFile)
+                {
+                    r.Method = method;
+                    using (var fileStream = File.OpenRead(fileName))
+                    {
+                        using (var requestStream = r.GetRequestStream())
+                        {
+                            fileStream.CopyTo(requestStream);
+                        }
+                    }
+                    using (var response = (FtpWebResponse)r.GetResponse())
+                    {
+                        result.FtpStatusCode = response.StatusCode;
+                    }
+                }
                 if (method == WebRequestMethods.Ftp.ListDirectory)
                 {
                     r.Method = method;
