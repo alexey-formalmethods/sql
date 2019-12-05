@@ -11,7 +11,7 @@ namespace bi_dev.sql.mssql.extensions.file
     public class Utils
     {
         [SqlFunction]
-        public string GetFileContent(string fileName, bool nullWhenError)
+        public static string GetFileContent(string fileName, bool nullWhenError)
         {
             try
             {
