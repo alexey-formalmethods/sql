@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using bi_dev.sql.mssql.extensions;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using System.Security.Cryptography;
 
 namespace bi_dev.sql.mssql.extensions.@string
 {
@@ -112,6 +113,19 @@ namespace bi_dev.sql.mssql.extensions.@string
             {
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
+        }
+        public static string GetSha256Hash(string value, bool nullWhenError)
+        {
+            SHA256Managed sha256 = new SHA256Managed();
+            Encoding encoding = Encoding.UTF8;
+            byte[] inputByteArray = encoding.GetBytes(value);
+            byte[] hashByteArray = sha256.ComputeHash(inputByteArray);
+            string hashString = string.Empty;
+            foreach (byte x in hashByteArray)
+            {
+                hashString += String.Format("{0:x2}", x);
+            }
+            return hashString;
         }
     }
 }
