@@ -8,6 +8,10 @@ using bi_dev.sql.mssql.extensions;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.Security.Cryptography;
+using System.IO;
+using CsvHelper;
+using System.Data.SqlTypes;
+using System.Collections;
 
 namespace bi_dev.sql.mssql.extensions.@string
 {
@@ -132,6 +136,69 @@ namespace bi_dev.sql.mssql.extensions.@string
             catch (Exception e)
             {
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        public class TableType
+        {
+            public int RowNumber { get; set; }
+            public int ColumnIndex { get; set; }
+            public string Value { get; set; }
+            public TableType()
+            {
+
+            }
+            public TableType(int rowNumber, int columnIndex, string value)
+            {
+                this.RowNumber = rowNumber;
+                this.ColumnIndex = columnIndex;
+                this.Value = value;
+            }
+        }
+        public static void FillRow(Object obj, out SqlInt32 rowType, out SqlInt32 key, out SqlChars value)
+        {
+            TableType table = (TableType)obj;
+            rowType = new SqlInt32(table.RowNumber);
+            key = new SqlInt32(table.ColumnIndex);
+            value = new SqlChars(table.Value);
+        }
+        private static List<string[] > parseCsv(string value, string delimiter)
+        {
+            List<string[]> result = new List<string[]>();
+            using (TextReader reader = new StringReader(value))
+            {
+                CsvParser csv = new CsvParser(reader);
+                csv.Configuration.Delimiter = (string.IsNullOrEmpty(delimiter)?";": delimiter);
+                while (true)
+                {
+                    var row = csv.Read();
+                    result.Add(row);
+                    if (row == null)
+                    {
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+        [SqlFunction(FillRowMethodName = "FillRow")]
+        public static IEnumerable ParseCsv(string value, string delimiter, bool nullWhenError)
+        {
+            try
+            {
+                List<TableType> l = new List<TableType>();
+                var result = parseCsv(value, delimiter);
+                for (int i = 0; i < result.Count; i++)
+                {
+                    for (int j = 0; j < result[i].Length; j++)
+                    {
+                        l.Add(new TableType(i, j, result[i][j]));
+                    }
+                }
+                return l;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
             }
         }
     }
