@@ -116,16 +116,23 @@ namespace bi_dev.sql.mssql.extensions.@string
         }
         public static string GetSha256Hash(string value, bool nullWhenError)
         {
-            SHA256Managed sha256 = new SHA256Managed();
-            Encoding encoding = Encoding.UTF8;
-            byte[] inputByteArray = encoding.GetBytes(value);
-            byte[] hashByteArray = sha256.ComputeHash(inputByteArray);
-            string hashString = string.Empty;
-            foreach (byte x in hashByteArray)
+            try
             {
-                hashString += String.Format("{0:x2}", x);
+                SHA256Managed sha256 = new SHA256Managed();
+                Encoding encoding = Encoding.UTF8;
+                byte[] inputByteArray = encoding.GetBytes(value);
+                byte[] hashByteArray = sha256.ComputeHash(inputByteArray);
+                string hashString = string.Empty;
+                foreach (byte x in hashByteArray)
+                {
+                    hashString += String.Format("{0:x2}", x);
+                }
+                return hashString;
             }
-            return hashString;
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
         }
     }
 }
