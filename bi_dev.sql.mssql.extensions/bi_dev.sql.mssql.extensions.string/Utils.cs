@@ -171,10 +171,13 @@ namespace bi_dev.sql.mssql.extensions.@string
                 while (true)
                 {
                     var row = csv.Read();
-                    result.Add(row);
                     if (row == null)
                     {
                         break;
+                    }
+                    else
+                    {
+                        result.Add(row);
                     }
                 }
             }

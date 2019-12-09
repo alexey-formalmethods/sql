@@ -12,7 +12,7 @@ namespace bi_dev.sql.mssql.cnsl
         
         static void Main(string[] args)
         {
-           
+            var e = Utils.ParseCsv("aaa;  a; aaa", ";", true);
         }
     }
 }
