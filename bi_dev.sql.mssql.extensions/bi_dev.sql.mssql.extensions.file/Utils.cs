@@ -27,7 +27,7 @@ namespace bi_dev.sql.mssql.extensions.file
         {
             try
             {
-                return (string.IsNullOrWhiteSpace(path)?false: (File.Exists(path) || Directory.Exists(path));
+                return (string.IsNullOrWhiteSpace(path))?false: (File.Exists(path) || Directory.Exists(path));
             }
             catch (Exception e)
             {
