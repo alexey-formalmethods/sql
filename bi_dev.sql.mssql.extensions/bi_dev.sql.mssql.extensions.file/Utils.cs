@@ -23,15 +23,15 @@ namespace bi_dev.sql.mssql.extensions.file
             }
         }
         [SqlFunction]
-        public static bool Exists(string path, bool nullWhenError)
+        public static bool? Exists(string path, bool nullWhenError)
         {
             try
             {
-                return File.Exists(path) || Directory.Exists(path);
+                return (string.IsNullOrWhiteSpace(path)?false: (File.Exists(path) || Directory.Exists(path));
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<bool>(e, nullWhenError);
+                return Common.ThrowIfNeeded<bool?>(e, nullWhenError);
             }
         }
     }
