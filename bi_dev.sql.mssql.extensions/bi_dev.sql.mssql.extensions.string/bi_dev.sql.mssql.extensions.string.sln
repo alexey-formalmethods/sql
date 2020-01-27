@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.file.excel", "..\bi_dev.sql.mssql.extensions.file.excel\bi_dev.sql.mssql.extensions.file.excel.csproj", "{BE681429-6481-4CAF-ABE8-41AF7765D5D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.aggregation", "..\bi_dev.sql.mssql.extensions.aggregation\bi_dev.sql.mssql.extensions.aggregation.csproj", "{804E2B40-A249-48AD-83AE-62C65C2881BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{BE681429-6481-4CAF-ABE8-41AF7765D5D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE681429-6481-4CAF-ABE8-41AF7765D5D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE681429-6481-4CAF-ABE8-41AF7765D5D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{804E2B40-A249-48AD-83AE-62C65C2881BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{804E2B40-A249-48AD-83AE-62C65C2881BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{804E2B40-A249-48AD-83AE-62C65C2881BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{804E2B40-A249-48AD-83AE-62C65C2881BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
