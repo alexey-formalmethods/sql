@@ -1,4 +1,4 @@
-﻿using bi_dev.sql.mssql.extensions.web;
+﻿using bi_dev.sql.mssql.extensions.@string;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace bi_dev.sql.mssql.cnsl
         
         static void Main(string[] args)
         {
-            var e = Utils.Get("", null, false);
+           
         }
     }
 }

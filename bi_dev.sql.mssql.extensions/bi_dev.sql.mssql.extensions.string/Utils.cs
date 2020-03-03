@@ -12,6 +12,8 @@ using System.IO;
 using CsvHelper;
 using System.Data.SqlTypes;
 using System.Collections;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace bi_dev.sql.mssql.extensions.@string
 {
@@ -202,6 +204,19 @@ namespace bi_dev.sql.mssql.extensions.@string
             catch (Exception e)
             {
                 return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
+            }
+        }
+        public static string JsonValue(string json, string path, bool nullWhenError)
+        {
+            try
+            {
+                JObject o = JObject.Parse(json);
+                string result = (string)o.SelectToken(path);
+                return result;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
     }
