@@ -23,7 +23,7 @@ namespace bi_dev.sql.mssql.extensions.web
             {
                 WebClient wc = new WebClient();
                 wc.Encoding = Encoding.UTF8;
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
                 if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
                 return wc.DownloadString(url);
             }
