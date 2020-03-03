@@ -16,6 +16,10 @@ namespace bi_dev.sql.mssql.extensions.web
 {
     public static class Utils
     {
+        private static void FixSecurityProtocol()
+        {
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+        }
         [SqlFunction]
         public static string Get(string url, string headersInUrlFormat, bool nullWhenError)
         {
@@ -23,7 +27,7 @@ namespace bi_dev.sql.mssql.extensions.web
             {
                 WebClient wc = new WebClient();
                 wc.Encoding = Encoding.UTF8;
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                FixSecurityProtocol();
                 if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
                 return wc.DownloadString(url);
             }
@@ -39,6 +43,7 @@ namespace bi_dev.sql.mssql.extensions.web
             {
                 WebClient wc = new WebClient();
                 wc.Encoding = Encoding.UTF8;
+                FixSecurityProtocol();
                 if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
                 return wc.UploadString(url, body);
             }
