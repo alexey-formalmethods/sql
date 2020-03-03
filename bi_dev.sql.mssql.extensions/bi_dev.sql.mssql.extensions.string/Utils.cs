@@ -206,18 +206,6 @@ namespace bi_dev.sql.mssql.extensions.@string
                 return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
             }
         }
-        public static string JsonValue(string json, string path, bool nullWhenError)
-        {
-            try
-            {
-                JObject o = JObject.Parse(json);
-                string result = (string)o.SelectToken(path);
-                return result;
-            }
-            catch (Exception e)
-            {
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
-            }
-        }
+        
     }
 }
