@@ -14,7 +14,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
 {
     public static class Utils
     {
-        public static long? create(string fileName, string sheetNamesSlashDelimited, bool nullWhenError)
+        public static long? CreateExcelFile(string fileName, string sheetNamesSlashDelimited, bool nullWhenError)
         {
             try
             {
