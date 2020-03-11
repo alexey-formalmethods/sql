@@ -34,5 +34,18 @@ namespace bi_dev.sql.mssql.extensions.file
                 return Common.ThrowIfNeeded<bool?>(e, nullWhenError);
             }
         }
+        [SqlFunction]
+        public static bool? Delete(string path, bool nullWhenError)
+        {
+            try
+            {
+                File.Delete(path);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<bool?>(e, nullWhenError);
+            }
+        }
     }
 }

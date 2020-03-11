@@ -9,11 +9,13 @@ using System.IO;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.HSSF.UserModel;
+using Microsoft.SqlServer.Server;
 
 namespace bi_dev.sql.mssql.extensions.file.excel
 {
     public static class Utils
     {
+        [SqlFunction]
         public static long? CreateExcelFile(string fileName, string sheetNamesSlashDelimited, bool nullWhenError)
         {
             try
