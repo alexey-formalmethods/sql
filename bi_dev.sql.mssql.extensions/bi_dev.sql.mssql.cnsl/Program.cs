@@ -1,4 +1,4 @@
-﻿using bi_dev.sql.mssql.extensions.@string;
+﻿using bi_dev.sql.mssql.extensions.file.excel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace bi_dev.sql.mssql.cnsl
         
         static void Main(string[] args)
         {
-           
+            
         }
     }
 }

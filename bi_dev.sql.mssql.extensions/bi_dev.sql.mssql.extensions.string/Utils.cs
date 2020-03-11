@@ -12,8 +12,6 @@ using System.IO;
 using CsvHelper;
 using System.Data.SqlTypes;
 using System.Collections;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace bi_dev.sql.mssql.extensions.@string
 {
