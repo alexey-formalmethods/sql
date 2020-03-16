@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using System.Security.Cryptography;
 using System.IO;
-using CsvHelper;
 using System.Data.SqlTypes;
 using System.Collections;
 
@@ -138,72 +137,33 @@ namespace bi_dev.sql.mssql.extensions.@string
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-        public class TableType
-        {
-            public int RowNumber { get; set; }
-            public int ColumnIndex { get; set; }
-            public string Value { get; set; }
-            public TableType()
-            {
-
-            }
-            public TableType(int rowNumber, int columnIndex, string value)
-            {
-                this.RowNumber = rowNumber;
-                this.ColumnIndex = columnIndex;
-                this.Value = value;
-            }
-        }
-        public static void FillRow(Object obj, out SqlInt32 rowType, out SqlInt32 key, out SqlChars value)
-        {
-            TableType table = (TableType)obj;
-            rowType = new SqlInt32(table.RowNumber);
-            key = new SqlInt32(table.ColumnIndex);
-            value = new SqlChars(table.Value);
-        }
-        private static List<string[] > parseCsv(string value, string delimiter)
-        {
-            List<string[]> result = new List<string[]>();
-            using (TextReader reader = new StringReader(value))
-            {
-                CsvParser csv = new CsvParser(reader);
-                csv.Configuration.Delimiter = (string.IsNullOrEmpty(delimiter)?";": delimiter);
-                while (true)
-                {
-                    var row = csv.Read();
-                    if (row == null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        result.Add(row);
-                    }
-                }
-            }
-            return result;
-        }
-        [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable ParseCsv(string value, string delimiter, bool nullWhenError)
+        [SqlFunction]
+        public static string Base64Decode(string value, bool nullWhenError)
         {
             try
             {
-                List<TableType> l = new List<TableType>();
-                var result = parseCsv(value, delimiter);
-                for (int i = 0; i < result.Count; i++)
-                {
-                    for (int j = 0; j < result[i].Length; j++)
-                    {
-                        l.Add(new TableType(i, j, result[i][j]));
-                    }
-                }
-                return l;
+                if (string.IsNullOrWhiteSpace(value)) return null;
+                else return Encoding.UTF8.GetString(Convert.FromBase64String(value));
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-        
+        [SqlFunction]
+        public static string Base64Encode(string value, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value)) return null;
+                else return System.Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+
+
     }
 }

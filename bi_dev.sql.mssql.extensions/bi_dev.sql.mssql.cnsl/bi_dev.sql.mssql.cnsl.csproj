@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.file.excel\bi_dev.sql.mssql.extensions.file.excel.csproj">
-      <Project>{be681429-6481-4caf-abe8-41af7765d5d1}</Project>
-      <Name>bi_dev.sql.mssql.extensions.file.excel</Name>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.string.csv\bi_dev.sql.mssql.extensions.string.csv.csproj">
+      <Project>{c3348c9c-c2f7-4f22-8c5e-06cebc486132}</Project>
+      <Name>bi_dev.sql.mssql.extensions.string.csv</Name>
     </ProjectReference>
     <ProjectReference Include="..\bi_dev.sql.mssql.extensions.string\bi_dev.sql.mssql.extensions.string.csproj">
       <Project>{4712b44c-5523-4a7c-a27a-096e2f056c97}</Project>
