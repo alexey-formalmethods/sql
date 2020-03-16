@@ -3,6 +3,7 @@ using Microsoft.SqlServer.Server;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -34,6 +35,10 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
                 }
             }
             return result;
+        }
+        public static void FillRow(Object obj, out SqlInt32 rowType, out SqlInt32 key, out SqlChars value)
+        {
+            TableType.FillRow(obj, out rowType, out key,out value);
         }
         [SqlFunction(FillRowMethodName = "FillRow")]
         public static IEnumerable ParseCsv(string value, string delimiter, bool nullWhenError)
