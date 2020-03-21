@@ -78,7 +78,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         }
         private static ICellStyle GetCellStyle(
             IWorkbook workbook,
-            short fontHeightInPoints,
+            int? fontHeightInPoints,
             bool? isBold,
             bool? borderTop,
             bool? borderBottom,
@@ -91,7 +91,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
 
             ICellStyle cellStyle = workbook.CreateCellStyle();
             var font = workbook.CreateFont();
-            font.FontHeightInPoints = fontHeightInPoints;
+            font.FontHeightInPoints = fontHeightInPoints.HasValue? fontHeightInPoints.Value:11;
             if (isBold.HasValue) {
                 if (isBold.HasValue) font.IsBold = isBold.Value;
             }
@@ -110,14 +110,14 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             }
             return cellStyle;
         }
-        public static bool? Format(
+        public static bool? FormatExcelFile(
             string fileName,
             string sheetName,
             int? rowNumberFrom,
             int? rowNumberTo,
             int? columnNumberFrom,
             int? columnNumberTo,
-            short fontHeightInPoints,
+            int? fontHeightInPoints,
             bool? isBold,
             bool? borderTop,
             bool? borderBottom,
