@@ -13,5 +13,6 @@ namespace bi_dev.sql.mssql.extensions
             if (nullWhenError) return default(T);
             else throw ex;
         }
+
     }
 }
