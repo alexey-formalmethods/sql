@@ -194,68 +194,75 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         }
         public static bool? EditExcelFile(string fileName, string sheetName, int rowNumber, int columnNumber, string jsonObject, bool nullWhenError)
         {
-            var workBook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Open);
-            var sheet = workBook.GetSheet(sheetName);
-            List<JObject> values;
             try
             {
-                values = JsonConvert.DeserializeObject<List<JObject>>(jsonObject);
-            }
-            catch (JsonSerializationException jsex)
-            {
-                values = new List<JObject>() { JsonConvert.DeserializeObject<JObject>(jsonObject) };
-            } 
-            for (int i = 0; i < values.Count; i++)
-            {
-                var row = sheet.GetRow(rowNumber + i);
-                if (row == null) row = sheet.CreateRow(i);
-                List<JProperty> properties = values[i].Properties().ToList();
-                for (int j = 0; j < properties.Count(); j++)
+                var workBook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Open);
+                var sheet = workBook.GetSheet(sheetName);
+                List<JObject> values;
+                try
                 {
-                    var property = properties[j];
-                    var value = properties[j].Value;
-                    var valueType = value.Type;
-                    var cell = row.GetCell(columnNumber + j, MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                    switch (valueType)
+                    values = JsonConvert.DeserializeObject<List<JObject>>(jsonObject);
+                }
+                catch (JsonSerializationException jsex)
+                {
+                    values = new List<JObject>() { JsonConvert.DeserializeObject<JObject>(jsonObject) };
+                }
+                for (int i = 0; i < values.Count; i++)
+                {
+                    var row = sheet.GetRow(rowNumber + i);
+                    if (row == null) row = sheet.CreateRow(i);
+                    List<JProperty> properties = values[i].Properties().ToList();
+                    for (int j = 0; j < properties.Count(); j++)
                     {
-                        case JTokenType.Date:
+                        var property = properties[j];
+                        var value = properties[j].Value;
+                        var valueType = value.Type;
+                        var cell = row.GetCell(columnNumber + j, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                        switch (valueType)
                         {
-                            cell.SetCellValue((DateTime)value);
-                            break;
-                        }
-                        case JTokenType.Float:
-                        {
-                            cell.SetCellValue((double)value);
-                            break;
-                        }
-                        case JTokenType.Boolean:
-                        {
-                            cell.SetCellValue((bool)value);
-                            break;
-                        }
-                        case JTokenType.Integer:
-                        {
-                            cell.SetCellValue((double)value);
-                            break;
-                        }
-                        case JTokenType.String:
-                        {
-                            cell.SetCellValue((string)value);
-                            break;
-                        }
-                        default:
-                        {
-                            cell.SetCellValue(JsonConvert.SerializeObject(value));
-                            break;
+                            case JTokenType.Date:
+                                {
+                                    cell.SetCellValue((DateTime)value);
+                                    break;
+                                }
+                            case JTokenType.Float:
+                                {
+                                    cell.SetCellValue((double)value);
+                                    break;
+                                }
+                            case JTokenType.Boolean:
+                                {
+                                    cell.SetCellValue((bool)value);
+                                    break;
+                                }
+                            case JTokenType.Integer:
+                                {
+                                    cell.SetCellValue((double)value);
+                                    break;
+                                }
+                            case JTokenType.String:
+                                {
+                                    cell.SetCellValue((string)value);
+                                    break;
+                                }
+                            default:
+                                {
+                                    cell.SetCellValue(JsonConvert.SerializeObject(value));
+                                    break;
+                                }
                         }
                     }
                 }
+                using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+                {
+                    workBook.Write(fs);
+                }
+                return true;
             }
-            using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+            catch (Exception e)
             {
-                workBook.Write(fs);
+                return Common.ThrowIfNeeded<bool?>(e, nullWhenError);
             }
-            return true;
         }
     }
 }
