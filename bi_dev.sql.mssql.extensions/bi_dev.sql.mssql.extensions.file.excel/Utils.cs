@@ -26,6 +26,11 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             Create,
             Open
         }
+        public enum FillExcelRowType
+        {
+            Value,
+            Name
+        }
         private static IWorkbook GetNewWorkBookFromFileName(string fileName, ExcelFileMode excelFileMode)
         {
             IWorkbook workbook;
@@ -192,7 +197,58 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 return Common.ThrowIfNeeded<bool?>(e, nullWhenError);
             }
         }
-        public static bool? EditExcelFile(string fileName, string sheetName, int rowNumber, int columnNumber, string jsonObject, bool nullWhenError)
+
+        private static void FillRow(this IRow row, int columnNumberFrom, List<JProperty> properties, FillExcelRowType fillExcelRowType)
+        {
+            for (int j = 0; j < properties.Count; j++)
+            {
+                var property = properties[j];
+                var cell = row.GetCell(columnNumberFrom + j, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                if (fillExcelRowType == FillExcelRowType.Value)
+                {
+                    JToken value = properties[j].Value;
+                    var valueType = value.Type;
+                    switch (valueType)
+                    {
+                        case JTokenType.Date:
+                            {
+                                cell.SetCellValue((DateTime)value);
+                                break;
+                            }
+                        case JTokenType.Float:
+                            {
+                                cell.SetCellValue((double)value);
+                                break;
+                            }
+                        case JTokenType.Boolean:
+                            {
+                                cell.SetCellValue((bool)value);
+                                break;
+                            }
+                        case JTokenType.Integer:
+                            {
+                                cell.SetCellValue((double)value);
+                                break;
+                            }
+                        case JTokenType.String:
+                            {
+                                cell.SetCellValue((string)value);
+                                break;
+                            }
+                        default:
+                            {
+                                cell.SetCellValue(JsonConvert.SerializeObject(value));
+                                break;
+                            }
+                    }
+                }
+                else
+                {
+                    cell.SetCellValue(properties[j].Name);
+                }
+            }
+        }
+        public static bool? EditExcelFile(string fileName, string sheetName, int rowNumber, int columnNumberFrom, string jsonObject, bool nullWhenError)
         {
             try
             {
@@ -203,54 +259,22 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 {
                     values = JsonConvert.DeserializeObject<List<JObject>>(jsonObject);
                 }
-                catch (JsonSerializationException jsex)
+                catch (JsonSerializationException)
                 {
                     values = new List<JObject>() { JsonConvert.DeserializeObject<JObject>(jsonObject) };
                 }
-                for (int i = 0; i < values.Count; i++)
+                if (values.Count > 0)
                 {
-                    var row = sheet.GetRow(rowNumber + i);
-                    if (row == null) row = sheet.CreateRow(i);
-                    List<JProperty> properties = values[i].Properties().ToList();
-                    for (int j = 0; j < properties.Count(); j++)
+                    var columnNames = values.FirstOrDefault().Properties().ToList();
+                    IRow row = sheet.GetRow(rowNumber);
+                    if (row == null) { row = sheet.CreateRow(rowNumber); }
+                    row.FillRow(columnNumberFrom, columnNames, FillExcelRowType.Name);
+                    for (int i = 0; i < values.Count; i++)
                     {
-                        var property = properties[j];
-                        var value = properties[j].Value;
-                        var valueType = value.Type;
-                        var cell = row.GetCell(columnNumber + j, MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                        switch (valueType)
-                        {
-                            case JTokenType.Date:
-                                {
-                                    cell.SetCellValue((DateTime)value);
-                                    break;
-                                }
-                            case JTokenType.Float:
-                                {
-                                    cell.SetCellValue((double)value);
-                                    break;
-                                }
-                            case JTokenType.Boolean:
-                                {
-                                    cell.SetCellValue((bool)value);
-                                    break;
-                                }
-                            case JTokenType.Integer:
-                                {
-                                    cell.SetCellValue((double)value);
-                                    break;
-                                }
-                            case JTokenType.String:
-                                {
-                                    cell.SetCellValue((string)value);
-                                    break;
-                                }
-                            default:
-                                {
-                                    cell.SetCellValue(JsonConvert.SerializeObject(value));
-                                    break;
-                                }
-                        }
+                        row = sheet.GetRow(rowNumber + 1 + i);
+                        if (row == null) row = sheet.CreateRow(rowNumber + 1 + i);
+                        List<JProperty> properties = values[i].Properties().ToList();
+                        row.FillRow(columnNumberFrom, properties, FillExcelRowType.Value);
                     }
                 }
                 using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
