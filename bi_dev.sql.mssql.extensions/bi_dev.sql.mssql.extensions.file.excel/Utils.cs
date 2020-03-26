@@ -248,7 +248,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 }
             }
         }
-        public static bool? EditExcelFile(string fileName, string sheetName, int rowNumber, int columnNumberFrom, string jsonObject, bool nullWhenError)
+        public static bool? EditExcelFile(string fileName, string sheetName, int rowNumberFrom, int columnNumberFrom, string jsonObject, bool nullWhenError)
         {
             try
             {
@@ -266,13 +266,13 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 if (values.Count > 0)
                 {
                     var columnNames = values.FirstOrDefault().Properties().ToList();
-                    IRow row = sheet.GetRow(rowNumber);
-                    if (row == null) { row = sheet.CreateRow(rowNumber); }
+                    IRow row = sheet.GetRow(rowNumberFrom);
+                    if (row == null) { row = sheet.CreateRow(rowNumberFrom); }
                     row.FillRow(columnNumberFrom, columnNames, FillExcelRowType.Name);
                     for (int i = 0; i < values.Count; i++)
                     {
-                        row = sheet.GetRow(rowNumber + 1 + i);
-                        if (row == null) row = sheet.CreateRow(rowNumber + 1 + i);
+                        row = sheet.GetRow(rowNumberFrom + 1 + i);
+                        if (row == null) row = sheet.CreateRow(rowNumberFrom + 1 + i);
                         List<JProperty> properties = values[i].Properties().ToList();
                         row.FillRow(columnNumberFrom, properties, FillExcelRowType.Value);
                     }
