@@ -153,7 +153,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                     if (!columnNumberFrom.HasValue) columnNumberFrom = 0;
 
                     // to
-                    int? lastColumnNumber = lastCellNums.Max();
+                    int? lastColumnNumber = (lastCellNums.Count == 0 ? 0 : lastCellNums.Max());
                     // add -1, some bug shit
                     if (lastColumnNumber.HasValue && lastColumnNumber.Value > columnNumberFrom) lastColumnNumber = lastColumnNumber.Value - 1;
                     else lastColumnNumber = columnNumberFrom;
