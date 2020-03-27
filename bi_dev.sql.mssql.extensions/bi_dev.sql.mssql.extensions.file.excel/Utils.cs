@@ -15,22 +15,28 @@ using Newtonsoft.Json.Linq;
 
 namespace bi_dev.sql.mssql.extensions.file.excel
 {
-    public class CustomCellStyle
+    public class SimpleObject
     {
-
+        [JsonProperty(PropertyName = "value")]
+        public string Value { get; set; }
+        public SimpleObject(string value)
+        {
+            this.Value = value;
+        }
+    }
+    public enum ExcelFileMode
+    {
+        Create,
+        Open
+    }
+    public enum FillExcelRowType
+    {
+        Value,
+        Name
     }
     public static class Utils
     {
-        public enum ExcelFileMode
-        {
-            Create,
-            Open
-        }
-        public enum FillExcelRowType
-        {
-            Value,
-            Name
-        }
+        
         private static IWorkbook GetNewWorkBookFromFileName(string fileName, ExcelFileMode excelFileMode)
         {
             IWorkbook workbook;
@@ -249,15 +255,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 }
             }
         }
-        public class SimpleObject
-        {
-            [JsonProperty(PropertyName = "value")]
-            public string Value { get; set; }
-            public SimpleObject (string value)
-            {
-                this.Value = value;
-            }
-        }
+        
         public static bool? EditExcelFile(string fileName, string sheetName, int rowNumberFrom, int columnNumberFrom, string jsonObject, bool includeColumnNames, bool nullWhenError)
         {
             try
