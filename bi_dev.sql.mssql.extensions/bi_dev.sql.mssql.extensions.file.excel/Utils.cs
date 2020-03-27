@@ -114,6 +114,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 // yes, it works
                 cellStyle.FillPattern = FillPattern.SolidForeground;
                 cellStyle.FillForegroundColor = backgroundColor.Value;
+                // colors here: NPOI.HSSF.Util.HSSFColor.Grey25Percent.Index
             }
             return cellStyle;
         }

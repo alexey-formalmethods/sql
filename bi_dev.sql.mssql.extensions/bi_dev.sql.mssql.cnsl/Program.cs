@@ -12,6 +12,11 @@ namespace bi_dev.sql.mssql.cnsl
 
         static void Main(string[] args)
         {
+            string fileName = @"C:\a.shamshur\kaka.xlsx";
+            Utils.CreateExcelFile(fileName, "1", false);
+
+            Utils.EditExcelFile(fileName, "1", 0, 0, "[{\"omg\": \"test\", \"number\": 1001}, {\"omg\": \"test - 2\", \"number\": 1002}, {\"omg\": \"test - 3\", \"number\": 133332}]", true);
+            Utils.FormatExcelFile(fileName, "1", 0, 0, 0, null, 10, true, null, true, false, false, null, 22, true);
         }
     }
 }
