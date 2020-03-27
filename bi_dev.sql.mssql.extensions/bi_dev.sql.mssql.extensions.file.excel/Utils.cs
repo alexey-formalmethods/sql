@@ -249,7 +249,16 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 }
             }
         }
-        public static bool? EditExcelFile(string fileName, string sheetName, int rowNumberFrom, int columnNumberFrom, string jsonObject, bool nullWhenError)
+        public class SimpleObject
+        {
+            [JsonProperty(PropertyName = "value")]
+            public string Value { get; set; }
+            public SimpleObject (string value)
+            {
+                this.Value = value;
+            }
+        }
+        public static bool? EditExcelFile(string fileName, string sheetName, int rowNumberFrom, int columnNumberFrom, string jsonObject, bool includeColumnNames, bool nullWhenError)
         {
             try
             {
@@ -264,24 +273,41 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 {
                     values = new List<JObject>() { JsonConvert.DeserializeObject<JObject>(jsonObject) };
                 }
+                catch (JsonReaderException)
+                {
+                    values = new List<JObject>() {
+                        JsonConvert.DeserializeObject<JObject>(
+                            JsonConvert.SerializeObject(
+                                new SimpleObject(jsonObject)
+                            )
+                        ) 
+                    };
+                }
+
                 if (values.Count > 0)
                 {
-                    var columnNames = values.FirstOrDefault().Properties().ToList();
-                    IRow row = sheet.GetRow(rowNumberFrom);
-                    if (row == null) { row = sheet.CreateRow(rowNumberFrom); }
-                    row.FillRow(columnNumberFrom, columnNames, FillExcelRowType.Name);
+                    IRow row;
+                    if (includeColumnNames)
+                    {
+                        List<JProperty> columnNames = values.FirstOrDefault().Properties().ToList();
+                        row = sheet.GetRow(rowNumberFrom);
+                        if (row == null) { row = sheet.CreateRow(rowNumberFrom); }
+                        row.FillRow(columnNumberFrom, columnNames, FillExcelRowType.Name);
+                    }
                     for (int i = 0; i < values.Count; i++)
                     {
-                        row = sheet.GetRow(rowNumberFrom + 1 + i);
-                        if (row == null) row = sheet.CreateRow(rowNumberFrom + 1 + i);
+                        int rowIndex = rowNumberFrom + i + ((includeColumnNames) ? 1 : 0);
+                        row = sheet.GetRow(rowIndex);
+                        if (row == null) row = sheet.CreateRow(rowIndex);
                         List<JProperty> properties = values[i].Properties().ToList();
                         row.FillRow(columnNumberFrom, properties, FillExcelRowType.Value);
                     }
+                    using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+                    {
+                        workBook.Write(fs);
+                    }
                 }
-                using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
-                {
-                    workBook.Write(fs);
-                }
+                
                 return true;
             }
             catch (Exception e)
