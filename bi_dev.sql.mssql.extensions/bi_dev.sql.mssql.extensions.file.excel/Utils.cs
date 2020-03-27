@@ -242,6 +242,11 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                                 cell.SetCellValue((string)value);
                                 break;
                             }
+                        case JTokenType.Null:
+                            {
+                                
+                                break;
+                            }
                         default:
                             {
                                 cell.SetCellValue(JsonConvert.SerializeObject(value));
