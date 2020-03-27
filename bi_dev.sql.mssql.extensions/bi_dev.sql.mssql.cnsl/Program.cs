@@ -9,7 +9,6 @@ namespace bi_dev.sql.mssql.cnsl
 {
     class Program
     {
-
         static void Main(string[] args)
         {
         }
