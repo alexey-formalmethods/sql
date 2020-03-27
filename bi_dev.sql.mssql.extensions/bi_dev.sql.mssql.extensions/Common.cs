@@ -13,6 +13,11 @@ namespace bi_dev.sql.mssql.extensions
             if (nullWhenError) return default(T);
             else throw ex;
         }
+        public static T ThrowIfNeeded<T>(Exception ex, bool defaultWhenError, T defaultValue)
+        {
+            if (defaultWhenError) return defaultValue;
+            else throw ex;
+        }
 
     }
 }

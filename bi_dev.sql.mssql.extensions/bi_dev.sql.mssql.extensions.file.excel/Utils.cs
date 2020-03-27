@@ -109,19 +109,23 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         {
             try
             {
-                sheetNamesSlashDelimited = (string.IsNullOrWhiteSpace(sheetNamesSlashDelimited) ? "Sheet1" : sheetNamesSlashDelimited);
-                IWorkbook workbook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Create);
-                string[] sheetNames = sheetNamesSlashDelimited.Split('/');
-                foreach(string sheetName in sheetNames)
+                if (!string.IsNullOrWhiteSpace(fileName))
                 {
-                    var sheet = workbook.CreateSheet(sheetName);
+                    sheetNamesSlashDelimited = (string.IsNullOrWhiteSpace(sheetNamesSlashDelimited) ? "Sheet1" : sheetNamesSlashDelimited);
+                    IWorkbook workbook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Create);
+                    string[] sheetNames = sheetNamesSlashDelimited.Split('/');
+                    foreach (string sheetName in sheetNames)
+                    {
+                        var sheet = workbook.CreateSheet(sheetName);
+                    }
+                    using (var fileData = new FileStream(fileName, FileMode.Create))
+                    {
+                        workbook.Write(fileData);
+                    }
+                    FileInfo template = new FileInfo(fileName);
+                    return template.Length;
                 }
-                using (var fileData = new FileStream(fileName, FileMode.Create))
-                {
-                    workbook.Write(fileData);
-                }
-                FileInfo template = new FileInfo(fileName);
-                return template.Length;
+                else return null;
             }
             catch (Exception e)
             {
@@ -210,74 +214,81 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         {
             try
             {
-                
-                IWorkbook workbook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Open);
-                var sheet = workbook.GetSheet(sheetName);
-                LimitedCellStyle lcs = new LimitedCellStyle(){ 
-                    BackgroundColor = backgroundColor,
-                    BorderBottom = borderBottom,
-                    BorderLeft = borderLeft,
-                    BorderRight = borderRight,
-                    BorderStyle = borderStyle,
-                    BorderTop = borderTop,
-                    LimitedCellStyleFont = LimitedCellStyleFont.GetLimitedCellStyleFont(fontHeightInPoints, isBold)
-                };
-                
-                if (rowNumberFrom.HasValue || rowNumberTo.HasValue || columnNumberFrom.HasValue || columnNumberFrom.HasValue)
+                if (!string.IsNullOrWhiteSpace(fileName))
                 {
-                    // rows
-                    // from
-                    if (!rowNumberFrom.HasValue) rowNumberFrom = 0;
-                    // to
-                    if (!rowNumberTo.HasValue) rowNumberTo = sheet.LastRowNum;
-                    // Columns
-                    List<int> lastCellNums = new List<int>();
-                    for (int i = rowNumberFrom.Value; i <= rowNumberTo.Value; i++)
+                    IWorkbook workbook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Open);
+                    var sheet = workbook.GetSheet(sheetName);
+                    LimitedCellStyle lcs = new LimitedCellStyle()
                     {
-                        var row = sheet.GetRow(i);
-                        if (row != null) lastCellNums.Add(row.LastCellNum);
-                    }
-                    // from
-                    if (!columnNumberFrom.HasValue) columnNumberFrom = 0;
+                        BackgroundColor = backgroundColor,
+                        BorderBottom = borderBottom,
+                        BorderLeft = borderLeft,
+                        BorderRight = borderRight,
+                        BorderStyle = borderStyle,
+                        BorderTop = borderTop,
+                        LimitedCellStyleFont = LimitedCellStyleFont.GetLimitedCellStyleFont(fontHeightInPoints, isBold)
+                    };
 
-                    // to
-                    int? lastColumnNumber = (lastCellNums.Count == 0 ? 0 : lastCellNums.Max());
-                    // add -1, some bug shit
-                    if (lastColumnNumber.HasValue && lastColumnNumber.Value > columnNumberFrom) lastColumnNumber = lastColumnNumber.Value - 1;
-                    else lastColumnNumber = columnNumberFrom;
-
-                    
-                    if (!columnNumberTo.HasValue) columnNumberTo = lastColumnNumber;
-                    for (int i = 0; i <=columnNumberTo;i++)
+                    if (rowNumberFrom.HasValue || rowNumberTo.HasValue || columnNumberFrom.HasValue || columnNumberFrom.HasValue)
                     {
-                        sheet.AutoSizeColumn(i);
-                    }
-                    var style = GetCellStyle(workbook, lcs);
-                    for (int i = rowNumberFrom.Value; i <= rowNumberTo.Value; i++)
-                    {
-                        IRow row = sheet.GetRow(i);
-                        if (row == null)
+                        // rows
+                        // from
+                        if (!rowNumberFrom.HasValue) rowNumberFrom = 0;
+                        // to
+                        if (!rowNumberTo.HasValue) rowNumberTo = sheet.LastRowNum;
+                        // Columns
+                        List<int> lastCellNums = new List<int>();
+                        for (int i = rowNumberFrom.Value; i <= rowNumberTo.Value; i++)
                         {
-                            row = sheet.CreateRow(i);
+                            var row = sheet.GetRow(i);
+                            if (row != null) lastCellNums.Add(row.LastCellNum);
                         }
+                        // from
+                        if (!columnNumberFrom.HasValue) columnNumberFrom = 0;
 
-                        for (int j = columnNumberFrom.Value; j <= columnNumberTo.Value; j++)
+                        // to
+                        int? lastColumnNumber = (lastCellNums.Count == 0 ? 0 : lastCellNums.Max());
+                        // add -1, some bug shit
+                        if (lastColumnNumber.HasValue && lastColumnNumber.Value > columnNumberFrom) lastColumnNumber = lastColumnNumber.Value - 1;
+                        else lastColumnNumber = columnNumberFrom;
+
+
+                        if (!columnNumberTo.HasValue) columnNumberTo = lastColumnNumber;
+                        for (int i = 0; i <= columnNumberTo; i++)
                         {
-                            var cell = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK);
-                            if (cell != null)
+                            sheet.AutoSizeColumn(i);
+                        }
+                        var style = GetCellStyle(workbook, lcs);
+                        for (int i = rowNumberFrom.Value; i <= rowNumberTo.Value; i++)
+                        {
+                            IRow row = sheet.GetRow(i);
+                            if (row == null)
                             {
-                                cell.SetLimitedStyle(style);
+                                row = sheet.CreateRow(i);
                             }
-                        }
 
+                            for (int j = columnNumberFrom.Value; j <= columnNumberTo.Value; j++)
+                            {
+                                var cell = row.GetCell(j, MissingCellPolicy.CREATE_NULL_AS_BLANK);
+                                if (cell != null)
+                                {
+                                    cell.SetLimitedStyle(style);
+                                }
+                            }
+
+                        }
+                        using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+                        {
+                            workbook.Write(fs);
+                        }
+                        return true;
                     }
-                    using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
-                    {
-                        workbook.Write(fs);
-                    }
-                    return true;
+                    else return false;
                 }
-                else return false;
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception e)
             {
@@ -347,57 +358,64 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(dateTimeFormat)) dateTimeFormat = Constants.DateTimeFormat;
-                var workBook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Open);
-                var sheet = workBook.GetSheet(sheetName);
-                var dataFormat = workBook.CreateDataFormat().GetFormat(dateTimeFormat);
-                ICellStyle cellStyle = workBook.CreateCellStyle();
-                cellStyle.DataFormat = workBook.CreateDataFormat().GetFormat(dateTimeFormat);
-                List<JObject> values;
-                try
+                if (!string.IsNullOrWhiteSpace(jsonObject))
                 {
-                    values = JsonConvert.DeserializeObject<List<JObject>>(jsonObject);
-                }
-                catch (JsonSerializationException)
-                {
-                    values = new List<JObject>() { JsonConvert.DeserializeObject<JObject>(jsonObject) };
-                }
-                catch (JsonReaderException)
-                {
-                    values = new List<JObject>() {
-                        JsonConvert.DeserializeObject<JObject>(
-                            JsonConvert.SerializeObject(
-                                new SimpleObject(jsonObject)
+                    if (string.IsNullOrWhiteSpace(dateTimeFormat)) dateTimeFormat = Constants.DateTimeFormat;
+                    var workBook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Open);
+                    var sheet = workBook.GetSheet(sheetName);
+                    var dataFormat = workBook.CreateDataFormat().GetFormat(dateTimeFormat);
+                    ICellStyle cellStyle = workBook.CreateCellStyle();
+                    cellStyle.DataFormat = workBook.CreateDataFormat().GetFormat(dateTimeFormat);
+                    List<JObject> values;
+                    try
+                    {
+                        values = JsonConvert.DeserializeObject<List<JObject>>(jsonObject);
+                    }
+                    catch (JsonSerializationException)
+                    {
+                        values = new List<JObject>() { JsonConvert.DeserializeObject<JObject>(jsonObject) };
+                    }
+                    catch (JsonReaderException)
+                    {
+                        values = new List<JObject>() {
+                            JsonConvert.DeserializeObject<JObject>(
+                                JsonConvert.SerializeObject(
+                                    new SimpleObject(jsonObject)
+                                )
                             )
-                        ) 
-                    };
-                }
+                        };
+                    }
 
-                if (values.Count > 0)
-                {
-                    IRow row;
-                    if (includeColumnNames)
+                    if (values.Count > 0)
                     {
-                        List<JProperty> columnNames = values.FirstOrDefault().Properties().ToList();
-                        row = sheet.GetRow(rowNumberFrom);
-                        if (row == null) { row = sheet.CreateRow(rowNumberFrom); }
-                        row.FillRow(columnNumberFrom, columnNames, FillExcelRowType.Name, cellStyle);
+                        IRow row;
+                        if (includeColumnNames)
+                        {
+                            List<JProperty> columnNames = values.FirstOrDefault().Properties().ToList();
+                            row = sheet.GetRow(rowNumberFrom);
+                            if (row == null) { row = sheet.CreateRow(rowNumberFrom); }
+                            row.FillRow(columnNumberFrom, columnNames, FillExcelRowType.Name, cellStyle);
+                        }
+                        for (int i = 0; i < values.Count; i++)
+                        {
+                            int rowIndex = rowNumberFrom + i + ((includeColumnNames) ? 1 : 0);
+                            row = sheet.GetRow(rowIndex);
+                            if (row == null) row = sheet.CreateRow(rowIndex);
+                            List<JProperty> properties = values[i].Properties().ToList();
+                            row.FillRow(columnNumberFrom, properties, FillExcelRowType.Value, cellStyle);
+                        }
+                        using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
+                        {
+                            workBook.Write(fs);
+                        }
                     }
-                    for (int i = 0; i < values.Count; i++)
-                    {
-                        int rowIndex = rowNumberFrom + i + ((includeColumnNames) ? 1 : 0);
-                        row = sheet.GetRow(rowIndex);
-                        if (row == null) row = sheet.CreateRow(rowIndex);
-                        List<JProperty> properties = values[i].Properties().ToList();
-                        row.FillRow(columnNumberFrom, properties, FillExcelRowType.Value, cellStyle);
-                    }
-                    using (FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write))
-                    {
-                        workBook.Write(fs);
-                    }
+
+                    return true;
                 }
-                
-                return true;
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception e)
             {
