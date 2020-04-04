@@ -48,12 +48,12 @@ namespace bi_dev.sql.mssql.extensions.file
             }
         }
         [SqlFunction]
-        public static long? WriteTextToFile(string value, string path, bool nullWhenError)
+        public static long? WriteTextToFile(string value, string fileName, bool nullWhenError)
         {
             try
             {
-                File.WriteAllText(path, value, Encoding.UTF8);
-                return new FileInfo(path).Length;
+                File.WriteAllText(fileName, value, Encoding.UTF8);
+                return new FileInfo(fileName).Length;
             }
             catch (Exception e)
             {
