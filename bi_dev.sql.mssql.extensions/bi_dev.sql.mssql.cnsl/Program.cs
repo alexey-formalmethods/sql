@@ -1,4 +1,4 @@
-﻿using bi_dev.sql.mssql.extensions.file.excel;
+﻿using bi_dev.sql.mssql.extensions.file;
 using System;
 using System.Collections.Generic;
 using System.Linq;

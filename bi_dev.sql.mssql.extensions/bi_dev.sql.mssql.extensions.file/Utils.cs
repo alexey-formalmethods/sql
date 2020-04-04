@@ -47,5 +47,18 @@ namespace bi_dev.sql.mssql.extensions.file
                 return Common.ThrowIfNeeded<bool?>(e, nullWhenError);
             }
         }
+        [SqlFunction]
+        public static long? WriteTextToFile(string value, string path, bool nullWhenError)
+        {
+            try
+            {
+                File.WriteAllText(path, value, Encoding.UTF8);
+                return new FileInfo(path).Length;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<long?>(e, nullWhenError);
+            }
+        }
     }
 }

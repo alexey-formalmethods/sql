@@ -55,6 +55,10 @@
       <Project>{be681429-6481-4caf-abe8-41af7765d5d1}</Project>
       <Name>bi_dev.sql.mssql.extensions.file.excel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.file\bi_dev.sql.mssql.extensions.file.csproj">
+      <Project>{3dba7fe9-0f60-464e-91d8-f2d80563ccb6}</Project>
+      <Name>bi_dev.sql.mssql.extensions.file</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
