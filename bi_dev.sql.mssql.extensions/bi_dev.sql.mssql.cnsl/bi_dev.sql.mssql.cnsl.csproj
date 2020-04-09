@@ -51,13 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.file.excel\bi_dev.sql.mssql.extensions.file.excel.csproj">
-      <Project>{be681429-6481-4caf-abe8-41af7765d5d1}</Project>
-      <Name>bi_dev.sql.mssql.extensions.file.excel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.file\bi_dev.sql.mssql.extensions.file.csproj">
-      <Project>{3dba7fe9-0f60-464e-91d8-f2d80563ccb6}</Project>
-      <Name>bi_dev.sql.mssql.extensions.file</Name>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.string.csv\bi_dev.sql.mssql.extensions.string.csv.csproj">
+      <Project>{c3348c9c-c2f7-4f22-8c5e-06cebc486132}</Project>
+      <Name>bi_dev.sql.mssql.extensions.string.csv</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,5 +1,7 @@
 ﻿using CsvHelper;
 using Microsoft.SqlServer.Server;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,6 +14,10 @@ using System.Threading.Tasks;
 
 namespace bi_dev.sql.mssql.extensions.@string.csv
 {
+    public static class Constants
+    {
+        public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+    }
     public static class Utils
     {
         private static List<string[]> parseCsv(string value, string delimiter)
@@ -59,6 +65,48 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
             catch (Exception e)
             {
                 return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
+            }
+        }
+        public static string JsonToCsv(string jsonObject, string delimiter, string dateTimeFormat, bool nullWhenError)
+        {
+            try
+            {
+                List<JObject> values = JsonConvert.DeserializeObject<List<JObject>>(jsonObject);
+                string result = "";
+                using (TextWriter tw = new StringWriter())
+                {
+                    using (CsvWriter cw = new CsvWriter(tw, CultureInfo.CurrentCulture))
+                    {
+                        cw.Configuration.Delimiter = (string.IsNullOrEmpty(delimiter) ? ";" : delimiter);
+                        dateTimeFormat = string.IsNullOrWhiteSpace(dateTimeFormat) ? Constants.DateTimeFormat : dateTimeFormat;
+                        for (int i = 0; i < values.Count; i++)
+                        {
+                            List<JProperty> properties = values[i].Properties().ToList();
+                            for (int j = 0; j < properties.Count; j++)
+                            {
+                                var property = properties[j];
+                                string valueString;
+                                if (property.Value.Type == JTokenType.Date)
+                                {
+                                    valueString = ((DateTime)property.Value).ToString(dateTimeFormat, CultureInfo.CurrentCulture);
+                                }
+                                else
+                                {
+                                    valueString = property.Value.ToString();
+                                }
+                                cw.WriteField(valueString);
+                            }
+                            cw.NextRecord();
+                        }
+                    }
+                    result = tw.ToString();
+
+                }
+                return result;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
     }
