@@ -90,6 +90,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
         private static SheetsService service;
         private static SheetsService GetService(string credentialsPath)
         {
+            
             if (service == null)
             {
                 UserCredential credential;
@@ -99,7 +100,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
                 {
                     // The file token.json stores the user's access and refresh tokens, and is created
                     // automatically when the authorization flow completes for the first time.
-                    string credPath = "token.json";
+                    string credPath = new FileInfo(credentialsPath).DirectoryName + "\\token.json";
                     credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                         GoogleClientSecrets.Load(stream).Secrets,
                         Scopes,
