@@ -1,4 +1,4 @@
-﻿using bi_dev.sql.mssql.extensions.@string.csv;
+﻿using bi_dev.sql.mssql.extensions.web.google.sheet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +11,6 @@ namespace bi_dev.sql.mssql.cnsl
     {
         static void Main(string[] args)
         {
-            string e = Utils.JsonToCsv("[{\"kaka\":\"2020-02-01T00:00:01\", \"pipka\": \"jopa\"},{\"kaka\":\"2020-02-01T00:00:01\", \"pipka\": \"jopa2\"}]", ": ", "yyyy-MM-dd", false);
-            Console.WriteLine(e);
         }
     }
 }

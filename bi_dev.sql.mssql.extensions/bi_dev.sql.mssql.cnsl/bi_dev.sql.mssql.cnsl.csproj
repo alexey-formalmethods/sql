@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.string.csv\bi_dev.sql.mssql.extensions.string.csv.csproj">
-      <Project>{c3348c9c-c2f7-4f22-8c5e-06cebc486132}</Project>
-      <Name>bi_dev.sql.mssql.extensions.string.csv</Name>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web.google.sheet\bi_dev.sql.mssql.extensions.web.google.sheet.csproj">
+      <Project>{a13b49cf-cc19-477c-8c84-5764b0f841db}</Project>
+      <Name>bi_dev.sql.mssql.extensions.web.google.sheet</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
