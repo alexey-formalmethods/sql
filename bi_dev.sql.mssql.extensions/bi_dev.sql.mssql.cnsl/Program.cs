@@ -1,4 +1,4 @@
-﻿using bi_dev.sql.mssql.extensions.web;
+﻿using bi_dev.sql.mssql.extensions.@string.web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
