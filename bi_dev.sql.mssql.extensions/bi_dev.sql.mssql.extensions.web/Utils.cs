@@ -218,6 +218,7 @@ namespace bi_dev.sql.mssql.extensions.web
             try
             {
                 HttpWebRequest r = (HttpWebRequest)WebRequest.Create(url);
+                r.Timeout = 1000 * 60 * 10;
                 r.AllowAutoRedirect = allowAutoRedirect;
                 r.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
                 r.Method = method;
@@ -312,15 +313,18 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             catch (WebException e)
             {
-                var response = (HttpWebResponse)e.Response;
                 result.WebException = e;
-                using (var responseStream = response.GetResponseStream())
+                var response = (HttpWebResponse)e.Response;
+                if (response != null)
                 {
-                    result.ResponseCookies = response.Cookies;
-                    using (var reader = new StreamReader(responseStream))
+                    using (var responseStream = response.GetResponseStream())
                     {
-                        result.ResponseText = reader.ReadToEnd();
-                        result.HttpStatusCode = response.StatusCode;
+                        result.ResponseCookies = response.Cookies;
+                        using (var reader = new StreamReader(responseStream))
+                        {
+                            result.ResponseText = reader.ReadToEnd();
+                            result.HttpStatusCode = response.StatusCode;
+                        }
                     }
                 }
                 return result;
