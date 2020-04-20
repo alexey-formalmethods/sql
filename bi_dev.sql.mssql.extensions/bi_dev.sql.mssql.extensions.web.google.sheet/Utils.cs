@@ -19,6 +19,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
         public const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
         public const string DateFormat = "yyyy-MM-dd";
         public const string TimeFormat = "HH:mm:ss";
+        public static string[] Scopes { get => new string[] { SheetsService.Scope.Spreadsheets }; }
     }
     public class SimpleObject
     {
@@ -93,21 +94,10 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
             
             if (service == null)
             {
-                UserCredential credential;
-                string[] Scopes = { SheetsService.Scope.Spreadsheets };
+                
+                string[] scopes = { SheetsService.Scope.Spreadsheets };
                 string ApplicationName = "bi_dev.mssql.google.sheets";
-                using (var stream = new FileStream(credentialsPath, FileMode.Open, FileAccess.Read))
-                {
-                    // The file token.json stores the user's access and refresh tokens, and is created
-                    // automatically when the authorization flow completes for the first time.
-                    string credPath = new FileInfo(credentialsPath).DirectoryName + "\\token.json";
-                    credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                        GoogleClientSecrets.Load(stream).Secrets,
-                        Scopes,
-                        "user",
-                        CancellationToken.None,
-                        new FileDataStore(credPath, true)).Result;
-                }
+                UserCredential credential = Auth.GetUserCredential(credentialsPath, scopes);
                 // Create Google Sheets API service.
                 service = new SheetsService(new BaseClientService.Initializer()
                 {
@@ -134,7 +124,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<bool?>(e, falseWhenError, false);
+                return  Common.ThrowIfNeeded<bool?>(e, falseWhenError, false);
             }
         }
 
@@ -183,7 +173,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
                 }
                 ValueRange r = new ValueRange()
                 {
-                    Range = rangeFrom,
+                    Range = currentRange,
                     Values = l
                 };
                 var service = GetService(credentialsJsonPath);
@@ -192,12 +182,12 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
                     ClearRange(credentialsJsonPath, spreadsheetId, sheetName, null, false);
                 }
                 SpreadsheetsResource.ValuesResource.UpdateRequest request = service.Spreadsheets.Values.Update(
-                    r, spreadsheetId, rangeFrom
+                    r, spreadsheetId, currentRange
                 );
 
                 //request.ResponseDateTimeRenderOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ResponseDateTimeRenderOptionEnum.SERIALNUMBER;
                 request.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
-                request.Execute();
+                var e = request.Execute();
                 return true;
             }
             catch (Exception e)
