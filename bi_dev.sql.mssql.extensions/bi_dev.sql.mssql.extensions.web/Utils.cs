@@ -430,7 +430,10 @@ namespace bi_dev.sql.mssql.extensions.web
                     allowAutoRedirect,
                     fileName
                 );
-
+                if (res.WebException != null && !nullWhenError)
+                {
+                    throw res.WebException;
+                }
                 List<TableType> l = new List<TableType>();
                 l.Add(new TableType("url", url));
                 l.Add(new TableType("method", method));
