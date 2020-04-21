@@ -210,6 +210,7 @@ namespace bi_dev.sql.mssql.extensions.web
         }
         public static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect, string fileName)
         {
+            FixSecurityProtocol();
             WebRequestResult result = new WebRequestResult();
             result.RequestCookies = cookies;
             result.RequestHeaders = headers;
