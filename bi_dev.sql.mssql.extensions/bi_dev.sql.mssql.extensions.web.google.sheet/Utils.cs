@@ -195,5 +195,22 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
                 return Common.ThrowIfNeeded<bool?>(e, falseWhenError, false);
             }
         }
+        public static string GetRange(string credentialsJsonPath, string spreadsheetId, string sheetName, string range, bool nullWhenError)
+        {
+            try
+            {
+                var service = GetService(credentialsJsonPath);
+                string currentRange = sheetName + (!string.IsNullOrWhiteSpace(range) ? "!" + range : "");
+                SpreadsheetsResource.ValuesResource.GetRequest getRequest = service.Spreadsheets.Values.Get(
+                        spreadsheetId, currentRange
+                );
+                var result = getRequest.Execute();
+                return JsonConvert.SerializeObject(result.Values);
+            } 
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
     }
 }
