@@ -261,7 +261,14 @@ namespace bi_dev.sql.mssql.extensions.web
 
                         if (defaultHeader.Count() > 0)
                         {
-                            r.Headers[defaultHeader.FirstOrDefault()] = header.Value;
+                            if (header.Key.ToLower() == "accept")
+                            {
+                                r.Accept = header.Value;
+                            }
+                            else
+                            {
+                                r.Headers[defaultHeader.FirstOrDefault()] = header.Value;
+                            }
                         }
                         else
                         {

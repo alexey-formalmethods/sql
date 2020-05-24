@@ -13,6 +13,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         static void Main(string[] args)
         {
+            
             if (args.Length > 0) {
                 // google sheets authorise via browser
                 if (args[0] == "gs")
