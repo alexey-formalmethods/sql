@@ -51,6 +51,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web.google.adwords\bi_dev.sql.mssql.extensions.web.google.adwords.csproj">
+      <Project>{91dd8f22-c70d-4d72-adfb-ab2087b4bd08}</Project>
+      <Name>bi_dev.sql.mssql.extensions.web.google.adwords</Name>
+    </ProjectReference>
     <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web.google.sheet\bi_dev.sql.mssql.extensions.web.google.sheet.csproj">
       <Project>{a13b49cf-cc19-477c-8c84-5764b0f841db}</Project>
       <Name>bi_dev.sql.mssql.extensions.web.google.sheet</Name>

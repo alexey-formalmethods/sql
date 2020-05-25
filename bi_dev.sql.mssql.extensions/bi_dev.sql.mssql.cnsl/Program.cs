@@ -1,6 +1,6 @@
-﻿using bi_dev.sql.mssql.extensions.web.google;
-using bi_dev.sql.mssql.extensions.web;
-using bi_dev.sql.mssql.extensions.web.google.sheet;
+﻿//using bi_dev.sql.mssql.extensions.web.google;
+//using bi_dev.sql.mssql.extensions.web;
+using bi_dev.sql.mssql.extensions.web.google.adwords;
 using System;
 using System.Collections.Generic;
 using System.Linq;
