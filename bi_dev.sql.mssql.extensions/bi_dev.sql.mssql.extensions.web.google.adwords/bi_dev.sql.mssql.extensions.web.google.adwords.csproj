@@ -31,11 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Google.Ads.Common, Version=9.5.0.0, Culture=neutral, PublicKeyToken=52807268f2b614dc, processorArchitecture=MSIL">
-      <HintPath>..\bi_dev.sql.mssql.extensions.string\packages\Google.Ads.Common.9.5.0\lib\net452\Google.Ads.Common.dll</HintPath>
+    <Reference Include="Google.Ads.Common, Version=9.5.1.0, Culture=neutral, PublicKeyToken=52807268f2b614dc, processorArchitecture=MSIL">
+      <HintPath>..\bi_dev.sql.mssql.extensions.string\packages\Google.Ads.Common.9.5.1\lib\net452\Google.Ads.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Google.AdWords, Version=24.3.0.0, Culture=neutral, PublicKeyToken=52807268f2b614dc, processorArchitecture=MSIL">
-      <HintPath>..\bi_dev.sql.mssql.extensions.string\packages\Google.AdWords.24.3.0\lib\net452\Google.AdWords.dll</HintPath>
+    <Reference Include="Google.AdWords, Version=24.11.0.0, Culture=neutral, PublicKeyToken=52807268f2b614dc, processorArchitecture=MSIL">
+      <HintPath>..\bi_dev.sql.mssql.extensions.string\packages\Google.AdWords.24.11.0\lib\net452\Google.AdWords.dll</HintPath>
     </Reference>
     <Reference Include="Google.Apis, Version=1.36.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\bi_dev.sql.mssql.extensions.string\packages\Google.Apis.1.36.1\lib\net45\Google.Apis.dll</HintPath>
