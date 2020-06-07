@@ -33,6 +33,26 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             catch (Exception e)
             {
+                if (e.GetType() == typeof(WebException))
+                {
+                    var response = (HttpWebResponse)((WebException)e).Response;
+                    if (response != null)
+                    {
+                        using (var responseStream = response.GetResponseStream())
+                        {
+                            if (responseStream != null)
+                            {
+                                using (var reader = new StreamReader(responseStream))
+                                {
+                                    if (reader != null)
+                                    {
+                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
