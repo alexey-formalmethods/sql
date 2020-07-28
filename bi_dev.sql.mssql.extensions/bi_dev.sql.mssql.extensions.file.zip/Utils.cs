@@ -11,11 +11,11 @@ namespace bi_dev.sql.mssql.extensions.file.zip
     public static class Utils
     {
         [SqlFunction]
-        public static bool CreateZipFromDirectory(string sourceDirectoryName, string destinationArchiveFileName, bool falseWhenError)
+        public static bool CreateZipFromDirectory(string directoryName, string destinationFileName, bool falseWhenError)
         {
             try
             {
-                ZipFile.CreateFromDirectory(sourceDirectoryName, destinationArchiveFileName);
+                ZipFile.CreateFromDirectory(directoryName, destinationFileName);
                 return true;
             }
             catch (Exception e)
