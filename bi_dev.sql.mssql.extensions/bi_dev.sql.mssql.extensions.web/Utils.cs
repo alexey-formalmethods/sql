@@ -443,7 +443,7 @@ namespace bi_dev.sql.mssql.extensions.web
         }
 
         [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable ProcessWebRequestWithCredentials(
+        public static IEnumerable ProcessWebRequestWithNetworkCredentials(
             string url,
             string method,
             string body,
@@ -552,7 +552,7 @@ namespace bi_dev.sql.mssql.extensions.web
             bool nullWhenError
         )
         {
-            return ProcessWebRequestWithCredentials(
+            return ProcessWebRequestWithNetworkCredentials(
                 url,
                 method,
                 body,
