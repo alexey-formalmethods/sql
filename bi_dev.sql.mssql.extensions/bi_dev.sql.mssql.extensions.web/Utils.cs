@@ -328,6 +328,7 @@ namespace bi_dev.sql.mssql.extensions.web
                         
                         if (!string.IsNullOrWhiteSpace(fileName))
                         {
+                            System.IO.Directory.CreateDirectory(new FileInfo(fileName).Directory.FullName);
                             if (File.Exists(fileName))
                             {
                                 File.Delete(fileName);
