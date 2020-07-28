@@ -155,9 +155,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web\bi_dev.sql.mssql.extensions.web.csproj">
-      <Project>{a24f2682-f277-46fe-9e71-3121913642e3}</Project>
-      <Name>bi_dev.sql.mssql.extensions.web</Name>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.file.zip\bi_dev.sql.mssql.extensions.file.zip.csproj">
+      <Project>{a8564379-25b9-4f5a-89c1-6e99f42e9016}</Project>
+      <Name>bi_dev.sql.mssql.extensions.file.zip</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

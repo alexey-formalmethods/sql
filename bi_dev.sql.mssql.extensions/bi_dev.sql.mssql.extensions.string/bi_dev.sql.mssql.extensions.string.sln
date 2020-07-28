@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.web.google", "..\bi_dev.sql.mssql.extensions.web.google\bi_dev.sql.mssql.extensions.web.google.csproj", "{EB6CC68C-DA1A-4387-A1CB-CB97E7C78852}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.file.zip", "..\bi_dev.sql.mssql.extensions.file.zip\bi_dev.sql.mssql.extensions.file.zip.csproj", "{A8564379-25B9-4F5A-89C1-6E99F42E9016}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{EB6CC68C-DA1A-4387-A1CB-CB97E7C78852}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB6CC68C-DA1A-4387-A1CB-CB97E7C78852}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB6CC68C-DA1A-4387-A1CB-CB97E7C78852}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8564379-25B9-4F5A-89C1-6E99F42E9016}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8564379-25B9-4F5A-89C1-6E99F42E9016}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8564379-25B9-4F5A-89C1-6E99F42E9016}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8564379-25B9-4F5A-89C1-6E99F42E9016}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
