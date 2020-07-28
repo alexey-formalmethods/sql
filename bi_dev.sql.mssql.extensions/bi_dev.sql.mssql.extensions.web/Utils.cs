@@ -18,7 +18,7 @@ namespace bi_dev.sql.mssql.extensions.web
     {
         private static void FixSecurityProtocol()
         {
-            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+            System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
         }
         [SqlFunction]
         public static string Get(string url, string headersInUrlFormat, bool nullWhenError)
