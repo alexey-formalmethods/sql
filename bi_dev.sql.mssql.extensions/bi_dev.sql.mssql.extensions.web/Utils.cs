@@ -248,7 +248,7 @@ namespace bi_dev.sql.mssql.extensions.web
                 return result;
             }
         }
-        public static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect, string fileName)
+        public static WebRequestResult processWebRequest(string url, string method, string body, string contentType, int? codePage, Dictionary<string, string> headers, Dictionary<string, string> cookies, bool allowAutoRedirect, string fileName, string networkCredentialUser = null, string networkCredentialPassword = null)
         {
             FixSecurityProtocol();
             WebRequestResult result = new WebRequestResult();
@@ -259,6 +259,9 @@ namespace bi_dev.sql.mssql.extensions.web
             try
             {
                 HttpWebRequest r = (HttpWebRequest)WebRequest.Create(url);
+                if (!string.IsNullOrEmpty(networkCredentialUser)) {
+                    r.Credentials = new NetworkCredential(networkCredentialUser, networkCredentialPassword);
+                }
                 r.Timeout = 1000 * 60 * 10;
                 r.AllowAutoRedirect = allowAutoRedirect;
                 r.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
@@ -438,8 +441,9 @@ namespace bi_dev.sql.mssql.extensions.web
                 return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
             }
         }
+
         [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable ProcessWebRequest(
+        public static IEnumerable ProcessWebRequestWithCredentials(
             string url,
             string method,
             string body,
@@ -449,6 +453,8 @@ namespace bi_dev.sql.mssql.extensions.web
             string cookiesInUrlFormat,
             bool allowAutoRedirect,
             string fileName,
+            string networkCredentialUser, 
+            string networkCredentialPassword,
             bool nullWhenError
         )
         {
@@ -466,7 +472,6 @@ namespace bi_dev.sql.mssql.extensions.web
                     var cookies = HttpUtility.ParseQueryString(cookiesInUrlFormat);
                     cookieDict = cookies.AllKeys.ToDictionary(x => x, y => Uri.UnescapeDataString(cookies[y]));
                 }
-
                 var res = processWebRequest(
                     url,
                     method,
@@ -476,7 +481,9 @@ namespace bi_dev.sql.mssql.extensions.web
                     headerDict,
                     cookieDict,
                     allowAutoRedirect,
-                    fileName
+                    fileName,
+                    networkCredentialUser,
+                    networkCredentialPassword
                 );
                 if (res.WebException != null && !nullWhenError)
                 {
@@ -491,6 +498,9 @@ namespace bi_dev.sql.mssql.extensions.web
                 l.Add(new TableType("status_code", res.StatusCode.ToString()));
                 l.Add(new TableType("response_text", res.ResponseText));
                 l.Add(new TableType("file_size", res.FileSize.ToString()));
+
+                l.Add(new TableType("network_credential_user", networkCredentialUser));
+                l.Add(new TableType("network_credential_password", networkCredentialPassword));
                 if (res.RequestCookies != null)
                 {
                     foreach (var cookie in res.RequestCookies)
@@ -526,6 +536,36 @@ namespace bi_dev.sql.mssql.extensions.web
             {
                 return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
             }
+        }
+
+        [SqlFunction(FillRowMethodName = "FillRow")]
+        public static IEnumerable ProcessWebRequest(
+            string url,
+            string method,
+            string body,
+            string contentType,
+            int? codePage,
+            string headersInUrlFormat,
+            string cookiesInUrlFormat,
+            bool allowAutoRedirect,
+            string fileName,
+            bool nullWhenError
+        )
+        {
+            return ProcessWebRequestWithCredentials(
+                url,
+                method,
+                body,
+                contentType,
+                codePage,
+                headersInUrlFormat,
+                cookiesInUrlFormat,
+                allowAutoRedirect,
+                fileName,
+                null,
+                null,
+                nullWhenError
+            );
         }
         public static void FillRow(Object obj, out SqlChars rowType, out SqlChars key, out SqlChars value)
         {
