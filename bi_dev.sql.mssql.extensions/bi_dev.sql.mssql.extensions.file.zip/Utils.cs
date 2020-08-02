@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Compression;
 using Microsoft.SqlServer.Server;
+using System.IO;
 
 namespace bi_dev.sql.mssql.extensions.file.zip
 {
@@ -15,6 +16,7 @@ namespace bi_dev.sql.mssql.extensions.file.zip
         {
             try
             {
+                System.IO.Directory.CreateDirectory(new FileInfo(destinationFileName).Directory.FullName);
                 ZipFile.CreateFromDirectory(directoryName, destinationFileName);
                 return true;
             }
