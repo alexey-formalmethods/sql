@@ -65,6 +65,7 @@ namespace bi_dev.sql.mssql.extensions.file
         {
             try
             {
+                System.IO.Directory.CreateDirectory(new FileInfo(fileName).Directory.FullName);
                 File.WriteAllText(fileName, value, new UTF8Encoding(false));
                 return new FileInfo(fileName).Length;
             }
