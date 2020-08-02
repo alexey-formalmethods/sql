@@ -42,7 +42,7 @@ namespace bi_dev.sql.mssql.extensions.file
                 FileAttributes attr = File.GetAttributes(path);
                 if (attr.HasFlag(FileAttributes.Directory))
                 {
-                    Directory.Delete(path);
+                    Directory.Delete(path, true);
                 }
                 else
                 {
