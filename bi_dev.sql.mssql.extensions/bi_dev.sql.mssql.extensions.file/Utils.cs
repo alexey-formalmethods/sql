@@ -39,7 +39,15 @@ namespace bi_dev.sql.mssql.extensions.file
         {
             try
             {
-                File.Delete(path);
+                FileAttributes attr = File.GetAttributes(path);
+                if (attr.HasFlag(FileAttributes.Directory))
+                {
+                    Directory.Delete(path);
+                }
+                else
+                {
+                    File.Delete(path);
+                }
                 return true;
             }
             catch (Exception e)
