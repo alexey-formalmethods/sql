@@ -1,7 +1,9 @@
 ﻿using Microsoft.SqlServer.Server;
 using Mono.Web;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data.SqlTypes;
@@ -54,6 +56,34 @@ namespace bi_dev.sql.mssql.extensions.web
                     }
                 }
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+
+
+        public class ParallelWebRequestUrlInput
+        {
+            [JsonProperty(PropertyName = "name")]
+            public string UrlName { get; set; }
+
+            [JsonProperty(PropertyName = "value")]
+            public string UrlValue { get; set; }
+        }
+        [SqlFunction(FillRowMethodName = "FillRow")]
+        public static IEnumerable GetParallel(string parallelWebRequestUrlInputJson, string headersInUrlFormat, bool nullWhenError)
+        {
+            try
+            {
+                ParallelWebRequestUrlInput[] urlArray = JsonConvert.DeserializeObject<ParallelWebRequestUrlInput[]>(parallelWebRequestUrlInputJson);
+                var bag = new ConcurrentBag<TableType>(new List<TableType>());
+                Parallel.ForEach(urlArray, x => {
+                    bag.Add((new TableType(x.UrlName, Get(x.UrlValue, headersInUrlFormat, nullWhenError))));
+                });
+                return bag;
+                
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
             }
         }
         [SqlFunction]
