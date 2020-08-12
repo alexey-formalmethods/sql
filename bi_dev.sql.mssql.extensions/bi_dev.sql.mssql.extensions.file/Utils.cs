@@ -86,6 +86,7 @@ namespace bi_dev.sql.mssql.extensions.file
         {
             try
             {
+                Directory.CreateDirectory(new FileInfo(destFileName).DirectoryName);
                 File.Copy(sourceFileName, destFileName, overwrite);
                 return true;
             }
