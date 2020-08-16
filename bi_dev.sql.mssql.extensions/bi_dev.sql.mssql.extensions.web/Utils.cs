@@ -22,6 +22,7 @@ namespace bi_dev.sql.mssql.extensions.web
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
         }
+        
         [SqlFunction]
         public static string Get(string url, string headersInUrlFormat, bool nullWhenError)
         {
@@ -35,27 +36,24 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(WebException))
-                {
-                    var response = (HttpWebResponse)((WebException)e).Response;
-                    if (response != null)
-                    {
-                        using (var responseStream = response.GetResponseStream())
-                        {
-                            if (responseStream != null)
-                            {
-                                using (var reader = new StreamReader(responseStream))
-                                {
-                                    if (reader != null)
-                                    {
-                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+                return Common.ThrowIfNeeded<string>(e.GetWebException(), nullWhenError);
+            }
+        }
+        [SqlFunction]
+        public static string GetWithProxy(string url, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
+        {
+            try
+            {
+                WebClient wc = new WebClient();
+                wc.Proxy = new WebProxy(proxyUrl, true, new string[] { }, new NetworkCredential(proxyUser, proxyPassword));
+                wc.Encoding = Encoding.UTF8;
+                FixSecurityProtocol();
+                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
+                return wc.DownloadString(url);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e.GetWebException(), nullWhenError);
             }
         }
 
@@ -80,6 +78,23 @@ namespace bi_dev.sql.mssql.extensions.web
                 });
                 return bag;
                 
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
+            }
+        }
+        public static IEnumerable GetParallelWithProxy(string parallelWebRequestUrlInputJson, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
+        {
+            try
+            {
+                ParallelWebRequestUrlInput[] urlArray = JsonConvert.DeserializeObject<ParallelWebRequestUrlInput[]>(parallelWebRequestUrlInputJson);
+                var bag = new ConcurrentBag<TableType>(new List<TableType>());
+                Parallel.ForEach(urlArray, x => {
+                    bag.Add((new TableType(x.UrlName, GetWithProxy(x.UrlValue, headersInUrlFormat, proxyUrl, proxyUser, proxyPassword, nullWhenError))));
+                });
+                return bag;
+
             }
             catch (Exception e)
             {
@@ -606,5 +621,32 @@ namespace bi_dev.sql.mssql.extensions.web
             value = new SqlChars(table.RowValue);
         }
         // -----------------
+    }
+    public static class Extensions
+    {
+        public static Exception GetWebException(this Exception e)
+        {
+            if (e.GetType() == typeof(WebException))
+            {
+                var response = (HttpWebResponse)((WebException)e).Response;
+                if (response != null)
+                {
+                    using (var responseStream = response.GetResponseStream())
+                    {
+                        if (responseStream != null)
+                        {
+                            using (var reader = new StreamReader(responseStream))
+                            {
+                                if (reader != null)
+                                {
+                                    e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return e;
+        }
     }
 }
