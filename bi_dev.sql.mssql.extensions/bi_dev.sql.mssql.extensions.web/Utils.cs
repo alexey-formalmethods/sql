@@ -45,7 +45,14 @@ namespace bi_dev.sql.mssql.extensions.web
             try
             {
                 WebClient wc = new WebClient();
-                wc.Proxy = new WebProxy(proxyUrl, true, new string[] { }, new NetworkCredential(proxyUser, proxyPassword));
+                if (!string.IsNullOrEmpty(proxyUser))
+                {
+                    wc.Proxy = new WebProxy(proxyUrl, true, new string[] { }, new NetworkCredential(proxyUser, proxyPassword));
+                }
+                else
+                {
+                    wc.Proxy = new WebProxy(proxyUrl);
+                }
                 wc.Encoding = Encoding.UTF8;
                 FixSecurityProtocol();
                 if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
