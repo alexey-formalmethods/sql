@@ -91,6 +91,8 @@ namespace bi_dev.sql.mssql.extensions.web
                 return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
             }
         }
+
+        [SqlFunction(FillRowMethodName = "FillRow")]
         public static IEnumerable GetParallelWithProxy(string parallelWebRequestUrlInputJson, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
         {
             try
