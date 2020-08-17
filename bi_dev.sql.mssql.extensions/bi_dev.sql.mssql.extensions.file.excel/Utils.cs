@@ -75,7 +75,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
     }
     public static class Utils
     {
-        
+
         private static IWorkbook GetNewWorkBookFromFileName(string fileName, ExcelFileMode excelFileMode)
         {
             IWorkbook workbook;
@@ -132,14 +132,14 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 return Common.ThrowIfNeeded<long?>(e, nullWhenError);
             }
         }
-        private static void SetLimitedStyle (this ICell cell, CellStyleWithLimited cellStyleWithLimited)
+        private static void SetLimitedStyle(this ICell cell, CellStyleWithLimited cellStyleWithLimited)
         {
             var workBook = cell.Sheet.Workbook;
             if (cellStyleWithLimited.LimitedStyle.LimitedCellStyleFont != null)
             {
                 cell.CellStyle.SetFont(cellStyleWithLimited.Style.GetFont(cell.Sheet.Workbook));
             }
-            
+
             if (cellStyleWithLimited.LimitedStyle.BorderRight.HasValue)
             {
                 cell.CellStyle.BorderRight = cellStyleWithLimited.Style.BorderRight;
@@ -178,8 +178,8 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 font.IsBold = limitedCellStyle.LimitedCellStyleFont.IsBold.HasValue ? limitedCellStyle.LimitedCellStyleFont.IsBold.Value : false;
                 cellStyle.SetFont(font);
             }
-            
-            BorderStyle cellBorderStyle = (limitedCellStyle.BorderStyle.HasValue)?(BorderStyle)limitedCellStyle.BorderStyle : BorderStyle.None; 
+
+            BorderStyle cellBorderStyle = (limitedCellStyle.BorderStyle.HasValue) ? (BorderStyle)limitedCellStyle.BorderStyle : BorderStyle.None;
             if (limitedCellStyle.BorderLeft.HasValue && limitedCellStyle.BorderLeft.Value) cellStyle.BorderLeft = cellBorderStyle;
             if (limitedCellStyle.BorderBottom.HasValue && limitedCellStyle.BorderBottom.Value) cellStyle.BorderBottom = cellBorderStyle;
             if (limitedCellStyle.BorderTop.HasValue && limitedCellStyle.BorderTop.Value) cellStyle.BorderTop = cellBorderStyle;
@@ -293,6 +293,134 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             catch (Exception e)
             {
                 return Common.ThrowIfNeeded<bool?>(e, nullWhenError);
+            }
+        }
+
+        public class ExcelReadResult
+        {
+            [JsonProperty(PropertyName = "columns")]
+            public List<string> Columns { get; set; }
+
+            [JsonProperty(PropertyName = "values")]
+            public List<List<object>> Values { get; set; }
+
+            public ExcelReadResult()
+            {
+                this.Columns = new List<string>();
+                this.Values = new List<List<object>>();
+            }
+        }
+        [SqlFunction]
+        public static string GetExcelContent(
+            string fileName,
+            string sheetName,
+            int? rowNumberFrom,
+            int? rowNumberTo,
+            int? columnNumberFrom,
+            int? columnNumberTo,
+            bool isFirstRowWithColumnNames,
+            bool nullWhenError
+        )
+        {
+            try
+            {
+                ExcelReadResult result = new ExcelReadResult();
+
+                IWorkbook workbook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Open);
+                ISheet sheet = workbook.GetSheet(sheetName);
+                if (!rowNumberFrom.HasValue || rowNumberFrom < sheet.FirstRowNum) rowNumberFrom = sheet.FirstRowNum;
+                // to
+                if (!rowNumberTo.HasValue || rowNumberTo > sheet.LastRowNum) rowNumberTo = sheet.LastRowNum;
+                // Columns
+                List<int> cellNums = new List<int>();
+                for (int i = rowNumberFrom.Value; i <= rowNumberTo.Value; i++)
+                {
+                    var row = sheet.GetRow(i);
+                    if (row != null)
+                    {
+                        cellNums.Add(row.FirstCellNum);
+                        cellNums.Add(row.LastCellNum);
+                    }
+                }
+                // from
+                int minColumnNum = (cellNums.Count == 0 ? 0 : cellNums.Min());
+                int maxColumnNum = (cellNums.Count == 0 ? 0 : cellNums.Max()) - 1;
+                if (!columnNumberFrom.HasValue || columnNumberFrom < minColumnNum) columnNumberFrom = minColumnNum;
+                // to
+                if (!columnNumberTo.HasValue || columnNumberTo > maxColumnNum) columnNumberTo = maxColumnNum;
+
+                if (sheet != null)
+                {
+                    for (int i = rowNumberFrom.Value; i <= rowNumberTo.Value; i++)
+                    {
+
+                        IRow curRow = sheet.GetRow(i);
+                        if (curRow != null)
+                        {
+                            if (!(i == rowNumberFrom.Value && isFirstRowWithColumnNames))
+                            {
+                                result.Values.Add(new List<object>());
+                            }
+                            for (int j = columnNumberFrom.Value; j <= columnNumberTo.Value; j++)
+                            {
+                                object cellValue;
+                                ICell cell = curRow.GetCell(j);
+                                if (cell != null)
+                                {
+                                    switch (cell.CellType)
+                                    {
+                                        default:
+                                            cellValue = null;
+                                            break;
+                                        case CellType.String:
+                                            cellValue = cell.StringCellValue;
+                                            break;
+
+                                        case CellType.Formula:
+                                            cellValue = cell.StringCellValue;
+                                            break;
+
+                                        case CellType.Numeric:
+                                            if (DateUtil.IsCellDateFormatted(cell))
+                                            {
+                                                cellValue = cell.DateCellValue;
+                                            }
+                                            else
+                                            {
+                                                cellValue = cell.NumericCellValue;
+                                            }
+                                            break;
+
+                                        case CellType.Blank:
+                                            cellValue = null;
+                                            break;
+
+                                        case CellType.Boolean:
+                                            cellValue = cell.BooleanCellValue;
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    cellValue = null;
+                                }
+                                if (i == rowNumberFrom.Value && isFirstRowWithColumnNames)
+                                {
+                                    result.Columns.Add(cellValue?.ToString());
+                                }
+                                else
+                                {
+                                    result.Values.Last().Add(cellValue);
+                                }
+                            }
+                        }
+                    }
+                }
+                return JsonConvert.SerializeObject(result);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
 

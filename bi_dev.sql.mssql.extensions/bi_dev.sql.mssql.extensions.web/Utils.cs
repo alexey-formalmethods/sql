@@ -648,7 +648,8 @@ namespace bi_dev.sql.mssql.extensions.web
                             {
                                 if (reader != null)
                                 {
-                                    e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
+                                    var errorMessage = reader.ReadToEnd();
+                                    e = new Exception(e.Message, new Exception(errorMessage));
                                 }
                             }
                         }
