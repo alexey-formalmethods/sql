@@ -97,26 +97,7 @@ namespace bi_dev.sql.mssql.extensions.@string
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-        public static string StringExceptHTML(string value, bool nullWhenError)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    return null;
-                }
-                else
-                {
-                    HtmlDocument htmlDoc = new HtmlDocument();
-                    htmlDoc.LoadHtml(value);
-                    return htmlDoc.DocumentNode.InnerText;
-                }
-            }
-            catch (Exception e)
-            {
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
-            }
-        }
+        
         public static string GetSha256Hash(string value, bool nullWhenError)
         {
             try
