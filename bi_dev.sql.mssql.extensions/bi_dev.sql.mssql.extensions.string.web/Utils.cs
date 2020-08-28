@@ -71,10 +71,9 @@ namespace bi_dev.sql.mssql.extensions.@string.web
             try
             {
                 HtmlDocument doc = new HtmlDocument();
-                var node = new HtmlNode(HtmlNodeType.Element, doc, 0);
-                node.Name = "div";
+                var node = doc.CreateElement("div");
                 node.InnerHtml = value;
-                return node.Attributes[attributeName]?.Value;
+                return node.FirstChild?.Attributes[attributeName]?.Value;
             }
             catch (Exception e)
             {
