@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.SqlServer.Server;
 using Mono.Web;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,18 +52,18 @@ namespace bi_dev.sql.mssql.extensions.@string.web
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-        public static ICollection<string> GetHtmlElements(string value, string xPath, bool nullWhenError)
+        public static string GetHtmlElements(string value, string xPath, bool nullWhenError)
         {
             try
             {
                 List<string> result = new List<string>();
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(value);
-                return doc.DocumentNode.SelectNodes(xPath).Select(x => x.OuterHtml).ToList();
+                return JsonConvert.SerializeObject(doc.DocumentNode.SelectNodes(xPath).Select(x => x.OuterHtml).ToList());
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<List<string>>(e, nullWhenError);
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
         public static string GetHtmlElementAttributeValue(string value, string attributeName, bool nullWhenError)
