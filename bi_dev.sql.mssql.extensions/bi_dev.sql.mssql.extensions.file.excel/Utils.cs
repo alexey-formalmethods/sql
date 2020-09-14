@@ -378,7 +378,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                                     cell.SetCellType(CellType.String);
                                     DataFormatter fmt = new DataFormatter();
                                     fmt.FormatCellValue(cell);
-                                    cellValue = cell.RichStringCellValue;
+                                    cellValue = cell.StringCellValue;
                                 }
                                 else
                                 {
