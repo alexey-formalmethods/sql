@@ -375,38 +375,8 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                                 ICell cell = curRow.GetCell(j);
                                 if (cell != null)
                                 {
-                                    switch (cell.CellType)
-                                    {
-                                        default:
-                                            cellValue = null;
-                                            break;
-                                        case CellType.String:
-                                            cellValue = cell.StringCellValue;
-                                            break;
-
-                                        case CellType.Formula:
-                                            cellValue = cell.StringCellValue;
-                                            break;
-
-                                        case CellType.Numeric:
-                                            if (DateUtil.IsCellDateFormatted(cell))
-                                            {
-                                                cellValue = cell.DateCellValue;
-                                            }
-                                            else
-                                            {
-                                                cellValue = cell.NumericCellValue;
-                                            }
-                                            break;
-
-                                        case CellType.Blank:
-                                            cellValue = null;
-                                            break;
-
-                                        case CellType.Boolean:
-                                            cellValue = cell.BooleanCellValue;
-                                            break;
-                                    }
+                                    cell.SetCellType(CellType.String);
+                                    cellValue = cell.StringCellValue;
                                 }
                                 else
                                 {
