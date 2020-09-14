@@ -376,6 +376,8 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                                 if (cell != null)
                                 {
                                     cell.SetCellType(CellType.String);
+                                    DataFormatter fmt = new DataFormatter();
+                                    fmt.FormatCellValue(cell);
                                     cellValue = cell.StringCellValue;
                                 }
                                 else
