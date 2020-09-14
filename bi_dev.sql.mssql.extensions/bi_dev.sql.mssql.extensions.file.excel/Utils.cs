@@ -327,7 +327,15 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 ExcelReadResult result = new ExcelReadResult();
 
                 IWorkbook workbook = GetNewWorkBookFromFileName(fileName, ExcelFileMode.Open);
-                ISheet sheet = workbook.GetSheet(sheetName);
+                ISheet sheet;
+                if (string.IsNullOrEmpty(sheetName))
+                {
+                    sheet = workbook.GetSheetAt(0);
+                }
+                else
+                {
+                    sheet = workbook.GetSheet(sheetName);
+                }
                 if (!rowNumberFrom.HasValue || rowNumberFrom < sheet.FirstRowNum) rowNumberFrom = sheet.FirstRowNum;
                 // to
                 if (!rowNumberTo.HasValue || rowNumberTo > sheet.LastRowNum) rowNumberTo = sheet.LastRowNum;
