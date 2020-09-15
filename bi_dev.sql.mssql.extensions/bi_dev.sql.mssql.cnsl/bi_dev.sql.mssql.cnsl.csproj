@@ -155,13 +155,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.string.web\bi_dev.sql.mssql.extensions.string.web.csproj">
-      <Project>{de551de3-4487-4eac-9b89-69edee6ec027}</Project>
-      <Name>bi_dev.sql.mssql.extensions.string.web</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web\bi_dev.sql.mssql.extensions.web.csproj">
-      <Project>{a24f2682-f277-46fe-9e71-3121913642e3}</Project>
-      <Name>bi_dev.sql.mssql.extensions.web</Name>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web.google.sheet\bi_dev.sql.mssql.extensions.web.google.sheet.csproj">
+      <Project>{a13b49cf-cc19-477c-8c84-5764b0f841db}</Project>
+      <Name>bi_dev.sql.mssql.extensions.web.google.sheet</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

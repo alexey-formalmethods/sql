@@ -21,7 +21,7 @@ namespace bi_dev.sql.mssql.extensions.web.google
                 // automatically when the authorization flow completes for the first time.
                 string credPath = new FileInfo(credentialsPath).DirectoryName + "\\token.json";
 
-                var e = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
                     scopes,
                     "user",
