@@ -375,10 +375,17 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                                 ICell cell = curRow.GetCell(j);
                                 if (cell != null)
                                 {
-                                    cell.SetCellType(CellType.String);
-                                    DataFormatter fmt = new DataFormatter();
-                                    fmt.FormatCellValue(cell);
-                                    cellValue = cell.StringCellValue;
+                                    if (cell.DateCellValue != null)
+                                    {
+                                        cellValue = cell.DateCellValue;
+                                    }
+                                    else 
+                                    {
+                                        cell.SetCellType(CellType.String);
+                                        DataFormatter fmt = new DataFormatter();
+                                        fmt.FormatCellValue(cell);
+                                        cellValue = cell.StringCellValue;
+                                    }
                                 }
                                 else
                                 {
