@@ -375,7 +375,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                                 ICell cell = curRow.GetCell(j);
                                 if (cell != null)
                                 {
-                                    if (cell.DateCellValue != null)
+                                    if (cell.CellType == CellType.Numeric && DateUtil.IsCellDateFormatted(cell))
                                     {
                                         cellValue = cell.DateCellValue;
                                     }
