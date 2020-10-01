@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.web.google.sheet", "..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.web.google.sheet\bi_dev.sql.mssql.extensions.web.google.sheet.csproj", "{A13B49CF-CC19-477C-8C84-5764B0F841DB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.web.google.cnsl", "..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.web.google.cnsl\bi_dev.sql.mssql.extensions.web.google.cnsl.csproj", "{EAF376E9-2266-45AF-87B5-E577C92B53AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{A13B49CF-CC19-477C-8C84-5764B0F841DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A13B49CF-CC19-477C-8C84-5764B0F841DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A13B49CF-CC19-477C-8C84-5764B0F841DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAF376E9-2266-45AF-87B5-E577C92B53AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAF376E9-2266-45AF-87B5-E577C92B53AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAF376E9-2266-45AF-87B5-E577C92B53AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAF376E9-2266-45AF-87B5-E577C92B53AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -36,7 +36,27 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<string>(e.GetWebException(), nullWhenError);
+                if (e.GetType() == typeof(WebException))
+                {
+                    var response = (HttpWebResponse)((WebException)e).Response;
+                    if (response != null)
+                    {
+                        using (var responseStream = response.GetResponseStream())
+                        {
+                            if (responseStream != null)
+                            {
+                                using (var reader = new StreamReader(responseStream))
+                                {
+                                    if (reader != null)
+                                    {
+                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
         [SqlFunction]
@@ -60,11 +80,30 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<string>(e.GetWebException(), nullWhenError);
+                if (e.GetType() == typeof(WebException))
+                {
+                    var response = (HttpWebResponse)((WebException)e).Response;
+                    if (response != null)
+                    {
+                        using (var responseStream = response.GetResponseStream())
+                        {
+                            if (responseStream != null)
+                            {
+                                using (var reader = new StreamReader(responseStream))
+                                {
+                                    if (reader != null)
+                                    {
+                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-
-
+        
         public class ParallelWebRequestUrlInput
         {
             [JsonProperty(PropertyName = "name")]
@@ -146,6 +185,51 @@ namespace bi_dev.sql.mssql.extensions.web
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+        public static string PostWithProxy(string url, string body, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
+        {
+            try
+            {
+                WebClient wc = new WebClient();
+                if (!string.IsNullOrEmpty(proxyUser))
+                {
+                    wc.Proxy = new WebProxy(proxyUrl, true, new string[] { }, new NetworkCredential(proxyUser, proxyPassword));
+                }
+                else
+                {
+                    wc.Proxy = new WebProxy(proxyUrl);
+                }
+                wc.Encoding = Encoding.UTF8;
+                FixSecurityProtocol();
+                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
+                return wc.UploadString(url, body);
+            }
+            catch (Exception e)
+            {
+                if (e.GetType() == typeof(WebException))
+                {
+                    var response = (HttpWebResponse)((WebException)e).Response;
+                    if (response != null)
+                    {
+                        using (var responseStream = response.GetResponseStream())
+                        {
+                            if (responseStream != null)
+                            {
+                                using (var reader = new StreamReader(responseStream))
+                                {
+                                    if (reader != null)
+                                    {
+                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+
+
         public class WebRequestResult
         {
 
