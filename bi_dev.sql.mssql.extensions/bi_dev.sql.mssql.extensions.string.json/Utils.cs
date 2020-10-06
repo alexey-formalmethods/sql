@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,18 @@ namespace bi_dev.sql.mssql.extensions.@string.json
         {
             try
             {
-                JObject o = JObject.Parse(json);
-                string result = (string)o.SelectToken(path);
+                JToken o = JContainer.Parse(json);
+                var parsedResult = o.SelectTokens(path);
+                string result = null;
+                if (parsedResult.Count() > 1)
+                {
+                    result = JsonConvert.SerializeObject(parsedResult);
+                }
+                else
+                {
+                    result = JsonConvert.SerializeObject(parsedResult.FirstOrDefault());
+                }
+                
                 return result;
             }
             catch (Exception e)
@@ -22,5 +33,6 @@ namespace bi_dev.sql.mssql.extensions.@string.json
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+
     }
 }
