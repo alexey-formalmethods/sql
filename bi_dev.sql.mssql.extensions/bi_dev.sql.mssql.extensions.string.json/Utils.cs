@@ -23,7 +23,15 @@ namespace bi_dev.sql.mssql.extensions.@string.json
                 }
                 else
                 {
-                    result = JsonConvert.SerializeObject(parsedResult.FirstOrDefault());
+                    var resultObject = parsedResult.FirstOrDefault();
+                    if (resultObject.Type == JTokenType.Object)
+                    {
+                        JsonConvert.SerializeObject(resultObject);
+                    }
+                    else 
+                    {
+                        result = (string)resultObject;
+                    }
                 }
                 
                 return result;
