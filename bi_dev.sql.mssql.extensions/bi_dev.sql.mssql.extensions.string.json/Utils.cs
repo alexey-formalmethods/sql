@@ -26,9 +26,13 @@ namespace bi_dev.sql.mssql.extensions.@string.json
                     var resultObject = parsedResult.FirstOrDefault();
                     if (resultObject.Type == JTokenType.Object)
                     {
-                        JsonConvert.SerializeObject(resultObject);
+                        result = JsonConvert.SerializeObject(resultObject);
                     }
-                    else 
+                    if (resultObject.Type == JTokenType.Date) 
+                    {
+                        result = ((DateTime)resultObject).ToString("s", System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    else
                     {
                         result = (string)resultObject;
                     }
