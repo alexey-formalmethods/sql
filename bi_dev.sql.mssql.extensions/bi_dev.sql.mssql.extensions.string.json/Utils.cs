@@ -10,34 +10,14 @@ namespace bi_dev.sql.mssql.extensions.@string.json
 {
     public static class Utils
     {
-        public static string JsonValue(string json, string path, bool nullWhenError)
+        public static string JsonSelectTokens(string json, string path, bool nullWhenError)
         {
             try
             {
                 JToken o = JContainer.Parse(json);
                 var parsedResult = o.SelectTokens(path);
                 string result = null;
-                if (parsedResult.Count() > 1)
-                {
-                    result = JsonConvert.SerializeObject(parsedResult);
-                }
-                else
-                {
-                    var resultObject = parsedResult.FirstOrDefault();
-                    if (resultObject.Type == JTokenType.Object)
-                    {
-                        result = JsonConvert.SerializeObject(resultObject);
-                    }
-                    if (resultObject.Type == JTokenType.Date) 
-                    {
-                        result = ((DateTime)resultObject).ToString("s", System.Globalization.CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        result = (string)resultObject;
-                    }
-                }
-                
+                result = JsonConvert.SerializeObject(parsedResult);
                 return result;
             }
             catch (Exception e)
