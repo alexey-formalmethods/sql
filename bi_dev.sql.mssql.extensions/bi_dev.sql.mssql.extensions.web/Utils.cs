@@ -63,9 +63,12 @@ namespace bi_dev.sql.mssql.extensions.web
                     var headers = HttpUtility.ParseQueryString(headersInUrlFormat);
                     foreach (var header in headers.AllKeys)
                     {
-                        httpClient
-                        .DefaultRequestHeaders
-                        .Add(header, headers[header]);
+                        if (!httpClient.DefaultRequestHeaders.Contains(header))
+                        {
+                            httpClient
+                            .DefaultRequestHeaders
+                            .Add(header, headers[header]);
+                        }
                     }
                     
                             
