@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,14 +53,24 @@ namespace bi_dev.sql.mssql.extensions.web
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
         }
         
-        private static string get(WebClient webClient, string url, string headersInUrlFormat, bool nullWhenError)
+        private static string get(HttpClient httpClient, string url, string headersInUrlFormat, bool nullWhenError)
         {
             try
             {
-                webClient.Encoding = Encoding.UTF8;
+                
                 FixSecurityProtocol();
-                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) webClient.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
-                return webClient.DownloadString(url);
+                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) {
+                    var headers = HttpUtility.ParseQueryString(headersInUrlFormat);
+                    foreach (var header in headers.AllKeys)
+                    {
+                        httpClient
+                        .DefaultRequestHeaders
+                        .Add(header, headers[header]);
+                    }
+                    
+                            
+                }
+                return httpClient.GetAsync(url).Result.Content.ReadAsStringAsync().Result;
             }
             catch (Exception e)
             {
@@ -70,22 +81,23 @@ namespace bi_dev.sql.mssql.extensions.web
         [SqlFunction]
         public static string Get(string url, string headersInUrlFormat, bool nullWhenError)
         {
-                WebClient wc = new WebClient();
+                HttpClient wc = new HttpClient();
                 return get(wc, url, headersInUrlFormat, nullWhenError);
         }
         [SqlFunction]
         public static string GetWithProxy(string url, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
         {
-            
-            WebClient wc = new WebClient();
+
+            WebProxy proxy;
             if (!string.IsNullOrEmpty(proxyUser))
             {
-                wc.Proxy = new WebProxy(proxyUrl, true, new string[] { }, new NetworkCredential(proxyUser, proxyPassword));
+                proxy = new WebProxy(proxyUrl, true, new string[] { }, new NetworkCredential(proxyUser, proxyPassword));
             }
             else
             {
-                wc.Proxy = new WebProxy(proxyUrl);
+                proxy = new WebProxy(proxyUrl);
             }
+            HttpClient wc = new HttpClient(new HttpClientHandler() { Proxy = proxy });
             return get(wc, url, headersInUrlFormat, nullWhenError);
         }
         
@@ -104,7 +116,7 @@ namespace bi_dev.sql.mssql.extensions.web
             {
                 ParallelWebRequestUrlInput[] urlArray = JsonConvert.DeserializeObject<ParallelWebRequestUrlInput[]>(parallelWebRequestUrlInputJson);
                 var bag = new ConcurrentBag<TableType>(new List<TableType>());
-                WebClient wc = new WebClient();
+                HttpClient wc = new HttpClient();
                 Parallel.ForEach(urlArray, x => {
                     bag.Add((new TableType(x.UrlName, get(wc, x.UrlValue, headersInUrlFormat, nullWhenError))));
                 });
