@@ -52,7 +52,7 @@ namespace bi_dev.sql.mssql.extensions.web
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
         }
         
-        private static string Get(WebClient webClient, string url, string headersInUrlFormat, bool nullWhenError)
+        private static string get(WebClient webClient, string url, string headersInUrlFormat, bool nullWhenError)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace bi_dev.sql.mssql.extensions.web
         public static string Get(string url, string headersInUrlFormat, bool nullWhenError)
         {
                 WebClient wc = new WebClient();
-                return Get(wc, url, headersInUrlFormat, nullWhenError);
+                return get(wc, url, headersInUrlFormat, nullWhenError);
         }
         [SqlFunction]
         public static string GetWithProxy(string url, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
@@ -86,7 +86,7 @@ namespace bi_dev.sql.mssql.extensions.web
             {
                 wc.Proxy = new WebProxy(proxyUrl);
             }
-            return Get(wc, url, headersInUrlFormat, nullWhenError);
+            return get(wc, url, headersInUrlFormat, nullWhenError);
         }
         
         public class ParallelWebRequestUrlInput
@@ -106,7 +106,7 @@ namespace bi_dev.sql.mssql.extensions.web
                 var bag = new ConcurrentBag<TableType>(new List<TableType>());
                 WebClient wc = new WebClient();
                 Parallel.ForEach(urlArray, x => {
-                    bag.Add((new TableType(x.UrlName, Get(wc, x.UrlValue, headersInUrlFormat, nullWhenError))));
+                    bag.Add((new TableType(x.UrlName, get(wc, x.UrlValue, headersInUrlFormat, nullWhenError))));
                 });
                 return bag;
                 
