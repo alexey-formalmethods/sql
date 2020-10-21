@@ -53,26 +53,29 @@ namespace bi_dev.sql.mssql.extensions.web
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
         }
         
-        private static string get(HttpClient httpClient, string url, string headersInUrlFormat, bool nullWhenError)
+        private static HttpClient AddHeaders(this HttpClient httpClient, string headersInUrlFormat)
+        {
+            if (!string.IsNullOrWhiteSpace(headersInUrlFormat))
+            {
+                var headers = HttpUtility.ParseQueryString(headersInUrlFormat);
+                foreach (var header in headers.AllKeys)
+                {
+                    if (!httpClient.DefaultRequestHeaders.Contains(header))
+                    {
+                        httpClient
+                        .DefaultRequestHeaders
+                        .Add(header, headers[header]);
+                    }
+                }
+            }
+            return httpClient;
+        }
+        private static string get(HttpClient httpClient, string url,  bool nullWhenError)
         {
             try
             {
                 
                 FixSecurityProtocol();
-                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) {
-                    var headers = HttpUtility.ParseQueryString(headersInUrlFormat);
-                    foreach (var header in headers.AllKeys)
-                    {
-                        if (!httpClient.DefaultRequestHeaders.Contains(header))
-                        {
-                            httpClient
-                            .DefaultRequestHeaders
-                            .Add(header, headers[header]);
-                        }
-                    }
-                    
-                            
-                }
                 return httpClient.GetAsync(url).Result.Content.ReadAsStringAsync().Result;
             }
             catch (Exception e)
@@ -85,7 +88,7 @@ namespace bi_dev.sql.mssql.extensions.web
         public static string Get(string url, string headersInUrlFormat, bool nullWhenError)
         {
                 HttpClient wc = new HttpClient();
-                return get(wc, url, headersInUrlFormat, nullWhenError);
+                return get(wc.AddHeaders(headersInUrlFormat), url, nullWhenError);
         }
         [SqlFunction]
         public static string GetWithProxy(string url, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
@@ -101,7 +104,7 @@ namespace bi_dev.sql.mssql.extensions.web
                 proxy = new WebProxy(proxyUrl);
             }
             HttpClient wc = new HttpClient(new HttpClientHandler() { Proxy = proxy });
-            return get(wc, url, headersInUrlFormat, nullWhenError);
+            return get(wc.AddHeaders(headersInUrlFormat), url, nullWhenError);
         }
         
         public class ParallelWebRequestUrlInput
@@ -119,9 +122,9 @@ namespace bi_dev.sql.mssql.extensions.web
             {
                 ParallelWebRequestUrlInput[] urlArray = JsonConvert.DeserializeObject<ParallelWebRequestUrlInput[]>(parallelWebRequestUrlInputJson);
                 var bag = new ConcurrentBag<TableType>(new List<TableType>());
-                HttpClient wc = new HttpClient();
+                HttpClient wc = new HttpClient().AddHeaders(headersInUrlFormat);
                 Parallel.ForEach(urlArray, x => {
-                    bag.Add((new TableType(x.UrlName, get(wc, x.UrlValue, headersInUrlFormat, nullWhenError))));
+                    bag.Add((new TableType(x.UrlName, get(wc, x.UrlValue, nullWhenError))));
                 });
                 return bag;
                 
