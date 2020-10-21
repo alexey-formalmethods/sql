@@ -18,90 +18,75 @@ namespace bi_dev.sql.mssql.extensions.web
 {
     public static class Utils
     {
+        /// <summary>
+        /// Creates new Exception with WebResponse if exists
+        /// </summary>
+        /// <param name="e">common Exception</param>
+        /// <returns>Exception object with inner Exception with WebResponse</returns>
+        private static Exception AddWebException(this Exception e)
+        {
+            if (e.GetType() == typeof(WebException))
+            {
+                var response = (HttpWebResponse)((WebException)e).Response;
+                if (response != null)
+                {
+                    using (var responseStream = response.GetResponseStream())
+                    {
+                        if (responseStream != null)
+                        {
+                            using (var reader = new StreamReader(responseStream))
+                            {
+                                if (reader != null)
+                                {
+                                    e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return e;
+        }
         private static void FixSecurityProtocol()
         {
             System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3;
         }
         
-        [SqlFunction]
-        public static string Get(string url, string headersInUrlFormat, bool nullWhenError)
+        private static string Get(WebClient webClient, string url, string headersInUrlFormat, bool nullWhenError)
         {
             try
             {
-                WebClient wc = new WebClient();
-                wc.Encoding = Encoding.UTF8;
+                webClient.Encoding = Encoding.UTF8;
                 FixSecurityProtocol();
-                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
-                return wc.DownloadString(url);
+                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) webClient.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
+                return webClient.DownloadString(url);
             }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(WebException))
-                {
-                    var response = (HttpWebResponse)((WebException)e).Response;
-                    if (response != null)
-                    {
-                        using (var responseStream = response.GetResponseStream())
-                        {
-                            if (responseStream != null)
-                            {
-                                using (var reader = new StreamReader(responseStream))
-                                {
-                                    if (reader != null)
-                                    {
-                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+                return Common.ThrowIfNeeded<string>(e.AddWebException(), nullWhenError);
             }
+        }
+
+        [SqlFunction]
+        public static string Get(string url, string headersInUrlFormat, bool nullWhenError)
+        {
+                WebClient wc = new WebClient();
+                return Get(wc, url, headersInUrlFormat, nullWhenError);
         }
         [SqlFunction]
         public static string GetWithProxy(string url, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
         {
-            try
+            
+            WebClient wc = new WebClient();
+            if (!string.IsNullOrEmpty(proxyUser))
             {
-                WebClient wc = new WebClient();
-                if (!string.IsNullOrEmpty(proxyUser))
-                {
-                    wc.Proxy = new WebProxy(proxyUrl, true, new string[] { }, new NetworkCredential(proxyUser, proxyPassword));
-                }
-                else
-                {
-                    wc.Proxy = new WebProxy(proxyUrl);
-                }
-                wc.Encoding = Encoding.UTF8;
-                FixSecurityProtocol();
-                if (!string.IsNullOrWhiteSpace(headersInUrlFormat)) wc.Headers.Add(HttpUtility.ParseQueryString(headersInUrlFormat));
-                return wc.DownloadString(url);
+                wc.Proxy = new WebProxy(proxyUrl, true, new string[] { }, new NetworkCredential(proxyUser, proxyPassword));
             }
-            catch (Exception e)
+            else
             {
-                if (e.GetType() == typeof(WebException))
-                {
-                    var response = (HttpWebResponse)((WebException)e).Response;
-                    if (response != null)
-                    {
-                        using (var responseStream = response.GetResponseStream())
-                        {
-                            if (responseStream != null)
-                            {
-                                using (var reader = new StreamReader(responseStream))
-                                {
-                                    if (reader != null)
-                                    {
-                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+                wc.Proxy = new WebProxy(proxyUrl);
             }
+            return Get(wc, url, headersInUrlFormat, nullWhenError);
         }
         
         public class ParallelWebRequestUrlInput
@@ -119,8 +104,9 @@ namespace bi_dev.sql.mssql.extensions.web
             {
                 ParallelWebRequestUrlInput[] urlArray = JsonConvert.DeserializeObject<ParallelWebRequestUrlInput[]>(parallelWebRequestUrlInputJson);
                 var bag = new ConcurrentBag<TableType>(new List<TableType>());
+                WebClient wc = new WebClient();
                 Parallel.ForEach(urlArray, x => {
-                    bag.Add((new TableType(x.UrlName, Get(x.UrlValue, headersInUrlFormat, nullWhenError))));
+                    bag.Add((new TableType(x.UrlName, Get(wc, x.UrlValue, headersInUrlFormat, nullWhenError))));
                 });
                 return bag;
                 
@@ -162,27 +148,7 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(WebException))
-                {   
-                    var response = (HttpWebResponse)((WebException)e).Response;
-                    if (response != null)
-                    {
-                        using (var responseStream = response.GetResponseStream())
-                        {
-                            if (responseStream != null)
-                            {
-                                using (var reader = new StreamReader(responseStream))
-                                {
-                                    if (reader != null)
-                                    {
-                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+                return Common.ThrowIfNeeded<string>(e.AddWebException(), nullWhenError);
             }
         }
         public static string PostWithProxy(string url, string body, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
@@ -205,27 +171,7 @@ namespace bi_dev.sql.mssql.extensions.web
             }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(WebException))
-                {
-                    var response = (HttpWebResponse)((WebException)e).Response;
-                    if (response != null)
-                    {
-                        using (var responseStream = response.GetResponseStream())
-                        {
-                            if (responseStream != null)
-                            {
-                                using (var reader = new StreamReader(responseStream))
-                                {
-                                    if (reader != null)
-                                    {
-                                        e = new Exception(e.Message, new Exception(reader.ReadToEnd()));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+                return Common.ThrowIfNeeded<string>(e.AddWebException(), nullWhenError);
             }
         }
 
