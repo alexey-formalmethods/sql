@@ -14,7 +14,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         static void Main(string[] args)
         {
-            Get("https://ya.ru", "Auth=basic kaka", false);
+            
         }
     }
 }
