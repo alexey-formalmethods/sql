@@ -129,7 +129,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <param name="value"></param>  
         public void Accumulate(SqlString value)
         {
-            this.Values.Add(value.ToString());
+            this.Values.Add(value.Value);
         }
 
         /// <summary>  

@@ -177,15 +177,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web\bi_dev.sql.mssql.extensions.web.csproj">
-      <Project>{a24f2682-f277-46fe-9e71-3121913642e3}</Project>
-      <Name>bi_dev.sql.mssql.extensions.web</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Core\Compression\Snappy\lib\win\snappy32.dll" />
     <Content Include="Core\Compression\Snappy\lib\win\snappy64.dll" />
     <Content Include="Core\Compression\Zstandard\lib\win\libzstd.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.aggregation\bi_dev.sql.mssql.extensions.aggregation.csproj">
+      <Project>{804e2b40-a249-48ad-83ae-62c65c2881bb}</Project>
+      <Name>bi_dev.sql.mssql.extensions.aggregation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\solutions\bi_dev.sql.mssql.extensions\packages\MongoDB.Libmongocrypt.1.0.0\build\MongoDB.Libmongocrypt.targets" Condition="Exists('..\..\solutions\bi_dev.sql.mssql.extensions\packages\MongoDB.Libmongocrypt.1.0.0\build\MongoDB.Libmongocrypt.targets')" />
