@@ -135,7 +135,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// Merge the partially computed aggregate with this aggregate.  
         /// </summary>  
         /// <param name="other"></param>  
-        public void Merge(JsonArray other)
+        public void Merge(ToJsonArray other)
         {
             this.Values.AddRange(other.values);
         }
