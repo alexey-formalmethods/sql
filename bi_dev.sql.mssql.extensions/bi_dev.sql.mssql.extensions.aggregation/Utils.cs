@@ -148,8 +148,8 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         public SqlString Terminate()
         {
             string output = string.Empty;
-            output = JsonConvert.SerializeObject(this.Values);
-            return new SqlString("[\"a\", \"b\"]");
+            output = JsonConvert.SerializeObject(this.Values, Formatting.Indented);
+            return new SqlString(output);
         }
         public void Read(BinaryReader r)
         {
