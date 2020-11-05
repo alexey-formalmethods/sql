@@ -145,7 +145,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// Called at the end of aggregation, to return the results of the aggregation.  
         /// </summary>  
         /// <returns></returns>  
-        public SqlString Terminate()
+        public string Terminate()
         {
             string output = string.Empty;
             output = JsonConvert.SerializeObject(this.Values);
