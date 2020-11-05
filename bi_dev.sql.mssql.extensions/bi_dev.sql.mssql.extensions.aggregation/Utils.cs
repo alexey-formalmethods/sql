@@ -145,11 +145,11 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// Called at the end of aggregation, to return the results of the aggregation.  
         /// </summary>  
         /// <returns></returns>  
-        public string Terminate()
+        public SqlString Terminate()
         {
             string output = string.Empty;
             output = JsonConvert.SerializeObject(this.Values);
-            return output;
+            return new SqlString("a");
         }
         public void Read(BinaryReader r)
         {
