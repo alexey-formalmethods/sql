@@ -87,7 +87,8 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         Format.UserDefined, //use clr serialization to serialize the intermediate result  
         IsInvariantToNulls = true, //optimizer property  
         IsInvariantToDuplicates = false, //optimizer property  
-        IsInvariantToOrder = false
+        IsInvariantToOrder = false, //optimizer property  
+        MaxByteSize = -1
     )] //maximum size in bytes of persisted value  
     public class ToJsonArray : IBinarySerialize
     {
