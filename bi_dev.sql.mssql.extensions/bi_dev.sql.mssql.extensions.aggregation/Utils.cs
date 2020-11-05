@@ -1,4 +1,5 @@
 ﻿using Microsoft.SqlServer.Server;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
@@ -81,5 +82,82 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             w.Write(this.intermediateResult.ToString());
         }
     }
-    
+    [Serializable]
+    [SqlUserDefinedAggregate(
+        Format.UserDefined, //use clr serialization to serialize the intermediate result  
+        IsInvariantToNulls = true, //optimizer property  
+        IsInvariantToDuplicates = false, //optimizer property  
+        IsInvariantToOrder = false
+    )] //maximum size in bytes of persisted value  
+    public class ToJsonArray : IBinarySerialize
+    {
+        /// <summary>  
+        /// The variable that holds the intermediate result of the concatenation  
+        /// </summary>  
+        private List<string> values;
+        public List<string> Values 
+        { 
+            get
+            {
+                if (values == null)
+                {
+                    return new List<string>();
+                }
+                else
+                {
+                    return this.values;
+                }
+            } 
+            set
+            {
+                this.values = value;
+            }
+        }
+
+        /// <summary>  
+        /// Initialize the internal data structures  
+        /// </summary>  
+        public void Init()
+        {
+            this.Values = new List<string>();
+        }
+
+        /// <summary>  
+        /// Accumulate the next value, not if the value is null  
+        /// </summary>  
+        /// <param name="value"></param>  
+        public void Accumulate(SqlString value)
+        {
+            this.Values.Add(value.ToString());
+        }
+
+        /// <summary>  
+        /// Merge the partially computed aggregate with this aggregate.  
+        /// </summary>  
+        /// <param name="other"></param>  
+        public void Merge(JsonArray other)
+        {
+            this.Values.AddRange(other.values);
+        }
+
+        /// <summary>  
+        /// Called at the end of aggregation, to return the results of the aggregation.  
+        /// </summary>  
+        /// <returns></returns>  
+        public SqlString Terminate()
+        {
+            string output = string.Empty;
+            output = JsonConvert.SerializeObject(this.Values);
+            return new SqlString(output);
+        }
+        public void Read(BinaryReader r)
+        {
+            values = new List<string>() { r.ReadString() };
+        }
+        public void Write(BinaryWriter w)
+        {
+            w.Write(JsonConvert.SerializeObject(this.Values));
+        }
+    }
+
 }
