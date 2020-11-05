@@ -149,7 +149,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         {
             string output = string.Empty;
             output = JsonConvert.SerializeObject(this.Values);
-            return new SqlString(output);
+            return output;
         }
         public void Read(BinaryReader r)
         {
