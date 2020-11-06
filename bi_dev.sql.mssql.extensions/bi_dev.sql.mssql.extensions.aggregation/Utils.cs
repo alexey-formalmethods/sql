@@ -95,33 +95,14 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <summary>  
         /// The variable that holds the intermediate result of the concatenation  
         /// </summary>  
-        private List<string> values;
-        public List<string> Values 
-        { 
-            get
-            {
-                if (values == null)
-                {
-                    this.values = new List<string>();
-                    return this.values;
-                }
-                else
-                {
-                    return this.values;
-                }
-            } 
-            set
-            {
-                this.values = value;
-            }
-        }
-
+        public StringBuilder intermediateResult = new StringBuilder();
+        
         /// <summary>  
         /// Initialize the internal data structures  
         /// </summary>  
         public void Init()
         {
-            this.Values = new List<string>();
+            intermediateResult = new StringBuilder();
         }
 
         /// <summary>  
@@ -130,7 +111,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <param name="value"></param>  
         public void Accumulate(SqlString value)
         {
-            this.Values.Add(value.Value);
+            
         }
 
         /// <summary>  
@@ -139,7 +120,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <param name="other"></param>  
         public void Merge(ToJsonArray other)
         {
-            this.Values.AddRange(other.values);
+            
         }
 
         /// <summary>  
@@ -148,17 +129,17 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <returns></returns>  
         public SqlString Terminate()
         {
-            string output = string.Empty;
-            output = JsonConvert.SerializeObject(this.Values);
-            return new SqlString(output);
+            
+            return new SqlString(intermediateResult.ToString());
         }
         public void Read(BinaryReader r)
         {
-            values = new List<string>() { r.ReadString() };
+            intermediateResult.Append(r.ReadString());
+            
         }
         public void Write(BinaryWriter w)
         {
-            w.Write(JsonConvert.SerializeObject(this.Values));
+            w.Write(this.intermediateResult.ToString());
         }
     }
 

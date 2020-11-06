@@ -206,6 +206,7 @@ namespace bi_dev.sql.mssql.extensions.web
 
             public string Url { get; set; }
             public string Body { get; set; }
+            public byte [] BodyByteArray { get; set; }
             public Dictionary<string, string> RequestHeaders { get; set; }
             public Dictionary<string, string> RequestCookies { get; set; }
 
@@ -414,6 +415,7 @@ namespace bi_dev.sql.mssql.extensions.web
                 {
                     var encoding = Encoding.GetEncoding(currentCodePage);
                     byte[] bytes = encoding.GetBytes(body);
+                    result.BodyByteArray = bytes;
                     //r.ContentLength = bytes.Length;
                     using (var stream = r.GetRequestStream())
                     {
@@ -595,12 +597,17 @@ namespace bi_dev.sql.mssql.extensions.web
                     networkCredentialUser,
                     networkCredentialPassword
                 );
+                
                 if (res.WebException != null && !nullWhenError)
                 {
                     throw res.WebException;
                 }
                 List<TableType> l = new List<TableType>();
                 l.Add(new TableType("url", url));
+                if (res.BodyByteArray != null)
+                {
+                    l.Add(new TableType("body_byte_array", JsonConvert.SerializeObject(res.BodyByteArray.Select(x => x.ToString()).ToArray())));
+                }
                 l.Add(new TableType("method", method));
                 l.Add(new TableType("body", res.Body));
                 l.Add(new TableType("content_type", contentType));
