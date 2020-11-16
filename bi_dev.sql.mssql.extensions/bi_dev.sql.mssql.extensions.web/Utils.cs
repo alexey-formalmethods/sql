@@ -119,26 +119,111 @@ namespace bi_dev.sql.mssql.extensions.web
             [JsonProperty(PropertyName = "value")]
             public string UrlValue { get; set; }
         }
-        [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable GetParallel(string parallelWebRequestUrlInputJson, string headersInUrlFormat, bool nullWhenError)
+        public class ParallelWebRequestOutput
+        {
+            [JsonProperty(PropertyName = "name")]
+            public string UrlName { get; set; }
+
+            [JsonProperty(PropertyName = "status_code")]
+            public int StatusCode { get; set; }
+
+            [JsonProperty(PropertyName = "response_text")]
+            public string ResponseText { get; set; }
+
+            [JsonProperty(PropertyName = "is_success")]
+            public bool IsSuccess { get; set; }
+
+
+        }
+        [SqlFunction]
+        public static string GetParallel(string parallelWebRequestUrlInputJson, string headerJson, string cookieJson, bool nullWhenError)
         {
             try
             {
                 ParallelWebRequestUrlInput[] urlArray = JsonConvert.DeserializeObject<ParallelWebRequestUrlInput[]>(parallelWebRequestUrlInputJson);
-                var bag = new ConcurrentBag<TableType>(new List<TableType>());
+                var bag = new ConcurrentBag<ParallelWebRequestOutput>();
                 List<Task<string>> taskList = new List<Task<string>>();
                 Parallel.ForEach(urlArray, 
                     (x)=>
                     {
-                        bag.Add(new TableType(x.UrlName, get(new WebClient().AddHeaders(headersInUrlFormat), x.UrlValue, nullWhenError)));
+                        try
+                        {
+                            string url = x.UrlValue;
+                            HttpWebRequest wr = (HttpWebRequest)WebRequest.Create(url);
+                            wr.Method = "GET";
+                            wr.KeepAlive = true;
+                            wr.Timeout = 1000 * 60 * 20;
+                            wr.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+                            
+                            wr.CookieContainer = new CookieContainer();
+                            if (cookieJson != null)
+                            {
+                                Uri target = new Uri(url);
+                                Dictionary<string, string> cookies = JsonConvert.DeserializeObject<Dictionary<string, string>>(cookieJson);
+                                foreach (var cookie in cookies)
+                                {
+                                    wr.CookieContainer.Add(new Cookie(cookie.Key, HttpUtility.UrlEncode(cookie.Value), "/", target.Host));
+                                }
+                            }
+                            if (headerJson != null)
+                            {
+                                var defaultHeaders = Enum.GetValues(typeof(HttpRequestHeader)).Cast<HttpRequestHeader>();
+                                Dictionary<string, string> headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(headerJson);
+                                foreach (var header in headers)
+                                {
+                                    var defaultHeader = defaultHeaders.Where(t => t.ToString().ToLower() == header.Key.ToLower());
+
+                                    if (defaultHeader.Count() > 0)
+                                    {
+                                        if (header.Key.ToLower() == "accept")
+                                        {
+                                            wr.Accept = header.Value;
+                                        }
+                                        else
+                                        {
+                                            wr.Headers[defaultHeader.FirstOrDefault()] = header.Value;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        wr.Headers[header.Key] = header.Value;
+                                    }
+                                }
+                            }
+                            var res = (HttpWebResponse)wr.GetResponse();
+                            using (var rs = res.GetResponseStream())
+                            {
+                                using (var sr = new StreamReader(rs))
+                                {
+                                    string responseText = sr.ReadToEnd();
+                                    bag.Add(new ParallelWebRequestOutput()
+                                    {
+                                        IsSuccess = true,
+                                        ResponseText = responseText,
+                                        StatusCode = (int)res.StatusCode,
+                                        UrlName = x.UrlName
+                                    });
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            bag.Add(new ParallelWebRequestOutput()
+                            {
+                                IsSuccess = false,
+                                ResponseText = e?.AddWebException()?.InnerException?.Message,
+                                StatusCode = (e is WebException)?((int)((WebException)e).Status):0,
+                                UrlName = x.UrlName
+                            });
+                        }
                     }
 
                 );
-                return bag;
+                return JsonConvert.SerializeObject(bag);
             }
             catch (Exception e)
             {
-                return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
 
