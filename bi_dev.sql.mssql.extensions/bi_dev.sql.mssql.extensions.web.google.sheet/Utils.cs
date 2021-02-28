@@ -107,14 +107,32 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
             }
             return service;
         }
+        private static SheetsService GetServiceFromAccessToken(string accessToken)
+        {
+
+            if (service == null)
+            {
+
+                string[] scopes = { SheetsService.Scope.Spreadsheets };
+                string ApplicationName = "bi_dev.mssql.google.sheets";
+                GoogleCredential credential = Auth.GetUserCredential(accessToken);
+                // Create Google Sheets API service.
+                service = new SheetsService(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = credential,
+                    ApplicationName = ApplicationName,
+                });
+            }
+            return service;
+        }
         // If modifying these scopes, delete your previously saved credentials
         // at ~/.credentials/sheets.googleapis.com-dotnet-quickstart.json
-        
-        public static bool? ClearRange(string credentialsJsonPath, string spreadsheetId, string sheetName, string range, bool falseWhenError)
+
+        public static bool? ClearRange(string accessToken, string spreadsheetId, string sheetName, string range, bool falseWhenError)
         {
             try
             {
-                var service = GetService(credentialsJsonPath);
+                var service = GetServiceFromAccessToken(accessToken);
                 string currentRange = sheetName + (!string.IsNullOrWhiteSpace(range) ? "!" + range : "");
                 SpreadsheetsResource.ValuesResource.ClearRequest cleaRequest = service.Spreadsheets.Values.Clear(
                         new ClearValuesRequest(), spreadsheetId, currentRange
@@ -128,7 +146,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
             }
         }
 
-        public static bool? UpdateRange(string credentialsJsonPath, string spreadsheetId, string sheetName, string rangeFrom, string jsonObject, bool includeColumnNames, bool cleanBeforeUpdate, bool falseWhenError)
+        public static bool? UpdateRange(string accessToken, string spreadsheetId, string sheetName, string rangeFrom, string jsonObject, bool includeColumnNames, bool cleanBeforeUpdate, bool falseWhenError)
         {
             try
             {
@@ -176,10 +194,10 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
                     Range = currentRange,
                     Values = l
                 };
-                var service = GetService(credentialsJsonPath);
+                var service = GetServiceFromAccessToken(accessToken);
                 if (cleanBeforeUpdate)
                 {
-                    ClearRange(credentialsJsonPath, spreadsheetId, sheetName, null, false);
+                    ClearRange(accessToken, spreadsheetId, sheetName, null, false);
                 }
                 SpreadsheetsResource.ValuesResource.UpdateRequest request = service.Spreadsheets.Values.Update(
                     r, spreadsheetId, currentRange
@@ -195,11 +213,11 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
                 return Common.ThrowIfNeeded<bool?>(e, falseWhenError, false);
             }
         }
-        public static string GetRange(string credentialsJsonPath, string spreadsheetId, string sheetName, string range, bool nullWhenError)
+        public static string GetRange(string accessToken, string spreadsheetId, string sheetName, string range, bool nullWhenError)
         {
             try
             {
-                var service = GetService(credentialsJsonPath);
+                var service = GetServiceFromAccessToken(accessToken);
                 string currentRange = sheetName + (!string.IsNullOrWhiteSpace(range) ? "!" + range : "");
                 SpreadsheetsResource.ValuesResource.GetRequest getRequest = service.Spreadsheets.Values.Get(
                         spreadsheetId, currentRange

@@ -12,6 +12,10 @@ namespace bi_dev.sql.mssql.extensions.web.google
 {
     public static class Auth
     {
+        public static GoogleCredential GetUserCredential(string accessToken)
+        {
+            return GoogleCredential.FromAccessToken(accessToken);
+        }
         public static UserCredential GetUserCredential(string credentialsPath, string[] scopes)
         {
             UserCredential credential = null;
@@ -31,6 +35,7 @@ namespace bi_dev.sql.mssql.extensions.web.google
             }
             return credential;
         }
+        
         public static void Do(string credentialsPath, string[] scopes)
         {
             GetUserCredential(credentialsPath, scopes);
