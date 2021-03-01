@@ -88,41 +88,19 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
     }
     public static class Utils
     {
-        private static SheetsService service;
-        private static SheetsService GetService(string credentialsPath)
-        {
-            
-            if (service == null)
-            {
-                
-                string[] scopes = { SheetsService.Scope.Spreadsheets };
-                string ApplicationName = "bi_dev.mssql.google.sheets";
-                UserCredential credential = Auth.GetUserCredential(credentialsPath, scopes);
-                // Create Google Sheets API service.
-                service = new SheetsService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = ApplicationName,
-                });
-            }
-            return service;
-        }
+        
         private static SheetsService GetServiceFromAccessToken(string accessToken)
         {
 
-            if (service == null)
+            string[] scopes = { SheetsService.Scope.Spreadsheets };
+            string ApplicationName = "bi_dev.mssql.google.sheets";
+            GoogleCredential credential = Auth.GetUserCredential(accessToken);
+            // Create Google Sheets API service.
+            var service = new SheetsService(new BaseClientService.Initializer()
             {
-
-                string[] scopes = { SheetsService.Scope.Spreadsheets };
-                string ApplicationName = "bi_dev.mssql.google.sheets";
-                GoogleCredential credential = Auth.GetUserCredential(accessToken);
-                // Create Google Sheets API service.
-                service = new SheetsService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credential,
-                    ApplicationName = ApplicationName,
-                });
-            }
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
             return service;
         }
         // If modifying these scopes, delete your previously saved credentials
