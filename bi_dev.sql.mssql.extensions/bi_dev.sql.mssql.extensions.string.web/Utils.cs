@@ -59,7 +59,7 @@ namespace bi_dev.sql.mssql.extensions.@string.web
                 List<string> result = new List<string>();
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(value);
-                return JsonConvert.SerializeObject(doc.DocumentNode.SelectNodes(xPath).Select(x => x.OuterHtml).ToList());
+                return JsonConvert.SerializeObject(doc.DocumentNode.SelectNodes(xPath).Select(x => x?.OuterHtml).ToList());
             }
             catch (Exception e)
             {
