@@ -11,6 +11,8 @@ using System.Security.Cryptography;
 using System.IO;
 using System.Data.SqlTypes;
 using System.Collections;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.extensions.@string
 {
@@ -97,7 +99,33 @@ namespace bi_dev.sql.mssql.extensions.@string
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-        
+        [SqlFunction]
+        public static string RegexMatches(string value, string regexPattern, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value)) return null;
+                else
+                {
+                    var result = new Regex(regexPattern).Matches(value)
+                        .Cast<Match>().ToList().Select((x, i) => new
+                    {
+                        math_index = i,
+                        groups = x.Groups.Cast<Group>().ToList().Select((t, j) => new
+                        {
+                            group_index = j,
+                            value = t.Value
+                        }).ToList()
+                    }).ToList();
+                    return JsonConvert.SerializeObject(result);
+                }
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+
         public static string GetSha256Hash(string value, bool nullWhenError)
         {
             try
