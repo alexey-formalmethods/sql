@@ -110,7 +110,7 @@ namespace bi_dev.sql.mssql.extensions.@string
                     var result = new Regex(regexPattern).Matches(value)
                         .Cast<Match>().ToList().Select((x, i) => new
                     {
-                        math_index = i,
+                        match_index = i,
                         groups = x.Groups.Cast<Group>().ToList().Select((t, j) => new
                         {
                             group_index = j,
