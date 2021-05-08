@@ -82,6 +82,7 @@ namespace bi_dev.sql.mssql.extensions.file
                 return Common.ThrowIfNeeded<long?>(e, nullWhenError);
             }
         }
+		[SqlFunction]
         public static bool CopyFile(string sourceFileName, string destFileName, bool overwrite, bool falseWhenError)
         {
             try
