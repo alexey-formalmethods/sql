@@ -9,9 +9,9 @@ All you need to start is
 Instructions:
 1. Choose a project you want to deploy
 2. Go to project directory
-3. restore packages nuget restore "..\..\solutions\bi_dev.sql.mssql.extensions"
-4. Build project msbuild
-5. Open deploy.sql and edit -- INPUT -- sction: set correct path to your project in @build_location and @build_file_name variables
-6. run deploy.sql
+3. restore packages ```nuget restore "..\..\solutions\bi_dev.sql.mssql.extensions"```
+4. Build project ```msbuild```
+5. Open deploy.sql and edit ```-- INPUT --``` sction: set correct path to your project in ```@build_location``` and ```@build_file_name``` variables
+6. run ```deploy.sql``` (I suggest that you should create a separate database for all clr functions)
 
 
