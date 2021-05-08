@@ -4,7 +4,7 @@ Every projects is a simple set of .Net functions, adapted for use in Ms Sql Serv
 All you need to start is 
 1. Microsoft .Net Framework 4.6.1 Developer Pack (Get it here https://dotnet.microsoft.com/download/dotnet-framework/net461). You will need msbuild to build projects.
 2. Nuget (Get it here https://www.nuget.org/downloads)
-3. Add nuget.exe System Environment Variable "Path"
+3. Add nuget.exe location to System Environment Variable "Path"
 
 Instructions:
 1. Choose a project you want to deploy
