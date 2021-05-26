@@ -377,7 +377,14 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                                 {
                                     if (cell.CellType == CellType.Numeric && DateUtil.IsCellDateFormatted(cell))
                                     {
-                                        cellValue = cell.DateCellValue;
+                                        try
+                                        {
+                                            cellValue = cell.DateCellValue;
+                                        }
+                                        catch (NullReferenceException)
+                                        {
+                                            cellValue = DateTime.FromOADate(cell.NumericCellValue);
+                                        }
                                     }
                                     else 
                                     {

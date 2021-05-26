@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using bi_dev.sql.mssql.extensions.@string;
+using bi_dev.sql.mssql.extensions.file.excel;
 
 namespace bi_dev.sql.mssql.cnsl
 {
@@ -13,7 +13,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            var res = Utils.RegexMatches(@"[br] [silver] [] приобрели Taviche. Серебро. Сильный игрок.", @"\[(.*?)\]", false);
+           
         }
     }
 }
