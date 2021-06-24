@@ -170,9 +170,16 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// Accumulate the next value, not if the value is null  
         /// </summary>  
         /// <param name="value"></param>  
-        public void Accumulate(double? value)
+        public void Accumulate(SqlDouble value, bool isNullEqualToZero)
         {
-            this.values.Add(value.Value);
+            if(isNullEqualToZero && value.IsNull)
+            {
+                value = 0;
+            }
+            if (!value.IsNull)
+            {
+                this.values.Add(value.Value);
+            }
         }
 
         /// <summary>  
