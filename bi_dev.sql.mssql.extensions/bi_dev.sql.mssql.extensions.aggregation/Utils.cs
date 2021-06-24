@@ -155,7 +155,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <summary>  
         /// The variable that holds the intermediate result of the concatenation  
         /// </summary>  
-        public List<double> values;
+        public IEnumerable<double> values;
 
         /// <summary>  
         /// Initialize the internal data structures  
@@ -177,7 +177,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             }
             if (value.HasValue)
             {
-                this.values.Add(value.Value);
+                (this.values as List<double>).Add(value.Value);
             }
         }
 
@@ -187,7 +187,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <param name="other"></param>  
         public void Merge(Median other)
         {
-            this.values.AddRange(other.values);
+            (this.values as List<double>).AddRange(other.values);
         }
 
         /// <summary>  
