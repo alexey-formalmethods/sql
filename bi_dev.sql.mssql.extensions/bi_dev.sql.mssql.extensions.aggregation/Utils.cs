@@ -143,7 +143,8 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             w.Write(this.intermediateResult.ToString());
         }
     }
-    
+    [Serializable]
+    [SqlUserDefinedAggregate(Format.Native)]
     public struct Median
     {
         /// <summary>  
@@ -193,7 +194,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             return values.Median();
         }
 
-        
+     
     }
 
 }
