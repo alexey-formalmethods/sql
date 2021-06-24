@@ -198,6 +198,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <returns></returns>  
         public double? Terminate()
         {
+
             if (values.Count == 0 || values.FirstOrDefault(x => x.HasValue) == null)
             {
                 if (this.isNullEqualToZero)
@@ -210,8 +211,15 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
                 }
             }
             else 
-            { 
-                return values.Median();
+            {
+                try
+                {
+                    return values.Median();
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("ololol");
+                }
             }
 
         }
