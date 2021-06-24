@@ -143,7 +143,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             w.Write(this.intermediateResult.ToString());
         }
     }
-    
+    [Serializable]
     [SqlUserDefinedAggregate(
         Format.UserDefined, //use clr serialization to serialize the intermediate result  
         IsInvariantToNulls = true, //optimizer property  
@@ -151,7 +151,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         IsInvariantToOrder = false, //optimizer property  
         MaxByteSize = -1
     )] //maximum size in bytes of persisted value  
-    public struct Median
+    public struct Median: IBinarySerialize
     {
         /// <summary>  
         /// The variable that holds the intermediate result of the concatenation  
@@ -199,7 +199,16 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         {
             return values.Median();
         }
-        
+
+        public void Read(BinaryReader r)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Write(BinaryWriter w)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
