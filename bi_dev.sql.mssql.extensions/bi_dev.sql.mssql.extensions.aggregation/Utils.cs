@@ -198,9 +198,10 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <returns></returns>  
         public double? Terminate()
         {
-
+            throw new Exception("values count:" + values.Count.ToString() + "; isNullEqualToZero: " + this.isNullEqualToZero.ToString());
             if (values.Count == 0 || values.FirstOrDefault(x => x.HasValue) == null)
             {
+                
                 if (this.isNullEqualToZero)
                 {
                     return 0;
