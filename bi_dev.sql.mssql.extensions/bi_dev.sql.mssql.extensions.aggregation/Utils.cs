@@ -143,8 +143,13 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             w.Write(this.intermediateResult.ToString());
         }
     }
-    [Serializable]
-    [SqlUserDefinedAggregate(Format.Native)]
+    [SqlUserDefinedAggregate(
+        Format.Native, //use clr serialization to serialize the intermediate result  
+        IsInvariantToNulls = true, //optimizer property  
+        IsInvariantToDuplicates = false, //optimizer property  
+        IsInvariantToOrder = false, //optimizer property  
+        MaxByteSize = -1
+    )] //maximum size in bytes of persisted value  
     public struct Median
     {
         /// <summary>  
@@ -194,7 +199,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             return values.Median();
         }
 
-     
+        
     }
 
 }
