@@ -157,7 +157,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// The variable that holds the intermediate result of the concatenation  
         /// </summary>  
         public List<double?> values;
-
+        private bool isNullEqualToZero;
         /// <summary>  
         /// Initialize the internal data structures  
         /// </summary>  
@@ -172,7 +172,8 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <param name="value"></param>  
         public void Accumulate(SqlDouble value, bool isNullEqualToZero)
         {
-            if(isNullEqualToZero && value.IsNull)
+            this.isNullEqualToZero = isNullEqualToZero;
+            if (this.isNullEqualToZero && value.IsNull)
             {
                 value = 0;
             }
@@ -197,7 +198,22 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <returns></returns>  
         public double? Terminate()
         {
-            return values.Median();
+            if (values.Count == 0 || values.FirstOrDefault(x => x.HasValue) == null)
+            {
+                if (this.isNullEqualToZero)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else 
+            { 
+                return values.Median();
+            }
+
         }
         public void Read(System.IO.BinaryReader r)
         {
