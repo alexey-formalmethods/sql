@@ -201,17 +201,14 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         }
         public void Read(System.IO.BinaryReader r)
         {
-            int cnt = r.Read();
-            this.values = new List<double?>(cnt);
-            for (int i = 0; i < cnt; i++)
-            {
+            while(r.BaseStream.Position != r.BaseStream.Length) 
+            { 
                 this.values.Add(r.ReadDouble());
             }
         }
 
         public void Write(System.IO.BinaryWriter w)
         {
-            w.Write(this.values.Count);
             foreach (double d in this.values)
             {
                 w.Write(d);
