@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.Server;
+﻿using MathNet.Numerics.Statistics;
+using Microsoft.SqlServer.Server;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -141,6 +142,64 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         {
             w.Write(this.intermediateResult.ToString());
         }
+    }
+    [Serializable]
+    [SqlUserDefinedAggregate(
+        Format.UserDefined, //use clr serialization to serialize the intermediate result  
+        IsInvariantToNulls = true, //optimizer property  
+        IsInvariantToDuplicates = false, //optimizer property  
+        IsInvariantToOrder = false, //optimizer property  
+        MaxByteSize = -1
+    )] //maximum size in bytes of persisted value  
+    public class Mid
+    {
+        /// <summary>  
+        /// The variable that holds the intermediate result of the concatenation  
+        /// </summary>  
+        public List<double> values;
+
+        /// <summary>  
+        /// Initialize the internal data structures  
+        /// </summary>  
+        public void Init()
+        {
+            values = new List<double>();
+        }
+
+        /// <summary>  
+        /// Accumulate the next value, not if the value is null  
+        /// </summary>  
+        /// <param name="value"></param>  
+        public void Accumulate(double? value, bool isNullEqualToZero)
+        {
+            if (value.HasValue && isNullEqualToZero)
+            {
+                value = 0;
+            }
+            if (value.HasValue)
+            {
+                this.values.Add(value.Value);
+            }
+        }
+
+        /// <summary>  
+        /// Merge the partially computed aggregate with this aggregate.  
+        /// </summary>  
+        /// <param name="other"></param>  
+        public void Merge(Mid other)
+        {
+            this.values.AddRange(other.values);
+        }
+
+        /// <summary>  
+        /// Called at the end of aggregation, to return the results of the aggregation.  
+        /// </summary>  
+        /// <returns></returns>  
+        public double? Terminate()
+        {
+            return values.Median();
+        }
+        
     }
 
 }
