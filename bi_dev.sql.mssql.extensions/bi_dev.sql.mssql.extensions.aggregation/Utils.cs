@@ -143,7 +143,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             w.Write(this.intermediateResult.ToString());
         }
     }
-    [Serializable]
+    
     [SqlUserDefinedAggregate(
         Format.UserDefined, //use clr serialization to serialize the intermediate result  
         IsInvariantToNulls = true, //optimizer property  
