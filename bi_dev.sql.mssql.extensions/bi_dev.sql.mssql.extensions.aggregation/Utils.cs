@@ -205,7 +205,10 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             {
                 values = new List<double?>();
             }
-            this.values.Add(r.ReadDouble());
+            while (r.BaseStream.Position != r.BaseStream.Length)
+            {
+                this.values.Add(r.ReadDouble());
+            }
         }
 
         public void Write(System.IO.BinaryWriter w)
