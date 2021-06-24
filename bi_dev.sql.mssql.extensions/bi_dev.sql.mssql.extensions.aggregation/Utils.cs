@@ -203,7 +203,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         {
             if (values == null)
             {
-                throw new Exception("olol");
+                values = new List<double?>();
             }
             this.values.Add(r.ReadDouble());
         }
