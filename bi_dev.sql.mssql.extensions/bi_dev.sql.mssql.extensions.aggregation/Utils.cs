@@ -212,14 +212,8 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             }
             else 
             {
-                try
-                {
-                    return values.Median();
-                }
-                catch (Exception e)
-                {
-                    throw new Exception("ololol");
-                }
+                return values.Median();
+                
             }
 
         }
