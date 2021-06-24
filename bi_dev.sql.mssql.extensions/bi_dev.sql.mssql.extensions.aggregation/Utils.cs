@@ -201,7 +201,8 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         }
         public void Read(System.IO.BinaryReader r)
         {
-            while(r.BaseStream.Position != r.BaseStream.Length) 
+            r.BaseStream.Position = 0;
+            while (r.BaseStream.Position != r.BaseStream.Length) 
             { 
                 this.values.Add(r.ReadDouble());
             }
