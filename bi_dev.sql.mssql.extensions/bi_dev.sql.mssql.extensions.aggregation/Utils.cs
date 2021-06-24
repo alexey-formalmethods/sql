@@ -151,7 +151,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         IsInvariantToOrder = false, //optimizer property  
         MaxByteSize = -1
     )] //maximum size in bytes of persisted value  
-    public class Mid
+    public class Median
     {
         /// <summary>  
         /// The variable that holds the intermediate result of the concatenation  
@@ -186,7 +186,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// Merge the partially computed aggregate with this aggregate.  
         /// </summary>  
         /// <param name="other"></param>  
-        public void Merge(Mid other)
+        public void Merge(Median other)
         {
             this.values.AddRange(other.values);
         }
