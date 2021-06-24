@@ -143,11 +143,12 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
             w.Write(this.intermediateResult.ToString());
         }
     }
+    [Serializable]
     [SqlUserDefinedAggregate(
-        Format.Native, //use clr serialization to serialize the intermediate result  
+        Format.UserDefined, //use clr serialization to serialize the intermediate result  
         IsInvariantToNulls = true, //optimizer property  
-        IsInvariantToDuplicates = false, //optimizer property  
-        IsInvariantToOrder = false, //optimizer property  
+        IsInvariantToDuplicates = true, //optimizer property  
+        IsInvariantToOrder = true, //optimizer property  
         MaxByteSize = -1
     )] //maximum size in bytes of persisted value  
     public struct Median
@@ -155,30 +156,23 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <summary>  
         /// The variable that holds the intermediate result of the concatenation  
         /// </summary>  
-        public IEnumerable<double> values;
+        public List<double?> values;
 
         /// <summary>  
         /// Initialize the internal data structures  
         /// </summary>  
         public void Init()
         {
-            values = new List<double>();
+            values = new List<double?>();
         }
 
         /// <summary>  
         /// Accumulate the next value, not if the value is null  
         /// </summary>  
         /// <param name="value"></param>  
-        public void Accumulate(double? value, bool isNullEqualToZero)
+        public void Accumulate(double? value)
         {
-            if (value.HasValue && isNullEqualToZero)
-            {
-                value = 0;
-            }
-            if (value.HasValue)
-            {
-                (this.values as List<double>).Add(value.Value);
-            }
+            this.values.Add(value.Value);
         }
 
         /// <summary>  
@@ -187,7 +181,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         /// <param name="other"></param>  
         public void Merge(Median other)
         {
-            (this.values as List<double>).AddRange(other.values);
+            this.values.AddRange(other.values);
         }
 
         /// <summary>  
@@ -198,8 +192,26 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         {
             return values.Median();
         }
+        public void Read(System.IO.BinaryReader r)
+        {
+            int cnt = r.Read();
+            this.values = new List<double?>(cnt);
+            for (int i = 0; i < cnt; i++)
+            {
+                this.values.Add(r.ReadDouble());
+            }
+        }
 
-        
+        public void Write(System.IO.BinaryWriter w)
+        {
+            w.Write(this.values.Count);
+            foreach (double d in this.values)
+            {
+                w.Write(d);
+            }
+        }
+
+
     }
 
 }
