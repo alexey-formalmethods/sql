@@ -201,7 +201,10 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         }
         public void Read(System.IO.BinaryReader r)
         {
-
+            if (values == null)
+            {
+                throw new Exception("olol");
+            }
             this.values.Add(r.ReadDouble());
         }
 
