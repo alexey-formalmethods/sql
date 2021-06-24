@@ -151,7 +151,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         IsInvariantToOrder = false, //optimizer property  
         MaxByteSize = -1
     )] //maximum size in bytes of persisted value  
-    public class Median
+    public struct Median
     {
         /// <summary>  
         /// The variable that holds the intermediate result of the concatenation  
