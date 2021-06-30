@@ -129,7 +129,7 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
         {
             try
             {
-                return JsonConvert.SerializeObject(GetCsvContent(value, delimiter, isFirstRowWithColumnNames));
+                return JsonConvert.SerializeObject(getCsvContent(value, delimiter, isFirstRowWithColumnNames));
             }
             catch (Exception e)
             {
