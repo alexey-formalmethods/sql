@@ -109,5 +109,46 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+        public static CsvReadResult GetCsvContent(string value, string delimiter, bool isFirstRowWithColumnNames)
+        {
+            var result = parseCsv(value, delimiter);
+            CsvReadResult csvResult = new CsvReadResult();
+            if (result != null && result.Count > 0)
+            {
+
+                if (isFirstRowWithColumnNames)
+                {
+                    csvResult.Columns.AddRange(result[0]);
+                }
+                csvResult.Values.AddRange(result.Where((x, i) => i > 0).ToList());
+            }
+            return csvResult;
+        }
+        [SqlFunction]
+        public static string GetCsvContent(string value, string delimiter, bool isFirstRowWithColumnNames, bool nullWhenError)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(GetCsvContent(value, delimiter, isFirstRowWithColumnNames));
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+    }
+    public class CsvReadResult
+    {
+        [JsonProperty(PropertyName = "columns")]
+        public List<string> Columns { get; set; }
+
+        [JsonProperty(PropertyName = "values")]
+        public List<string[]> Values { get; set; }
+
+        public CsvReadResult()
+        {
+            this.Columns = new List<string>();
+            this.Values = new List<string[]>();
+        }
     }
 }
