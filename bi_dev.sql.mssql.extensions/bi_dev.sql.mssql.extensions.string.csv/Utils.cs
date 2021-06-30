@@ -109,7 +109,7 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-        private static CsvReadResult GetCsvContent(string value, string delimiter, bool isFirstRowWithColumnNames)
+        private static CsvReadResult getCsvContent(string value, string delimiter, bool isFirstRowWithColumnNames)
         {
             var result = parseCsv(value, delimiter);
             CsvReadResult csvResult = new CsvReadResult();
