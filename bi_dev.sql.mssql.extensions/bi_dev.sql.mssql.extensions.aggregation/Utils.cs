@@ -17,7 +17,7 @@ namespace bi_dev.sql.mssql.extensions.aggregation.Utils
         IsInvariantToNulls = true, //optimizer property  
         IsInvariantToDuplicates = false, //optimizer property  
         IsInvariantToOrder = false, //optimizer property  
-        MaxByteSize = 8000
+        MaxByteSize = -1
     )] //maximum size in bytes of persisted value  
     public class StringAgg: IBinarySerialize
     {
