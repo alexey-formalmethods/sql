@@ -79,7 +79,20 @@ namespace bi_dev.sql.mssql.extensions.@string.web
             {
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
-
+        }
+        public static string GetHtmlElementInnerText(string value, bool nullWhenError)
+        {
+            try
+            {
+                HtmlDocument doc = new HtmlDocument();
+                var node = doc.CreateElement("div");
+                node.InnerHtml = value;
+                return node.FirstChild?.InnerText;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
         }
     }
 }

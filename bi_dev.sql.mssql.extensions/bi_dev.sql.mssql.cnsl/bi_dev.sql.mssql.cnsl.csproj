@@ -182,9 +182,9 @@
     <Content Include="Core\Compression\Zstandard\lib\win\libzstd.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.aggregation\bi_dev.sql.mssql.extensions.aggregation.csproj">
-      <Project>{804e2b40-a249-48ad-83ae-62c65c2881bb}</Project>
-      <Name>bi_dev.sql.mssql.extensions.aggregation</Name>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.string.web\bi_dev.sql.mssql.extensions.string.web.csproj">
+      <Project>{de551de3-4487-4eac-9b89-69edee6ec027}</Project>
+      <Name>bi_dev.sql.mssql.extensions.string.web</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
