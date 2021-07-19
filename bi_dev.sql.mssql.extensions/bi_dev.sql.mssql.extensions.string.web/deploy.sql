@@ -14,7 +14,7 @@ declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.ms
 	go
 	create function dbo.f_clr_html_get_query_param_value(@value nvarchar(max), @param_name nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string.web].[bi_dev.sql.mssql.extensions.string.web.Utils].GetQueryParamValue;
 	go
-	create function dbo.f_clr_html_get_elements(@value nvarchar(max), @x_path nvarchar(max) @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string.web].[bi_dev.sql.mssql.extensions.string.web.Utils].GetHtmlElements;
+	create function dbo.f_clr_html_get_elements(@value nvarchar(max), @x_path nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string.web].[bi_dev.sql.mssql.extensions.string.web.Utils].GetHtmlElements;
 	go
 	create function dbo.f_clr_html_get_element_attribute_value(@value nvarchar(max), @attribute_name nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string.web].[bi_dev.sql.mssql.extensions.string.web.Utils].GetHtmlElementAttributeValue;
 	go
