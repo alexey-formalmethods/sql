@@ -32,26 +32,6 @@ namespace bi_dev.sql.mssql.extensions.@string.web
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
-        public static string GetStringExceptHTML(string value, bool nullWhenError)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    return null;
-                }
-                else
-                {
-                    HtmlDocument htmlDoc = new HtmlDocument();
-                    htmlDoc.LoadHtml(value);
-                    return htmlDoc.DocumentNode.InnerText;
-                }
-            }
-            catch (Exception e)
-            {
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
-            }
-        }
         public static string GetHtmlElements(string value, string xPath, bool nullWhenError)
         {
             try
