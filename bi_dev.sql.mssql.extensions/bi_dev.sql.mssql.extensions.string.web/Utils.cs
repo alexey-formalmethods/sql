@@ -46,6 +46,19 @@ namespace bi_dev.sql.mssql.extensions.@string.web
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+        public static string GetHtmlElement(string value, string xPath, bool nullWhenError)
+        {
+            try
+            {
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(value);
+                return JsonConvert.SerializeObject(doc.DocumentNode.SelectNodes(xPath).Select(x => x?.OuterHtml)?.FirstOrDefault());
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
         public static string GetHtmlElementAttributeValue(string value, string attributeName, bool nullWhenError)
         {
             try

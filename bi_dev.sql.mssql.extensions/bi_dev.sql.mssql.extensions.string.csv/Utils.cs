@@ -115,7 +115,6 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
             CsvReadResult csvResult = new CsvReadResult();
             if (result != null && result.Count > 0)
             {
-
                 if (isFirstRowWithColumnNames)
                 {
                     csvResult.Columns.AddRange(result[0]);
