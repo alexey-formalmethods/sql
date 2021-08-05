@@ -207,6 +207,10 @@ namespace bi_dev.sql.mssql.extensions.web2
                     requestStream.Write(byteBody, 0, byteBody.Length);
                 }
             }
+            else
+            {
+                r.ContentLength = 0;
+            }
             int attempt = 1;
             while (attempt <= webRequestArgument.Attempts) {
                 try
