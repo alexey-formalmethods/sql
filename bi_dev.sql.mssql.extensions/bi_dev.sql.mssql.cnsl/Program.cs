@@ -15,7 +15,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            string j = "{\"url\":\"https://ya.ru\",\"method\":\"GET\"}";
+            string j = "{\"url\":\"https://query2.finance.yahoo.com/v10/finance/quoteSummary/NFLX\",\"method\":\"GET\"}";
             var e = Utils.WebProcessRequest(j, false);
         }
     }

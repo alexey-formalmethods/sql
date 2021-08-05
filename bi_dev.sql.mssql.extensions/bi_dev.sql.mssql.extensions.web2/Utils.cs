@@ -76,6 +76,12 @@ namespace bi_dev.sql.mssql.extensions.web2
 
         [JsonProperty(PropertyName="headers")]
         public ICollection<WebRequestHeader> Headers { get; set; }
+        public WebRequestResult(WebRequestArgument request)
+        {
+            this.Request = request;
+            this.Headers = new List<WebRequestHeader>();
+            this.Cookies = new List<WebRequestCookie>();
+        }
     }
     public class WebRequestArgument
     {
@@ -125,6 +131,7 @@ namespace bi_dev.sql.mssql.extensions.web2
             this.Method = "GET";
             this.TimeOutMilliseconds = 100_000;
             this.Attempts = 1;
+            this.MillisecondsToRetry = 0;
         }
         public static WebRequestArgument GetExammple()
         {
@@ -162,7 +169,7 @@ namespace bi_dev.sql.mssql.extensions.web2
                 "User-Agent",
                 "Cookies"
             };
-            WebRequestResult result = new WebRequestResult();
+            WebRequestResult result = new WebRequestResult(webRequestArgument);
             result.Request = webRequestArgument;
             HttpWebRequest r = WebRequest.Create(webRequestArgument.Url) as HttpWebRequest;
             r.Method = webRequestArgument.Method;
@@ -245,14 +252,55 @@ namespace bi_dev.sql.mssql.extensions.web2
                 }
                 catch (WebException we)
                 {
+                    attempt++;
                     if (attempt <= webRequestArgument.Attempts)
                     {
-                        attempt++;
+                        
                         Thread.Sleep(webRequestArgument.MillisecondsToRetry);
                     }
                     else
                     {
-                        throw we;
+                        using (var response = we.Response as HttpWebResponse)
+                        {
+                            using (var responseStream = response.GetResponseStream())
+                            {
+                                using (var responseStreamReader = new StreamReader(responseStream))
+                                {
+                                    result.ResponseText = responseStreamReader.ReadToEnd();
+                                }
+                            }
+                            result.StatusCode = (int)response.StatusCode;
+                            result.Cookies = new List<WebRequestCookie>();
+                            if (response.Cookies != null)
+                            {
+                                foreach (Cookie responseCookie in response.Cookies)
+                                {
+                                    result.Cookies.Add(new WebRequestCookie()
+                                    {
+                                        Domain = responseCookie.Domain,
+                                        Name = responseCookie.Name,
+                                        Path = responseCookie.Path,
+                                        Value = responseCookie.Value
+                                    });
+                                }
+                            }
+                            result.Headers = new List<WebRequestHeader>();
+                            if (response.Headers != null)
+                            {
+                                for (int i = 0; i < response.Headers.Count; i++)
+                                {
+                                    string header = response.Headers.GetKey(i);
+                                    foreach (string value in response.Headers.GetValues(i))
+                                    {
+                                        result.Headers.Add(new WebRequestHeader()
+                                        {
+                                            Name = header,
+                                            Value = value
+                                        });
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
