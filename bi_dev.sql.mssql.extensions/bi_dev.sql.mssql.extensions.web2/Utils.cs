@@ -256,6 +256,8 @@ namespace bi_dev.sql.mssql.extensions.web2
                             }
                         }
                     }
+
+                    result.IsSuccess = true;
                     break;
                 }
                 catch (WebException we)
