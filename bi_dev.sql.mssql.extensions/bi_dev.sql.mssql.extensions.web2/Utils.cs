@@ -92,7 +92,7 @@ namespace bi_dev.sql.mssql.extensions.web2
         public string FileName { get; set; }
 
         [JsonProperty(PropertyName = "time_out_milliseconds")]
-        public int TimeOutMilliSeconds { get; set; }
+        public int TimeOutMilliseconds { get; set; }
 
         [JsonProperty(PropertyName = "code_page")]
         public int CodePage { get; set; }
@@ -109,25 +109,22 @@ namespace bi_dev.sql.mssql.extensions.web2
         [JsonProperty(PropertyName = "proxy")]
         public WebRequestArgumentProxy Proxy { get; set; }
 
+        private int attempts;
         [JsonProperty(PropertyName = "attempts")]
         public int Attempts { get; set; }
 
         [JsonProperty(PropertyName = "milliseconds_to_retry")]
         public int MillisecondsToRetry { get; set; }
-
-        public static WebRequestArgument GetDefault()
+        public WebRequestArgument()
         {
-            WebRequestArgument d = new WebRequestArgument()
-            {
-                AllowAutoRedirect = true,
-                Headers = new WebRequestHeader[] {
-                    new WebRequestHeader() { Name = "Content-Type", Value = "applicaion/json" },
-                    new WebRequestHeader() { Name = "User-Agent", Value = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"}
-                },
-                Method = "GET",
-                TimeOutMilliSeconds = 100_000
+            this.AllowAutoRedirect = true;
+            this.Headers = new WebRequestHeader[] {
+                new WebRequestHeader() { Name = "Content-Type", Value = "applicaion/json" },
+                new WebRequestHeader() { Name = "User-Agent", Value = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36"}
             };
-            return d;
+            this.Method = "GET";
+            this.TimeOutMilliseconds = 100_000;
+            this.Attempts = 1;
         }
         public static WebRequestArgument GetExammple()
         {
@@ -150,7 +147,7 @@ namespace bi_dev.sql.mssql.extensions.web2
                     Username = "(optional) username",
                     Password = "(optional) password"
                 },
-                TimeOutMilliSeconds = 100000
+                TimeOutMilliseconds = 100000
             };
             return e;
         }
@@ -167,10 +164,9 @@ namespace bi_dev.sql.mssql.extensions.web2
             };
             WebRequestResult result = new WebRequestResult();
             result.Request = webRequestArgument;
-            var defaults = WebRequestArgument.GetDefault();
             HttpWebRequest r = WebRequest.Create(webRequestArgument.Url) as HttpWebRequest;
             r.Method = webRequestArgument.Method;
-            r.Timeout = webRequestArgument.TimeOutMilliSeconds;
+            r.Timeout = webRequestArgument.TimeOutMilliseconds;
             r.ContentType = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "Content-Type")?.Value ?? "applicaion/json";
             r.UserAgent = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "User-Agent")?.Value ?? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
             if (webRequestArgument.Cookies != null)
