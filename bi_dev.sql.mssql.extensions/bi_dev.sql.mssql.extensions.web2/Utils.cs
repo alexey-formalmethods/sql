@@ -28,11 +28,11 @@ namespace bi_dev.sql.mssql.extensions.web2
 
         [JsonProperty(PropertyName="path")]
         public string Path { get; set; }
-        public Cookie GetCookie()
+        public Cookie GetCookie(string domain)
         {
             var cookie = new Cookie(this.Name, this.Value);
-            if (!string.IsNullOrEmpty(this.Path)) { cookie.Path = this.Path; }
-            if (!string.IsNullOrEmpty(this.Domain)) { cookie.Path = this.Domain; }
+            cookie.Path = (!string.IsNullOrEmpty(this.Path)) ? this.Path : "/";
+            cookie.Domain = (!string.IsNullOrEmpty(this.Domain)) ? this.Domain : domain;
             return cookie;
         }
     }
@@ -182,9 +182,10 @@ namespace bi_dev.sql.mssql.extensions.web2
             r.UserAgent = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "User-Agent")?.Value ?? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
             if (webRequestArgument.Cookies != null)
             {
+                r.CookieContainer = new CookieContainer();
                 foreach (var cookie in webRequestArgument.Cookies)
                 {
-                    r.CookieContainer.Add(cookie.GetCookie());
+                    r.CookieContainer.Add(cookie.GetCookie(new Uri(webRequestArgument.Url).Host));
                 }
             }
             if (webRequestArgument.Headers != null)
