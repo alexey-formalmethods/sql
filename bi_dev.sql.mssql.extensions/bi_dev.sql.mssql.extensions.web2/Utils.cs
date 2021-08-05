@@ -79,17 +79,40 @@ namespace bi_dev.sql.mssql.extensions.web2
     }
     public class WebRequestArgument
     {
+        [JsonProperty(PropertyName = "url")]
         public string Url { get; set; }
+
+        [JsonProperty(PropertyName = "method")]
         public string Method { get; set; }
+
+        [JsonProperty(PropertyName = "body")]
         public string Body { get; set; }
+
+        [JsonProperty(PropertyName = "file_name")]
         public string FileName { get; set; }
+
+        [JsonProperty(PropertyName = "time_out_milliseconds")]
         public int TimeOutMilliSeconds { get; set; }
+
+        [JsonProperty(PropertyName = "code_page")]
         public int CodePage { get; set; }
+
+        [JsonProperty(PropertyName = "headers")]
         public IEnumerable<WebRequestHeader> Headers { get; set; }
+
+        [JsonProperty(PropertyName = "cookies")]
         public IEnumerable<WebRequestCookie> Cookies { get; set; }
+
+        [JsonProperty(PropertyName = "allow_auto_redirect")]
         public bool AllowAutoRedirect { get; set; }
+
+        [JsonProperty(PropertyName = "proxy")]
         public WebRequestArgumentProxy Proxy { get; set; }
+
+        [JsonProperty(PropertyName = "attempts")]
         public int Attempts { get; set; }
+
+        [JsonProperty(PropertyName = "milliseconds_to_retry")]
         public int MillisecondsToRetry { get; set; }
 
         public static WebRequestArgument GetDefault()
