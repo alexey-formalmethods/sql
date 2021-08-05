@@ -1,34 +1,32 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace bi_dev.sql.mssql.extensions.web2
 {
     public class WebRequestHeader
     {
-        [JsonPropertyName("name")]
+        [JsonProperty(PropertyName="name")]
         public string Name { get; set; }
-        [JsonPropertyName("value")]
+        [JsonProperty(PropertyName="value")]
         public string Value { get; set; }
     }   
     public class WebRequestCookie
     {
-        [JsonPropertyName("name")]
+        [JsonProperty(PropertyName="name")]
         public string Name { get; set; }
-        [JsonPropertyName("value")]
+        [JsonProperty(PropertyName="value")]
         public string Value { get; set; }
 
-        [JsonPropertyName("domain")]
+        [JsonProperty(PropertyName="domain")]
         public string Domain { get; set; }
 
-        [JsonPropertyName("path")]
+        [JsonProperty(PropertyName="path")]
         public string Path { get; set; }
         public Cookie GetCookie()
         {
@@ -40,16 +38,16 @@ namespace bi_dev.sql.mssql.extensions.web2
     }
     public class WebRequestArgumentProxy
     {
-        [JsonPropertyName("address")]
+        [JsonProperty(PropertyName="address")]
         public string Address { get; set; }
 
-        [JsonPropertyName("port")]
+        [JsonProperty(PropertyName="port")]
         public int Port { get; set; }
 
-        [JsonPropertyName("username")]
+        [JsonProperty(PropertyName="username")]
         public string Username { get; set; }
 
-        [JsonPropertyName("password")]
+        [JsonProperty(PropertyName="password")]
         public string Password { get; set; }
         public IWebProxy GetProxy()
         {
@@ -64,19 +62,19 @@ namespace bi_dev.sql.mssql.extensions.web2
     }
     public class WebRequestResult
     {
-        [JsonPropertyName("request")]
+        [JsonProperty(PropertyName="request")]
         public WebRequestArgument Request { get; set; }
 
-        [JsonPropertyName("response_text")]
+        [JsonProperty(PropertyName="response_text")]
         public string ResponseText { get; set; }
 
-        [JsonPropertyName("status_code")]
+        [JsonProperty(PropertyName="status_code")]
         public int StatusCode { get; set; }
 
-        [JsonPropertyName("cookies")]
+        [JsonProperty(PropertyName="cookies")]
         public ICollection<WebRequestCookie> Cookies { get; set; }
 
-        [JsonPropertyName("headers")]
+        [JsonProperty(PropertyName="headers")]
         public ICollection<WebRequestHeader> Headers { get; set; }
     }
     public class WebRequestArgument
@@ -238,8 +236,8 @@ namespace bi_dev.sql.mssql.extensions.web2
         
         public static string WebProcessRequest(string jsonArgument, bool ignoreResponseErrors)
         {
-            WebRequestArgument argument = JsonSerializer.Deserialize<WebRequestArgument>(jsonArgument);
-            return JsonSerializer.Serialize(ProcessWebRequest(argument));
+            WebRequestArgument argument = JsonConvert.DeserializeObject<WebRequestArgument>(jsonArgument);
+            return JsonConvert.SerializeObject(ProcessWebRequest(argument));
         }
         
     }
