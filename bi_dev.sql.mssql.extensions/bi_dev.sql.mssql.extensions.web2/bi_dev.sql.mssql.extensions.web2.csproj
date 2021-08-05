@@ -61,5 +61,11 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.csproj">
+      <Project>{f9f65fef-d614-44f0-8517-5383860b664e}</Project>
+      <Name>bi_dev.sql.mssql.extensions</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

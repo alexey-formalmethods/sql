@@ -62,6 +62,10 @@ namespace bi_dev.sql.mssql.extensions.web2
     }
     public class WebRequestResult
     {
+
+        [JsonProperty(PropertyName = "is_success")]
+        public bool IsSuccess { get; set; }
+
         [JsonProperty(PropertyName="request")]
         public WebRequestArgument Request { get; set; }
 
@@ -115,7 +119,6 @@ namespace bi_dev.sql.mssql.extensions.web2
         [JsonProperty(PropertyName = "proxy")]
         public WebRequestArgumentProxy Proxy { get; set; }
 
-        private int attempts;
         [JsonProperty(PropertyName = "attempts")]
         public int Attempts { get; set; }
 
@@ -132,6 +135,7 @@ namespace bi_dev.sql.mssql.extensions.web2
             this.TimeOutMilliseconds = 100_000;
             this.Attempts = 1;
             this.MillisecondsToRetry = 0;
+            this.CodePage = 65001;
         }
         public static WebRequestArgument GetExammple()
         {
@@ -161,7 +165,7 @@ namespace bi_dev.sql.mssql.extensions.web2
     }
     public static class Utils
     {
-        private static WebRequestResult ProcessWebRequest(WebRequestArgument webRequestArgument)
+        private static WebRequestResult ProcessWebRequest(WebRequestArgument webRequestArgument, bool ignoreResponseErrors)
         {
             string[] mainHttpRequestHeaders = new string[]
             {
@@ -260,46 +264,54 @@ namespace bi_dev.sql.mssql.extensions.web2
                     }
                     else
                     {
-                        using (var response = we.Response as HttpWebResponse)
+                        if (ignoreResponseErrors)
                         {
-                            using (var responseStream = response.GetResponseStream())
+                            result.IsSuccess = false;
+                            using (var response = we.Response as HttpWebResponse)
                             {
-                                using (var responseStreamReader = new StreamReader(responseStream))
+                                using (var responseStream = response.GetResponseStream())
                                 {
-                                    result.ResponseText = responseStreamReader.ReadToEnd();
-                                }
-                            }
-                            result.StatusCode = (int)response.StatusCode;
-                            result.Cookies = new List<WebRequestCookie>();
-                            if (response.Cookies != null)
-                            {
-                                foreach (Cookie responseCookie in response.Cookies)
-                                {
-                                    result.Cookies.Add(new WebRequestCookie()
+                                    using (var responseStreamReader = new StreamReader(responseStream))
                                     {
-                                        Domain = responseCookie.Domain,
-                                        Name = responseCookie.Name,
-                                        Path = responseCookie.Path,
-                                        Value = responseCookie.Value
-                                    });
+                                        result.ResponseText = responseStreamReader.ReadToEnd();
+                                    }
                                 }
-                            }
-                            result.Headers = new List<WebRequestHeader>();
-                            if (response.Headers != null)
-                            {
-                                for (int i = 0; i < response.Headers.Count; i++)
+                                result.StatusCode = (int)response.StatusCode;
+                                result.Cookies = new List<WebRequestCookie>();
+                                if (response.Cookies != null)
                                 {
-                                    string header = response.Headers.GetKey(i);
-                                    foreach (string value in response.Headers.GetValues(i))
+                                    foreach (Cookie responseCookie in response.Cookies)
                                     {
-                                        result.Headers.Add(new WebRequestHeader()
+                                        result.Cookies.Add(new WebRequestCookie()
                                         {
-                                            Name = header,
-                                            Value = value
+                                            Domain = responseCookie.Domain,
+                                            Name = responseCookie.Name,
+                                            Path = responseCookie.Path,
+                                            Value = responseCookie.Value
                                         });
                                     }
                                 }
+                                result.Headers = new List<WebRequestHeader>();
+                                if (response.Headers != null)
+                                {
+                                    for (int i = 0; i < response.Headers.Count; i++)
+                                    {
+                                        string header = response.Headers.GetKey(i);
+                                        foreach (string value in response.Headers.GetValues(i))
+                                        {
+                                            result.Headers.Add(new WebRequestHeader()
+                                            {
+                                                Name = header,
+                                                Value = value
+                                            });
+                                        }
+                                    }
+                                }
                             }
+                        }
+                        else
+                        {
+                            throw we;
                         }
                     }
                 }
@@ -309,8 +321,15 @@ namespace bi_dev.sql.mssql.extensions.web2
         
         public static string WebProcessRequest(string jsonArgument, bool ignoreResponseErrors)
         {
-            WebRequestArgument argument = JsonConvert.DeserializeObject<WebRequestArgument>(jsonArgument);
-            return JsonConvert.SerializeObject(ProcessWebRequest(argument));
+            try
+            {
+                WebRequestArgument argument = JsonConvert.DeserializeObject<WebRequestArgument>(jsonArgument);
+                return JsonConvert.SerializeObject(ProcessWebRequest(argument, ignoreResponseErrors));
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, ignoreResponseErrors);
+            }
         }
         
     }
