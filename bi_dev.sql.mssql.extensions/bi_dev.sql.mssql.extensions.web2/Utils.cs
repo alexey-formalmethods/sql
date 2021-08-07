@@ -190,9 +190,9 @@ namespace bi_dev.sql.mssql.extensions.web2
             }
             if (webRequestArgument.Headers != null)
             {
-                foreach (var header in webRequestArgument.Headers.Where(x => mainHttpRequestHeaders.Any(t => t == x.Name)))
+                foreach (var header in webRequestArgument.Headers.Where(x => !mainHttpRequestHeaders.Any(t => t == x.Name)))
                 {
-                    if (!r.Headers.AllKeys.Contains(header.Name) && string.IsNullOrEmpty(header.Name))
+                    if (!r.Headers.AllKeys.Contains(header.Name) && !string.IsNullOrEmpty(header.Name))
                     {
                         r.Headers.Add($@"{header.Name}:{header.Value}");
                     }
