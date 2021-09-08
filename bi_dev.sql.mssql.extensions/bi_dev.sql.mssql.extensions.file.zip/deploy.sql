@@ -1,3 +1,18 @@
+-- System.IO.Compression --------
+declare @system_io_compression nvarchar(4000) = 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.IO.Compression.dll';
+if (not exists (select 1 from sys.assemblies where name = N'System.IO.Compression')) create ASSEMBLY [System.IO.Compression] from @system_io_compression with permission_set = unsafe;
+else begin
+	begin try
+		alter ASSEMBLY [System.IO.Compression] from @system_io_compression with permission_set = unsafe;
+	end try
+	begin catch
+		declare @error_message nvarchar(max) = error_message();
+		if (@error_message not like '%identical to an assembly that is already registered under the name%') begin
+			raiserror(@error_message, 16, 1);
+		end
+	end catch
+end
+go
 -- System.IO.Compression.FileSystem --------
 declare @system_io_compression_filesystem nvarchar(4000) = 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.IO.Compression.FileSystem.dll';
 if (not exists (select 1 from sys.assemblies where name = N'System.IO.Compression.FileSystem')) create ASSEMBLY [System.IO.Compression.FileSystem] from @system_io_compression_filesystem with permission_set = unsafe;
