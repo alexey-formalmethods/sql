@@ -1,3 +1,18 @@
+-- microsoft.csharp--------
+declare @microsoft_csharp_location nvarchar(4000) = 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\microsoft.csharp.dll';
+if (not exists (select 1 from sys.assemblies where name = N'microsoft.csharp')) create ASSEMBLY [microsoft.csharp] from @microsoft_csharp_location with permission_set = unsafe;
+else begin
+	begin try
+		alter ASSEMBLY [microsoft.csharp] from @microsoft_csharp_location with permission_set = unsafe;
+	end try
+	begin catch
+		declare @error_message nvarchar(max) = error_message();
+		if (@error_message not like '%identical to an assembly that is already registered under the name%') begin
+			raiserror(@error_message, 16, 1);
+		end
+	end catch
+end
+go
 -- System.ValueTuple--------
 declare @system_value_tuple_location nvarchar(4000) = 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.ValueTuple.dll';
 if (not exists (select 1 from sys.assemblies where name = N'System.ValueTuple')) create ASSEMBLY [System.ValueTuple] from @system_value_tuple_location with permission_set = unsafe;
