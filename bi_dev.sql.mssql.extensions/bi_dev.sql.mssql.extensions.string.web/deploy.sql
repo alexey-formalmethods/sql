@@ -8,6 +8,8 @@ declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.ms
 	if (object_id('.dbo.f_clr_html_get_elements') is not null) drop function dbo.f_clr_html_get_elements;
 	if (object_id('.dbo.f_clr_html_get_element_attribute_value') is not null) drop function dbo.f_clr_html_get_element_attribute_value;
 	if (object_id('.dbo.f_clr_html_get_element_inner_text') is not null) drop function dbo.f_clr_html_get_element_inner_text;
+	if (object_id('.dbo.f_clr_html_encode') is not null) drop function dbo.f_clr_html_encode;
+	if (object_id('.dbo.f_clr_html_decode') is not null) drop function dbo.f_clr_html_decode;
 	if (exists (select 1 from sys.assemblies where name = N'mssql.extensions.string.web')) drop assembly [mssql.extensions.string.web];
 -- create new --------------------
 	create assembly [mssql.extensions.string.web] from @build_file_name with permission_set = unsafe;
@@ -19,4 +21,8 @@ declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.ms
 	create function dbo.f_clr_html_get_element_attribute_value(@value nvarchar(max), @attribute_name nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string.web].[bi_dev.sql.mssql.extensions.string.web.Utils].GetHtmlElementAttributeValue;
 	go
 	create function dbo.f_clr_html_get_element_inner_text(@value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string.web].[bi_dev.sql.mssql.extensions.string.web.Utils].GetHtmlElementInnerText;
+	go
+	create function dbo.f_clr_html_encode(@value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string.web].[bi_dev.sql.mssql.extensions.string.web.Utils].HtmlEncode;
+	go
+	create function dbo.f_clr_html_decode(@value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string.web].[bi_dev.sql.mssql.extensions.string.web.Utils].HtmlDecode;
 	go
