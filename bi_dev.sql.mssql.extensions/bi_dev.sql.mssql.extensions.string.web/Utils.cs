@@ -87,5 +87,41 @@ namespace bi_dev.sql.mssql.extensions.@string.web
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+        public static string HtmlEncode(string value, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return null;
+                }
+                else
+                {
+                    return HttpUtility.HtmlEncode(value);
+                }
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        public static string HtmlDecode(string value, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return null;
+                }
+                else
+                {
+                    return HttpUtility.HtmlDecode(value);
+                }
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
     }
 }
