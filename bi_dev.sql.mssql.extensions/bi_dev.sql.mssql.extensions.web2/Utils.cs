@@ -80,6 +80,9 @@ namespace bi_dev.sql.mssql.extensions.web2
 
         [JsonProperty(PropertyName="headers")]
         public ICollection<WebRequestHeader> Headers { get; set; }
+
+        [JsonProperty(PropertyName = "file_size")]
+        public long FileSize { get; set; }
         public WebRequestResult(WebRequestArgument request)
         {
             this.Request = request;
@@ -220,9 +223,37 @@ namespace bi_dev.sql.mssql.extensions.web2
                     {
                         using (var responseStream = response.GetResponseStream())
                         {
-                            using (var reader = new StreamReader(responseStream))
+                            if (!string.IsNullOrWhiteSpace(webRequestArgument?.FileName))
                             {
-                                result.ResponseText = reader.ReadToEnd();
+                                System.IO.Directory.CreateDirectory(new FileInfo(webRequestArgument?.FileName).Directory.FullName);
+                                if (File.Exists(webRequestArgument?.FileName))
+                                {
+                                    File.Delete(webRequestArgument?.FileName);
+                                }
+                                using (FileStream os = new FileStream(webRequestArgument?.FileName, FileMode.OpenOrCreate, FileAccess.Write))
+                                {
+                                    byte[] buff = new byte[102400];
+                                    int c = 0;
+                                    if (responseStream.CanRead)
+                                    {
+                                        while ((c = responseStream.Read(buff, 0, 10400)) > 0)
+                                        {
+                                            os.Write(buff, 0, c);
+                                            os.Flush();
+                                        }
+                                    }
+                                }
+                                if (File.Exists(webRequestArgument?.FileName))
+                                {
+                                    result.FileSize = new FileInfo(webRequestArgument?.FileName).Length;
+                                }
+                            }
+                            else
+                            {
+                                using (var reader = new StreamReader(responseStream))
+                                {
+                                    result.ResponseText = reader.ReadToEnd();
+                                }
                             }
                         }
                         result.StatusCode = (int)response.StatusCode;
