@@ -13,6 +13,7 @@ declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.ms
 	if (object_id('.dbo.f_clr_url_decode') is not null) drop function dbo.f_clr_url_decode;
 	if (object_id('.dbo.f_clr_base64_encode') is not null) drop function dbo.f_clr_base64_encode;
 	if (object_id('.dbo.f_clr_base64_decode') is not null) drop function dbo.f_clr_base64_decode;
+	if (object_id('.dbo.f_clr_get_sha_256_hash') is not null) drop function dbo.f_clr_get_sha_256_hash;
 	if (exists (select 1 from sys.assemblies where name = N'mssql.extensions.string')) drop assembly [mssql.extensions.string];
 -- create new --------------------
 	create assembly [mssql.extensions.string] from @build_file_name with permission_set = unsafe;
@@ -34,4 +35,6 @@ declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.ms
 	create function f_clr_base64_encode(@value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string].[bi_dev.sql.mssql.extensions.string.Utils].Base64Encode;
 	go
 	create function f_clr_base64_decode(@value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string].[bi_dev.sql.mssql.extensions.string.Utils].Base64Decode;
+	go
+	create function f_clr_get_sha_256_hash(@value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string].[bi_dev.sql.mssql.extensions.string.Utils].GetSha256Hash;
 	go
