@@ -308,7 +308,7 @@ namespace bi_dev.sql.mssql.extensions.web2
                         }
                         else
                         {
-                            if (ignoreResponseErrors)
+                            if (ignoreResponseErrors || isCodeAccepted)
                             {
                                 result.IsSuccess = isCodeAccepted;
                                 using (var responseStream = response.GetResponseStream())
