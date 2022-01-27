@@ -301,7 +301,8 @@ namespace bi_dev.sql.mssql.extensions.web2
                     using (var response = we.Response as HttpWebResponse)
                     {
                         attempt++;
-                        if (attempt <= webRequestArgument.Attempts || webRequestArgument.AccesptedResponseCodes?.Any(x=>x == (int?)response?.StatusCode) == true)
+                        bool isCodeAccepted = webRequestArgument.AccesptedResponseCodes?.Any(x => x == (int?)response?.StatusCode) ?? false;
+                        if (attempt <= webRequestArgument.Attempts && !isCodeAccepted)
                         {
                             Thread.Sleep(webRequestArgument.MillisecondsToRetry);
                         }
@@ -309,7 +310,7 @@ namespace bi_dev.sql.mssql.extensions.web2
                         {
                             if (ignoreResponseErrors)
                             {
-                                result.IsSuccess = false;
+                                result.IsSuccess = isCodeAccepted;
                                 using (var responseStream = response.GetResponseStream())
                                 {
                                     using (var responseStreamReader = new StreamReader(responseStream))
