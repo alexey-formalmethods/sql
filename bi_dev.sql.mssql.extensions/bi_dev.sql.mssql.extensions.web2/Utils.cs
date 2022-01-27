@@ -127,6 +127,9 @@ namespace bi_dev.sql.mssql.extensions.web2
 
         [JsonProperty(PropertyName = "milliseconds_to_retry")]
         public int MillisecondsToRetry { get; set; }
+
+        [JsonProperty(PropertyName = "accespted_codes")]
+        public IEnumerable<int> AccesptedResponseCodes { get; set; }
         public WebRequestArgument()
         {
             this.AllowAutoRedirect = true;
@@ -295,19 +298,18 @@ namespace bi_dev.sql.mssql.extensions.web2
                 }
                 catch (WebException we)
                 {
-                    attempt++;
-                    if (attempt <= webRequestArgument.Attempts)
+                    using (var response = we.Response as HttpWebResponse)
                     {
-                        
-                        Thread.Sleep(webRequestArgument.MillisecondsToRetry);
-                    }
-                    else
-                    {
-                        if (ignoreResponseErrors)
+                        attempt++;
+                        if (attempt <= webRequestArgument.Attempts || webRequestArgument.AccesptedResponseCodes?.Any(x=>x == (int?)response?.StatusCode) == true)
                         {
-                            result.IsSuccess = false;
-                            using (var response = we.Response as HttpWebResponse)
+                            Thread.Sleep(webRequestArgument.MillisecondsToRetry);
+                        }
+                        else
+                        {
+                            if (ignoreResponseErrors)
                             {
+                                result.IsSuccess = false;
                                 using (var responseStream = response.GetResponseStream())
                                 {
                                     using (var responseStreamReader = new StreamReader(responseStream))
@@ -347,10 +349,10 @@ namespace bi_dev.sql.mssql.extensions.web2
                                     }
                                 }
                             }
-                        }
-                        else
-                        {
-                            throw we;
+                            else
+                            {
+                                throw we;
+                            }
                         }
                     }
                 }
