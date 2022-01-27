@@ -128,7 +128,7 @@ namespace bi_dev.sql.mssql.extensions.web2
         [JsonProperty(PropertyName = "milliseconds_to_retry")]
         public int MillisecondsToRetry { get; set; }
 
-        [JsonProperty(PropertyName = "accespted_codes")]
+        [JsonProperty(PropertyName = "accepted_codes")]
         public IEnumerable<int> AccesptedResponseCodes { get; set; }
         public WebRequestArgument()
         {
