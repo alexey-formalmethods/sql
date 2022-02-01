@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using bi_dev.sql.mssql.extensions.file.excel;
+using bi_dev.sql.mssql.extensions.num;
 using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.cnsl
@@ -15,16 +15,8 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            Utils.GetExcelContent(
-                @"C:\a.shamshur\Robocash - for publication.xlsx",
-                "2021_08_04_Debex_list",
-                null,
-                null,
-                null,
-                null,
-                true,
-                false
-            );
+            Console.WriteLine(Utils.ToRub(352321,  false));
+            Console.ReadLine();
         }
     }
 }
