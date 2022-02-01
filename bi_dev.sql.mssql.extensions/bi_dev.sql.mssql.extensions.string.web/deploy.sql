@@ -1,4 +1,19 @@
 -- INPUT --
+
+declare @system_net_http_location nvarchar(4000) = 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Net.Http.dll';
+if (not exists (select 1 from sys.assemblies where name = N'System.Net.Http')) create ASSEMBLY [System.Net.Http] from @system_net_http_location with permission_set = unsafe;
+else begin
+	begin try
+		alter ASSEMBLY [System.Net.Http] from @system_net_http_location with permission_set = unsafe;
+	end try
+	begin catch
+		declare @error_message nvarchar(max) = error_message();
+		if (@error_message not like '%identical to an assembly that is already registered under the name%') begin
+			raiserror(@error_message, 16, 1);
+		end
+	end catch
+end
+go
 -- determin project-location
 declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.mssql.extensions';
 -------------------------------
