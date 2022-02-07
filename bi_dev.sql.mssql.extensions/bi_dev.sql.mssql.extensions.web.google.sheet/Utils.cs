@@ -193,19 +193,34 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
         }
         public static string GetRange(string accessToken, string spreadsheetId, string sheetName, string range, bool nullWhenError)
         {
-            try
+            int iRetryCount = 3;
+
+            while (true)
             {
-                var service = GetServiceFromAccessToken(accessToken);
-                string currentRange = sheetName + (!string.IsNullOrWhiteSpace(range) ? "!" + range : "");
-                SpreadsheetsResource.ValuesResource.GetRequest getRequest = service.Spreadsheets.Values.Get(
-                        spreadsheetId, currentRange
-                );
-                var result = getRequest.Execute();
-                return JsonConvert.SerializeObject(result.Values);
-            } 
-            catch (Exception e)
-            {
-                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+                try
+                {
+                    var service = GetServiceFromAccessToken(accessToken);
+                    string currentRange = sheetName + (!string.IsNullOrWhiteSpace(range) ? "!" + range : "");
+                    SpreadsheetsResource.ValuesResource.GetRequest getRequest = service.Spreadsheets.Values.Get(
+                            spreadsheetId, currentRange
+                    );
+                    var result = getRequest.Execute();
+
+                    string sResult = JsonConvert.SerializeObject(result.Values);
+
+                    return sResult;
+                }
+                catch(TaskCanceledException ex)
+                {
+                    if (--iRetryCount == 0)
+                        return Common.ThrowIfNeeded<string>(ex, nullWhenError);
+                    else
+                        Thread.Sleep(1000);
+                }
+                catch (Exception ex)
+                {
+                    return Common.ThrowIfNeeded<string>(ex, nullWhenError);
+                }
             }
         }
     }
