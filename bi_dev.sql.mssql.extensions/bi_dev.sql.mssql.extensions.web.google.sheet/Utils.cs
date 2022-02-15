@@ -230,16 +230,5 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
             }
         }
     }
-    public class A: SpreadsheetsResource.ValuesResource.GetRequest
-    {
-        public A(): base(null, null, null)
-        {
-
-        }
-        public ValueRange Execute()
-        {
-
-            return null;
-        }
-    }
+    
 }
