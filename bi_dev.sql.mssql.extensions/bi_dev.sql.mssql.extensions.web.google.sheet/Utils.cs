@@ -205,11 +205,16 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
                     SpreadsheetsResource.ValuesResource.GetRequest getRequest = service.Spreadsheets.Values.Get(
                             spreadsheetId, currentRange
                     );
-                    var result = getRequest.Execute();
+                    var resultStream = getRequest.ExecuteAsStream();
+                    using (var sr = new StreamReader(resultStream))
+                    {
+                        string responseText = sr.ReadToEnd();
+                        var valueRange = JsonConvert.DeserializeObject<ValueRange>(responseText);
+                        return JsonConvert.SerializeObject(valueRange.Values);
+                    }
+                    //string sResult = JsonConvert.SerializeObject(result.Values);
 
-                    string sResult = JsonConvert.SerializeObject(result.Values);
-
-                    return sResult;
+                   
                 }
                 catch(TaskCanceledException ex)
                 {
@@ -223,6 +228,18 @@ namespace bi_dev.sql.mssql.extensions.web.google.sheet
                     return Common.ThrowIfNeeded<string>(ex, nullWhenError);
                 }
             }
+        }
+    }
+    public class A: SpreadsheetsResource.ValuesResource.GetRequest
+    {
+        public A(): base(null, null, null)
+        {
+
+        }
+        public ValueRange Execute()
+        {
+
+            return null;
         }
     }
 }
