@@ -96,5 +96,18 @@ namespace bi_dev.sql.mssql.extensions.file
                 return Common.ThrowIfNeeded<bool>(e, falseWhenError, false);
             }
         }
+        [SqlFunction]
+        public static bool CreateDirectory(string directoryName, bool falseWhenError)
+        {
+            try
+            {
+                Directory.CreateDirectory(directoryName);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<bool>(e, falseWhenError, false);
+            }
+        }
     }
 }

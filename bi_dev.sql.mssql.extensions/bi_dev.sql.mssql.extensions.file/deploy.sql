@@ -9,7 +9,8 @@ declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.ms
 	if (object_id('.dbo.f_clr_delete_file') is not null) drop function dbo.f_clr_delete_file;
 	if (object_id('.dbo.f_clr_write_text_to_file') is not null) drop function dbo.f_clr_write_text_to_file;
 	if (object_id('.dbo.f_clr_write_text_to_file_no_bom') is not null) drop function dbo.f_clr_write_text_to_file_no_bom;
-	if (object_id('.dbo.f_clr_copy_file') is not null) drop function dbo.f_clr_copy_file
+	if (object_id('.dbo.f_clr_copy_file') is not null) drop function dbo.f_clr_copy_file;
+	if (object_id('.dbo.f_clr_filesystem_create_directory') is not null) drop function dbo.f_clr_filesystem_create_directory;
 	if (exists (select 1 from sys.assemblies where name = N'mssql.extensions.file')) drop assembly [mssql.extensions.file];
 -- create new --------------------
 	create assembly [mssql.extensions.file] from @build_file_name with permission_set = unsafe;
@@ -25,4 +26,6 @@ declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.ms
 	create function dbo.f_clr_write_text_to_file_no_bom(@value nvarchar(max),@file_name nvarchar(max), @null_when_error bit) returns bigint with execute as owner as external name [mssql.extensions.file].[bi_dev.sql.mssql.extensions.file.Utils].[WriteTextToFileNoBom];
 	go
 	create function f_clr_copy_file(@source_file_name nvarchar(max), @dest_file_name nvarchar(max), @overwrite bit, @null_when_error bit) returns bit with execute as owner as external name [mssql.extensions.file].[bi_dev.sql.mssql.extensions.file.Utils].[CopyFile];
+	go
+	create function f_clr_filesystem_create_directory(@directory_name nvarchar(max), @false_when_error bit) returns bit with execute as owner as external name [mssql.extensions.file].[bi_dev.sql.mssql.extensions.file.Utils].[CreateDirectory];
 	go
