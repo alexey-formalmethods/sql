@@ -189,6 +189,7 @@ namespace bi_dev.sql.mssql.extensions.web2
             HttpWebRequest r = WebRequest.Create(webRequestArgument.Url) as HttpWebRequest;
             r.Method = webRequestArgument.Method;
             r.Timeout = webRequestArgument.TimeOutMilliseconds;
+            r.AllowAutoRedirect = webRequestArgument.AllowAutoRedirect;
             r.ContentType = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "Content-Type")?.Value ?? "applicaion/json";
             r.UserAgent = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "User-Agent")?.Value ?? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
             r.CookieContainer = new CookieContainer();
