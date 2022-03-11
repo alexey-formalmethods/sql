@@ -1,6 +1,24 @@
+-- input variables -----------------------------
+	if (object_id('tempdb..#t_tmp_var') is not null) drop table #t_tmp_var;
+	create table #t_tmp_var (name nvarchar(max), value nvarchar(max));
+	insert into #t_tmp_var
+	(
+		name
+	  , value
+	)
+	select
+		 name, value
+	from (values
+		 ('@build_location', N'C:\storage\hdd01\proj\sql\bi_dev.sql.mssql.extensions')
+	) t (name, value);
+	go
 -- INPUT --
 -- determin project-location
-declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.mssql.extensions';
+declare @build_location nvarchar(max);
+select
+	 @build_location = t.value
+from #t_tmp_var t
+where t.name = '@build_location';
 -------------------------------
 	declare @build_file_name nvarchar(4000) = @build_location + N'\bi_dev.sql.mssql.extensions.string\bin\Debug\bi_dev.sql.mssql.extensions.@string.dll';
 -- drop existing --------

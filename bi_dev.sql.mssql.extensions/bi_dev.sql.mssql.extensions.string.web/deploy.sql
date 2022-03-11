@@ -1,6 +1,24 @@
+-- input variables -----------------------------
+	if (object_id('tempdb..#t_tmp_var') is not null) drop table #t_tmp_var;
+	create table #t_tmp_var (name nvarchar(max), value nvarchar(max));
+	insert into #t_tmp_var
+	(
+		name
+	  , value
+	)
+	select
+		 name, value
+	from (values
+		 ('@system_net_http_location', N'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Net.Http.dll')
+		,('@build_location', N'C:\storage\hdd01\proj\sql\bi_dev.sql.mssql.extensions')
+	) t (name, value);
+	go
 -- INPUT --
-
-declare @system_net_http_location nvarchar(4000) = 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Net.Http.dll';
+declare @system_net_http_location nvarchar(4000);
+select
+	 @system_net_http_location = t.value
+from #t_tmp_var t
+where t.name = '@system_net_http_location';
 if (not exists (select 1 from sys.assemblies where name = N'System.Net.Http')) create ASSEMBLY [System.Net.Http] from @system_net_http_location with permission_set = unsafe;
 else begin
 	begin try
@@ -15,7 +33,11 @@ else begin
 end
 go
 -- determin project-location
-declare @build_location nvarchar(max) = N'C:\storage\ssd01\app\sql\bi_dev.sql.mssql.extensions';
+declare @build_location nvarchar(max);
+select
+	 @build_location = t.value
+from #t_tmp_var t
+where t.name = '@build_location'
 -------------------------------
 	declare @build_file_name nvarchar(4000) = @build_location + N'\bi_dev.sql.mssql.extensions.string.web\bin\Debug\bi_dev.sql.mssql.extensions.@string.web.dll';
 -- drop existing --------
