@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.num", "..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.num\bi_dev.sql.mssql.extensions.num.csproj", "{BDDF263B-FD5E-47B1-9699-B515FE4F966F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.web.google.drive", "..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.google.drive\bi_dev.sql.mssql.extensions.web.google.drive.csproj", "{918D2BDE-4E69-414C-939E-3161801731A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -117,6 +119,10 @@ Global
 		{BDDF263B-FD5E-47B1-9699-B515FE4F966F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BDDF263B-FD5E-47B1-9699-B515FE4F966F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BDDF263B-FD5E-47B1-9699-B515FE4F966F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{918D2BDE-4E69-414C-939E-3161801731A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{918D2BDE-4E69-414C-939E-3161801731A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{918D2BDE-4E69-414C-939E-3161801731A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{918D2BDE-4E69-414C-939E-3161801731A6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
