@@ -81,7 +81,21 @@ namespace bi_dev.sql.mssql.extensions.date
                 return Common.ThrowIfNeeded<DateTime?>(e, nullWhenError);
             }
         }
-        public static DateTime? MaxDate(DateTime? value1, DateTime? value2, bool nullWhenError)
+        public static DateTime? MinOfTwo(DateTime? value1, DateTime? value2, bool nullWhenError)
+        {
+            try
+            {
+                if (!value1.HasValue && !value2.HasValue) return null;
+                else if (value1.HasValue && !value2.HasValue) return value1.Value;
+                else if (!value1.HasValue && value2.HasValue) return value2.Value;
+                else return ((value1.Value < value2.Value) ? value1.Value : value2.Value);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<DateTime?>(e, nullWhenError);
+            }
+        }
+        public static DateTime? MaxOfTwo(DateTime? value1, DateTime? value2, bool nullWhenError)
         {
             try
             {
