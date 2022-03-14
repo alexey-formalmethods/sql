@@ -27,3 +27,7 @@ declare @build_location nvarchar(max) = N'C:\storage\hdd01\source\sql\bi_dev.sql
 	go
 	create function dbo.f_clr_date_utc_to_local(@value datetime, @null_when_error bit) returns datetime with execute as owner as external name [mssql.extensions.date].[bi_dev.sql.mssql.extensions.date.Utils].UtcDateToLocalDate;
 	go
+	create function dbo.f_clr_date_min_of_two(@value1 datetime, @valu2 datetime, @null_when_error bit) returns datetime with execute as owner as external name [mssql.extensions.date].[bi_dev.sql.mssql.extensions.date.Utils].MinOfTwo;
+	go
+	create function dbo.f_clr_date_max_of_two(@value1 datetime, @valu2 datetime, @null_when_error bit) returns datetime with execute as owner as external name [mssql.extensions.date].[bi_dev.sql.mssql.extensions.date.Utils].MaxOfTwo;
+	go
