@@ -29,8 +29,17 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
         [JsonProperty("parents")]
         public ICollection<string> Parents { get; set; }
 
+        [JsonProperty("created_time")]
+        public DateTime? CreatedTime { get; set; }
+
         [JsonProperty("modified_time")]
         public DateTime? ModifiedTime { get; set; }
+
+        [JsonProperty("mime_type")]
+        public string MimeType { get; set; }
+
+        [JsonProperty("is_directory")]
+        public bool IsDirectory { get; set; }
     }
     public static class Utils
     {
@@ -67,7 +76,9 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
                             Id = x.Id,
                             Name = x.Name,
                             Parents = x.Parents,
-                            ModifiedTime = x.ModifiedTime
+                            CreatedTime = x.CreatedTime,
+                            ModifiedTime = x.ModifiedTime,
+                            MimeType = x.MimeType
                         }));
                         listRequest.PageToken = response.NextPageToken;
                     }

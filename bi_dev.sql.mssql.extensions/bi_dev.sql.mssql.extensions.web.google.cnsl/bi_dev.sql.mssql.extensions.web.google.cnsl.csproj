@@ -53,5 +53,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web.google.drive\bi_dev.sql.mssql.extensions.web.google.drive.csproj">
+      <Project>{918d2bde-4e69-414c-939e-3161801731a6}</Project>
+      <Name>bi_dev.sql.mssql.extensions.web.google.drive</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
