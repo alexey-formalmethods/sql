@@ -15,8 +15,12 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
 {
     public class GoogleDriveFilesResult
     {
+        public GoogleDriveFilesResult()
+        {
+            this.Files = new List<GoogleDriveFile>();
+        }
         [JsonProperty("files")]
-        public IEnumerable<GoogleDriveFile> Files { get; set; }
+        public List<GoogleDriveFile> Files { get; set; }
     }
     public class GoogleDriveFile
     {
@@ -57,9 +61,9 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
             });
             return service;
         }
-        public static IEnumerable<GoogleDriveFile> getFiles(string accessToken)
+        public static GoogleDriveFilesResult getFiles(string accessToken)
         {
-            List<GoogleDriveFile> result = new List<GoogleDriveFile>();
+            GoogleDriveFilesResult result = new GoogleDriveFilesResult();
             using (DriveService ds = GetServiceFromAccessToken(accessToken))
             {
                 FilesResource.ListRequest listRequest = ds.Files.List();
@@ -71,7 +75,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
                     var response = listRequest.Execute();
                     if (response?.Files?.Count > 0)
                     {
-                        result.AddRange(response.Files.Select(x => new GoogleDriveFile()
+                        result.Files.AddRange(response.Files.Select(x => new GoogleDriveFile()
                         {
                             Id = x.Id,
                             Name = x.Name,
