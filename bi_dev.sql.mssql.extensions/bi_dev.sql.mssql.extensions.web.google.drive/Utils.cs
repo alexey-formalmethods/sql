@@ -39,7 +39,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
         public string MimeType { get; set; }
 
         [JsonProperty("is_directory")]
-        public bool IsDirectory { get; set; }
+        public bool IsDirectory => this.MimeType == "application/vnd.google-apps.folder";
     }
     public static class Utils
     {
