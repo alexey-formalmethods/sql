@@ -62,10 +62,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web.google\bi_dev.sql.mssql.extensions.web.google.csproj">
+      <Project>{EB6CC68C-DA1A-4387-A1CB-CB97E7C78852}</Project>
+      <Name>bi_dev.sql.mssql.extensions.web.google</Name>
+    </ProjectReference>
     <ProjectReference Include="..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.csproj">
       <Project>{f9f65fef-d614-44f0-8517-5383860b664e}</Project>
       <Name>bi_dev.sql.mssql.extensions</Name>
