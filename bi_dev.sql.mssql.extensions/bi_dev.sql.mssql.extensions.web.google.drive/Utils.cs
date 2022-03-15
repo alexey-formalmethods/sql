@@ -98,6 +98,8 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
         }
         public static void downloadFile(string accessToken, string fileId, string fileName)
         {
+            var directory = Path.GetDirectoryName(fileName);
+            Directory.CreateDirectory(directory);
             using (DriveService ds = GetServiceFromAccessToken(accessToken))
             {
                 FilesResource.GetRequest fileRequest = ds.Files.Get(fileId);
