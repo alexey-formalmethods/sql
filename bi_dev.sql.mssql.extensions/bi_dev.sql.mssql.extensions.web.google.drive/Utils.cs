@@ -30,6 +30,9 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
         [JsonProperty("name")]
         public string Name { get; set; }
 
+        [JsonProperty("full_file_extension")]
+        public string FullFileExtension { get; set; }
+
         [JsonProperty("parents")]
         public ICollection<string> Parents { get; set; }
 
@@ -82,7 +85,8 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
                             Parents = x.Parents,
                             CreatedTime = x.CreatedTime,
                             ModifiedTime = x.ModifiedTime,
-                            MimeType = x.MimeType
+                            MimeType = x.MimeType,
+                            FullFileExtension = x.FullFileExtension
                         }));
                         listRequest.PageToken = response.NextPageToken;
                     }
