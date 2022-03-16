@@ -14,8 +14,6 @@ namespace bi_dev.sql.mssql.extensions.web.google.cnsl
     {
         static void Main(string[] args)
         {
-            var files = Utils.getFiles("ya29.A0ARrdaM-4TNZZ5x6sYbdzit4f66V9MoSeXoj5DsY58BGxppuCfjUj3p3BDsLtAyy26fLdN0iQiBf5UXuu9Mv1fV15pbqw6YTqQj5VMvzhAFCLE5jc33HHwb750raWN_D665fRPYXnGbhcqRVQUOYleITXZKbI");
-            
         }
        
     }

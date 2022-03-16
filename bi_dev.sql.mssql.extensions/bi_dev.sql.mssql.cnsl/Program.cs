@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using bi_dev.sql.mssql.extensions.num;
+using bi_dev.sql.mssql.extensions.file.excel;
 using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.cnsl
@@ -15,8 +15,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            Console.WriteLine(Utils.ToRub(352321,  false));
-            Console.ReadLine();
+            
         }
     }
 }
