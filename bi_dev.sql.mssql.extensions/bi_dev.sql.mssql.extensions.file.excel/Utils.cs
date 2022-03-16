@@ -79,19 +79,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
     }
     public static class Utils
     {
-        private static bool IsCellDateFormatted(ICell cell)
-        {
-            try
-            {
-                return DateUtil.IsValidExcelDate(cell.NumericCellValue);
-                //return DateUtil.IsCellDateFormatted(cell);
-              //return DateUtil.IsCellInternalDateFormatted(cell);
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
+     
         private static IWorkbook GetNewWorkBookFromFileName(string fileName, ExcelFileMode excelFileMode)
         {
             IWorkbook workbook;
@@ -411,7 +399,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                                 }
                                 else
                                 {
-                                    if (cell.CellType == CellType.Numeric && IsCellDateFormatted(cell))
+                                    if (cell.CellType == CellType.Numeric && DateUtil.IsCellDateFormatted(cell))
                                     {
                                         try
                                         {
