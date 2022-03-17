@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,6 +105,57 @@ namespace bi_dev.sql.mssql.extensions.date
                 else if (value1.HasValue && !value2.HasValue) return value1.Value;
                 else if (!value1.HasValue && value2.HasValue) return value2.Value;
                 else return ((value1.Value > value2.Value) ? value1.Value : value2.Value);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<DateTime?>(e, nullWhenError);
+            }
+        }
+        private static DateTime? fromString(string value, IEnumerable<string> formats)
+        {
+            DateTime result;
+            foreach(var frmt in formats)
+            {
+                if (frmt.ToLower() == "oadate")
+                {
+                    double doubleDt;
+                    if(double.TryParse(value, out doubleDt))
+                    {
+                        return DateTime.FromOADate(doubleDt);
+                    }
+                }
+                if (DateTime.TryParseExact(value, frmt, CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out result))
+                {
+                    return result;
+                }
+            }
+            return null;
+        }
+        public static DateTime? FromString(string value, string formatsArray, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    return null;
+                }
+                IEnumerable<string> formats;
+                if (!string.IsNullOrWhiteSpace(formatsArray))
+                {
+                    formats = JsonConvert.DeserializeObject<IEnumerable<string>>(formatsArray);
+                }
+                else
+                {
+                    formats = new string[]
+                    {
+                        "yyyy-MM-dd",
+                        "MM/dd/yyyy",
+                        "dd.MM.yyyy",
+                        "yyyy-MM-ddTHH:mm:ss",
+                        "yyyy-MM-dd HH:mm:ss"
+                    };
+                }
+                return fromString(value, formats);
             }
             catch (Exception e)
             {
