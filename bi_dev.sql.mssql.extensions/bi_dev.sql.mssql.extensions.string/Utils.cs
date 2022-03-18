@@ -11,7 +11,6 @@ using System.Security.Cryptography;
 using System.IO;
 using System.Data.SqlTypes;
 using System.Collections;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.extensions.@string
@@ -166,6 +165,33 @@ namespace bi_dev.sql.mssql.extensions.@string
             {
                 if (string.IsNullOrWhiteSpace(value)) return null;
                 else return System.Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        private static string replace(string value, IEnumerable<string> valuesToReplace, string replaceValue)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+            if (valuesToReplace?.Count() > 0)
+            {
+                foreach(var valueToReplace in valuesToReplace)
+                {
+                    value = value.Replace(valueToReplace, replaceValue);
+                }
+            }
+            return value;
+        }
+        [SqlFunction]
+        public static string Replace(string value, string valuesToReplace, string replaceValue, bool nullWhenError)
+        {
+            try
+            {
+                return replace(value, JsonConvert.DeserializeObject<IEnumerable<string>>(valuesToReplace), replaceValue);
             }
             catch (Exception e)
             {

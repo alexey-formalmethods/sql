@@ -15,7 +15,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            var f = Utils.FromString("2021-04-03", null, false);
+            
         }
     }
 }
