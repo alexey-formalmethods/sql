@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.SqlServer.Server;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -25,23 +26,28 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
             List<string[]> result = new List<string[]>();
             using (TextReader reader = new StringReader(value))
             {
-                CsvParser csv = new CsvParser(reader,CultureInfo.CurrentCulture);
-                csv.Configuration.Delimiter = (string.IsNullOrEmpty(delimiter) ? ";" : delimiter);
-                while (true)
+
+                CsvParser csv = new CsvParser(
+                    reader, 
+                    new CsvConfiguration(CultureInfo.InvariantCulture) 
+                    { 
+                        Delimiter = string.IsNullOrEmpty(delimiter) ? ";" : delimiter 
+                    }
+                );
+                while (csv.Read())
                 {
-                    var row = csv.Read();
-                    if (row == null)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        result.Add(row);
-                    }
+                    result.Add(csv.Record);
                 }
+                
             }
             return result;
         }
+
+        private static CultureInfo CsvConfiguration(CultureInfo invariantCulture)
+        {
+            throw new NotImplementedException();
+        }
+
         public static void FillRow(Object obj, out SqlInt32 rowType, out SqlInt32 key, out SqlChars value)
         {
             TableType.FillRow(obj, out rowType, out key,out value);
@@ -75,9 +81,8 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
                 string result = "";
                 using (TextWriter tw = new StringWriter())
                 {
-                    using (CsvWriter cw = new CsvWriter(tw, CultureInfo.CurrentCulture))
+                    using (CsvWriter cw = new CsvWriter(tw, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = string.IsNullOrEmpty(delimiter) ? ";" : delimiter }))
                     {
-                        cw.Configuration.Delimiter = (string.IsNullOrEmpty(delimiter) ? ";" : delimiter);
                         dateTimeFormat = string.IsNullOrWhiteSpace(dateTimeFormat) ? Constants.DateTimeFormat : dateTimeFormat;
                         for (int i = 0; i < values.Count; i++)
                         {
