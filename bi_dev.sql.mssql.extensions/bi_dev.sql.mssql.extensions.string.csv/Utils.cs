@@ -43,36 +43,6 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
             return result;
         }
 
-        private static CultureInfo CsvConfiguration(CultureInfo invariantCulture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static void FillRow(Object obj, out SqlInt32 rowType, out SqlInt32 key, out SqlChars value)
-        {
-            TableType.FillRow(obj, out rowType, out key,out value);
-        }
-        [SqlFunction(FillRowMethodName = "FillRow")]
-        public static IEnumerable ParseCsv(string value, string delimiter, bool nullWhenError)
-        {
-            try
-            {
-                List<TableType> l = new List<TableType>();
-                var result = parseCsv(value, delimiter);
-                for (int i = 0; i < result.Count; i++)
-                {
-                    for (int j = 0; j < result[i].Length; j++)
-                    {
-                        l.Add(new TableType(i, j, result[i][j]));
-                    }
-                }
-                return l;
-            }
-            catch (Exception e)
-            {
-                return Common.ThrowIfNeeded<IEnumerable>(e, nullWhenError);
-            }
-        }
         public static string JsonToCsv(string jsonObject, string delimiter, string dateTimeFormat, bool nullWhenError)
         {
             try
