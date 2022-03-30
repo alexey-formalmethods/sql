@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using bi_dev.sql.mssql.extensions.@string.csv;
+using bi_dev.sql.mssql.extensions.web2;
 using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.cnsl
@@ -15,7 +15,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            var e = Utils.ParseCsv(@"C:\a.shamshur\mama.csv", ";", false);
+            
         }
     }
 }

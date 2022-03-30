@@ -90,6 +90,15 @@ namespace bi_dev.sql.mssql.extensions.web2
             this.Cookies = new List<WebRequestCookie>();
         }
     }
+    public class WebRequestArgumentCredential
+    {
+        [JsonProperty(PropertyName = "username")]
+        public string UserName { get; set; }
+        [JsonProperty(PropertyName = "password")]
+        public string Password { get; set; }
+        [JsonProperty(PropertyName = "domain")]
+        public string Domain { get; set; }
+    }
     public class WebRequestArgument
     {
         [JsonProperty(PropertyName = "url")]
@@ -130,6 +139,9 @@ namespace bi_dev.sql.mssql.extensions.web2
 
         [JsonProperty(PropertyName = "accepted_codes")]
         public IEnumerable<int> AccesptedResponseCodes { get; set; }
+
+        [JsonProperty(PropertyName = "network_credential")]
+        public WebRequestArgumentCredential NetworkCredential { get; set; }
         public WebRequestArgument()
         {
             this.AllowAutoRedirect = true;
@@ -192,6 +204,17 @@ namespace bi_dev.sql.mssql.extensions.web2
             r.AllowAutoRedirect = webRequestArgument.AllowAutoRedirect;
             r.ContentType = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "Content-Type")?.Value ?? "applicaion/json";
             r.UserAgent = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "User-Agent")?.Value ?? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+            if (webRequestArgument.NetworkCredential != null)
+            {
+                CredentialCache myCredentialCache = new CredentialCache();
+                myCredentialCache.Add(new Uri(webRequestArgument.Url), "Basic", 
+                new NetworkCredential(
+                    webRequestArgument.NetworkCredential.UserName,
+                    webRequestArgument.NetworkCredential.Password,
+                    webRequestArgument.NetworkCredential.Domain
+                ));
+                r.Credentials = myCredentialCache;
+            }
             r.CookieContainer = new CookieContainer();
             if (webRequestArgument.Cookies != null)
             {
@@ -205,9 +228,12 @@ namespace bi_dev.sql.mssql.extensions.web2
             {
                 foreach (var header in webRequestArgument.Headers.Where(x => !mainHttpRequestHeaders.Any(t => t == x.Name)))
                 {
-                    if (!r.Headers.AllKeys.Contains(header.Name) && !string.IsNullOrEmpty(header.Name))
+                    if (!(header.Name.ToLower() == "authorization" && webRequestArgument.NetworkCredential != null))
                     {
-                        r.Headers.Add($@"{header.Name}:{header.Value}");
+                        if (!r.Headers.AllKeys.Contains(header.Name) && !string.IsNullOrEmpty(header.Name))
+                        {
+                            r.Headers.Add($@"{header.Name}:{header.Value}");
+                        }
                     }
                 }
             }
