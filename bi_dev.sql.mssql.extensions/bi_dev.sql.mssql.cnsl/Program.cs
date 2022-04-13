@@ -15,7 +15,15 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            
+            var e = Utils.ProcessWebRequest(
+                new WebRequestArgument()
+                {
+                    Url = "https://query1.finance.yahoo.com/v1/finance/quote?symbols=EFO&fields=exchangeTimezoneName,exchangeTimezoneShortName,regularMarketTime,gmtOffSetMilliseconds&region=US&lang=en-US"
+                    ,Attempts = 3,
+                    MillisecondsToRetry = 1000
+                },
+                false
+            );
         }
     }
 }

@@ -183,7 +183,39 @@ namespace bi_dev.sql.mssql.extensions.web2
     }
     public static class Utils
     {
-        public static WebRequestResult ProcessWebRequest(WebRequestArgument webRequestArgument, bool ignoreResponseErrors)
+        private static ICollection<WebRequestCookie> ToWebRequestCookies(this CookieCollection cookieCollection)
+        {
+            ICollection<WebRequestCookie> cookies = new List<WebRequestCookie>();
+            foreach (Cookie responseCookie in cookieCollection)
+            {
+                cookies.Add(new WebRequestCookie()
+                {
+                    Domain = responseCookie.Domain,
+                    Name = responseCookie.Name,
+                    Path = responseCookie.Path,
+                    Value = responseCookie.Value
+                });
+            }
+            return cookies;
+        }
+        private static ICollection<WebRequestHeader> ToWebRequestHeaders(this WebHeaderCollection webHeaderCollection)
+        {
+            ICollection<WebRequestHeader> headers = new List<WebRequestHeader>();
+            for (int i = 0; i < webHeaderCollection.Count; i++)
+            {
+                string header = webHeaderCollection.GetKey(i);
+                foreach (string value in webHeaderCollection.GetValues(i))
+                {
+                    headers.Add(new WebRequestHeader()
+                    {
+                        Name = header,
+                        Value = value
+                    });
+                }
+            }
+            return headers;
+        }
+        public static WebRequestResult ProcessWebRequest(WebRequestArgument webRequestArgument, bool ignoreResponseErrors, int attempt = 0)
         {
             string[] mainHttpRequestHeaders = new string[]
             {
@@ -194,7 +226,8 @@ namespace bi_dev.sql.mssql.extensions.web2
             WebRequestResult result = new WebRequestResult(webRequestArgument);
             result.Request = webRequestArgument;
             ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+            ServicePointManager.SecurityProtocol = 
+                     SecurityProtocolType.Tls
                    | SecurityProtocolType.Tls11
                    | SecurityProtocolType.Tls12
                    | SecurityProtocolType.Ssl3;
@@ -218,7 +251,6 @@ namespace bi_dev.sql.mssql.extensions.web2
             r.CookieContainer = new CookieContainer();
             if (webRequestArgument.Cookies != null)
             {
-                
                 foreach (var cookie in webRequestArgument.Cookies)
                 {
                     r.CookieContainer.Add(cookie.GetCookie(new Uri(webRequestArgument.Url).Host));
@@ -251,141 +283,86 @@ namespace bi_dev.sql.mssql.extensions.web2
             {
                 r.ContentLength = 0;
             }
-            int attempt = 1;
-            while (attempt <= webRequestArgument.Attempts) {
-                try
+            try
+            {
+                using (var response = r.GetResponse() as HttpWebResponse)
                 {
-                    using (var response = r.GetResponse() as HttpWebResponse)
+                    using (var responseStream = response.GetResponseStream())
                     {
-                        using (var responseStream = response.GetResponseStream())
+                        if (!string.IsNullOrWhiteSpace(webRequestArgument?.FileName))
                         {
-                            if (!string.IsNullOrWhiteSpace(webRequestArgument?.FileName))
+                            System.IO.Directory.CreateDirectory(new FileInfo(webRequestArgument?.FileName).Directory.FullName);
+                            if (File.Exists(webRequestArgument?.FileName))
                             {
-                                System.IO.Directory.CreateDirectory(new FileInfo(webRequestArgument?.FileName).Directory.FullName);
-                                if (File.Exists(webRequestArgument?.FileName))
+                                File.Delete(webRequestArgument?.FileName);
+                            }
+                            using (FileStream os = new FileStream(webRequestArgument?.FileName, FileMode.OpenOrCreate, FileAccess.Write))
+                            {
+                                byte[] buff = new byte[102400];
+                                int c = 0;
+                                if (responseStream.CanRead)
                                 {
-                                    File.Delete(webRequestArgument?.FileName);
-                                }
-                                using (FileStream os = new FileStream(webRequestArgument?.FileName, FileMode.OpenOrCreate, FileAccess.Write))
-                                {
-                                    byte[] buff = new byte[102400];
-                                    int c = 0;
-                                    if (responseStream.CanRead)
+                                    while ((c = responseStream.Read(buff, 0, 10400)) > 0)
                                     {
-                                        while ((c = responseStream.Read(buff, 0, 10400)) > 0)
-                                        {
-                                            os.Write(buff, 0, c);
-                                            os.Flush();
-                                        }
+                                        os.Write(buff, 0, c);
+                                        os.Flush();
                                     }
                                 }
-                                if (File.Exists(webRequestArgument?.FileName))
-                                {
-                                    result.FileSize = new FileInfo(webRequestArgument?.FileName).Length;
-                                }
                             }
-                            else
+                            if (File.Exists(webRequestArgument?.FileName))
                             {
-                                using (var reader = new StreamReader(responseStream))
-                                {
-                                    result.ResponseText = reader.ReadToEnd();
-                                }
+                                result.FileSize = new FileInfo(webRequestArgument?.FileName).Length;
                             }
-                        }
-                        result.StatusCode = (int)response.StatusCode;
-                        result.Cookies = new List<WebRequestCookie>();
-                        if (response.Cookies != null)
-                        {
-                            foreach (Cookie responseCookie in response.Cookies)
-                            {
-                                result.Cookies.Add(new WebRequestCookie()
-                                {
-                                    Domain = responseCookie.Domain,
-                                    Name = responseCookie.Name,
-                                    Path = responseCookie.Path,
-                                    Value = responseCookie.Value
-                                });
-                            }
-                        }
-                        result.Headers = new List<WebRequestHeader>();
-                        if (response.Headers != null)
-                        {
-                            for (int i = 0; i < response.Headers.Count; i++)
-                            {
-                                string header = response.Headers.GetKey(i);
-                                foreach (string value in response.Headers.GetValues(i))
-                                {
-                                    result.Headers.Add(new WebRequestHeader()
-                                    {
-                                        Name = header,
-                                        Value = value
-                                    });
-                                }
-                            }
-                        }
-                    }
-
-                    result.IsSuccess = true;
-                    break;
-                }
-                catch (WebException we)
-                {
-                    using (var response = we.Response as HttpWebResponse)
-                    {
-                        attempt++;
-                        bool isCodeAccepted = webRequestArgument.AccesptedResponseCodes?.Any(x => x == (int?)response?.StatusCode) ?? false;
-                        if (attempt <= webRequestArgument.Attempts && !isCodeAccepted)
-                        {
-                            Thread.Sleep(webRequestArgument.MillisecondsToRetry);
                         }
                         else
                         {
-                            if (ignoreResponseErrors || isCodeAccepted)
+                            using (var reader = new StreamReader(responseStream))
                             {
-                                result.IsSuccess = isCodeAccepted;
-                                using (var responseStream = response.GetResponseStream())
+                                result.ResponseText = reader.ReadToEnd();
+                            }
+                        }
+                    }
+                    result.StatusCode = (int)response.StatusCode;
+                    if (response.Cookies != null)
+                    {
+                        result.Cookies = response.Cookies.ToWebRequestCookies();
+                    }
+                    if (response.Headers != null)
+                    {
+                        result.Headers = response.Headers.ToWebRequestHeaders();
+                    }
+                }
+                result.IsSuccess = true;
+            }
+            catch (WebException we)
+            {
+                using (var response = we.Response as HttpWebResponse)
+                {
+                    bool isCodeAccepted = webRequestArgument.AccesptedResponseCodes?.Any(x => x == (int?)response?.StatusCode) ?? false;
+                    if (attempt <= webRequestArgument.Attempts && !isCodeAccepted)
+                    {
+                        Thread.Sleep(webRequestArgument.MillisecondsToRetry);
+                        result = ProcessWebRequest(webRequestArgument, ignoreResponseErrors, ++attempt);
+                    }
+                    else
+                    {
+                        if (ignoreResponseErrors || isCodeAccepted)
+                        {
+                            result.IsSuccess = isCodeAccepted;
+                            using (var responseStream = response.GetResponseStream())
+                            {
+                                using (var responseStreamReader = new StreamReader(responseStream))
                                 {
-                                    using (var responseStreamReader = new StreamReader(responseStream))
-                                    {
-                                        result.ResponseText = responseStreamReader.ReadToEnd();
-                                    }
-                                }
-                                result.StatusCode = (int)response.StatusCode;
-                                result.Cookies = new List<WebRequestCookie>();
-                                if (response.Cookies != null)
-                                {
-                                    foreach (Cookie responseCookie in response.Cookies)
-                                    {
-                                        result.Cookies.Add(new WebRequestCookie()
-                                        {
-                                            Domain = responseCookie.Domain,
-                                            Name = responseCookie.Name,
-                                            Path = responseCookie.Path,
-                                            Value = responseCookie.Value
-                                        });
-                                    }
-                                }
-                                result.Headers = new List<WebRequestHeader>();
-                                if (response.Headers != null)
-                                {
-                                    for (int i = 0; i < response.Headers.Count; i++)
-                                    {
-                                        string header = response.Headers.GetKey(i);
-                                        foreach (string value in response.Headers.GetValues(i))
-                                        {
-                                            result.Headers.Add(new WebRequestHeader()
-                                            {
-                                                Name = header,
-                                                Value = value
-                                            });
-                                        }
-                                    }
+                                    result.ResponseText = responseStreamReader.ReadToEnd();
                                 }
                             }
-                            else
-                            {
-                                throw we;
-                            }
+                            result.StatusCode = (int)response.StatusCode;
+                            result.Cookies = response.Cookies?.ToWebRequestCookies();
+                            result.Headers = response.Headers?.ToWebRequestHeaders();
+                        }
+                        else
+                        {
+                            throw we;
                         }
                     }
                 }

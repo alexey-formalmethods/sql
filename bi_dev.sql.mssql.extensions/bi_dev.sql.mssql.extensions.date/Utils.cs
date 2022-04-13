@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.SqlServer.Server;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -111,7 +112,7 @@ namespace bi_dev.sql.mssql.extensions.date
                 return Common.ThrowIfNeeded<DateTime?>(e, nullWhenError);
             }
         }
-        private static DateTime? fromString(string value, IEnumerable<string> formats)
+        public static DateTime? FromString(string value, IEnumerable<string> formats)
         {
             DateTime result;
             foreach(var frmt in formats)
@@ -131,6 +132,7 @@ namespace bi_dev.sql.mssql.extensions.date
             }
             return null;
         }
+        [SqlFunction]
         public static DateTime? FromString(string value, string formatsArray, bool nullWhenError)
         {
             try
@@ -155,7 +157,7 @@ namespace bi_dev.sql.mssql.extensions.date
                         "yyyy-MM-dd HH:mm:ss"
                     };
                 }
-                return fromString(value, formats);
+                return FromString(value, formats);
             }
             catch (Exception e)
             {
