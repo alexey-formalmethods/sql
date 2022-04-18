@@ -34,5 +34,5 @@ declare @build_location nvarchar(max) = N'C:\storage\hdd01\proj\sql\bi_dev.sql.m
 	go
 	create function dbo.f_clr_date_max_of_two(@value1 datetime, @valu2 datetime, @null_when_error bit) returns datetime with execute as owner as external name [mssql.extensions.date].[bi_dev.sql.mssql.extensions.date.Utils].MaxOfTwo;
 	go
-	create function dbo.f_clr_date_from_string(@value nvarchar(max), @formats_array nvarchar(max), @null_when_error bit) returns datetime with execute as owner as external name [mssql.extensions.date].[bi_dev.sql.mssql.extensions.date.Utils].FromString;
+	create function dbo.f_clr_date_from_string(@value nvarchar(max), @formats_array nvarchar(max), @null_when_error bit) returns datetime2 with execute as owner as external name [mssql.extensions.date].[bi_dev.sql.mssql.extensions.date.Utils].FromString;
 	go
