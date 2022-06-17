@@ -210,6 +210,30 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             }
             return result;
         }
+        [SqlFunction]
+        public static string GetSheets(string fileName, bool nullWhenError)
+        {
+            try 
+            {
+                return JsonConvert.SerializeObject(GetSheets(fileName));
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        [SqlFunction]
+        public static string GetContent(string excelRequestJson, bool nullWhenError)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(GetContent(JsonConvert.DeserializeObject<ExcelArgument>(excelRequestJson)));
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+}
     }
     // ------------
 
