@@ -243,8 +243,7 @@ namespace bi_dev.sql.mssql.extensions.web2
                 myCredentialCache.Add(new Uri(webRequestArgument.Url), "Basic", 
                 new NetworkCredential(
                     webRequestArgument.NetworkCredential.UserName,
-                    webRequestArgument.NetworkCredential.Password,
-                    webRequestArgument.NetworkCredential.Domain
+                    webRequestArgument.NetworkCredential.Password
                 ));
                 r.Credentials = myCredentialCache;
             }
