@@ -105,7 +105,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 this.Values = new List<List<string>>();
             }
         }
-        public static IEnumerable<ExcelSheet> GetSheets(string fileName)
+        private static IEnumerable<ExcelSheet> GetSheets(string fileName)
         {
             List<ExcelSheet> sheets = new List<ExcelSheet>();
             IWorkbook workbook = GetNewWorkBookFromFileName(fileName, FileMode.Open);
@@ -117,7 +117,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             return sheets;
         }
 
-        public static ExcelSheetResult GetContent(ExcelArgument request)
+        private static ExcelSheetResult GetContent(ExcelArgument request)
         {
             ExcelSheetResult result = new ExcelSheetResult();
 
