@@ -22,6 +22,9 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         [JsonProperty("file_name")]
         public string FileName { get; set; }
 
+        [JsonProperty("range")]
+        public string Range { get; set; }
+
         [JsonProperty("range_from")]
         public string RangeFrom { get; set; }
 
@@ -133,9 +136,11 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 sheet = workbook.GetSheetAt(0);
             }
             //rows
-            int rowNumberFrom = !string.IsNullOrWhiteSpace(request.RangeFrom) ? CellRangeAddress.ValueOf(request.RangeFrom).FirstRow : request.RowFrom ?? 0;
+            var rangeFrom = string.IsNullOrWhiteSpace(request.Range) ? request.RangeFrom: request.Range;
+            var rangeTo = string.IsNullOrWhiteSpace(request.Range) ? request.RangeTo : request.Range;
+            int rowNumberFrom = !string.IsNullOrWhiteSpace(rangeFrom) ? CellRangeAddress.ValueOf(rangeFrom).FirstRow : request.RowFrom ?? 0;
             if (rowNumberFrom < sheet.FirstRowNum) rowNumberFrom = sheet.FirstRowNum;
-            int? rowNumberTo = !string.IsNullOrWhiteSpace(request.RangeTo) ? CellRangeAddress.ValueOf(request.RangeTo).LastRow : request.RowTo;
+            int? rowNumberTo = !string.IsNullOrWhiteSpace(rangeTo) ? CellRangeAddress.ValueOf(rangeTo).LastRow : request.RowTo;
             if (!rowNumberTo.HasValue || rowNumberTo > sheet.LastRowNum) rowNumberTo = sheet.LastRowNum;
             // Columns
             List<int> cellNums = new List<int>();
@@ -151,9 +156,9 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             // from
             int minColumnNum = (cellNums.Count == 0 ? 0 : cellNums.Min());
             int maxColumnNum = (cellNums.Count == 0 ? 0 : cellNums.Max()) - 1;
-            int columnNumberFrom = !string.IsNullOrWhiteSpace(request.RangeFrom) ? CellRangeAddress.ValueOf(request.RangeFrom).FirstColumn : request.ColFrom ?? 0;
+            int columnNumberFrom = !string.IsNullOrWhiteSpace(rangeFrom) ? CellRangeAddress.ValueOf(rangeFrom).FirstColumn : request.ColFrom ?? 0;
             if (columnNumberFrom < minColumnNum) columnNumberFrom = minColumnNum;
-            int? columnNumberTo = !string.IsNullOrWhiteSpace(request.RangeTo) ? CellRangeAddress.ValueOf(request.RangeTo).LastColumn : request.ColTo;
+            int? columnNumberTo = !string.IsNullOrWhiteSpace(rangeTo) ? CellRangeAddress.ValueOf(rangeTo).LastColumn : request.ColTo;
             if (!columnNumberTo.HasValue || columnNumberTo > maxColumnNum) columnNumberTo = maxColumnNum;
 
             if (sheet != null)
