@@ -105,7 +105,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 this.Values = new List<List<string>>();
             }
         }
-        private static IEnumerable<ExcelSheet> GetSheets(string fileName)
+        public static IEnumerable<ExcelSheet> getSheets(string fileName)
         {
             List<ExcelSheet> sheets = new List<ExcelSheet>();
             IWorkbook workbook = GetNewWorkBookFromFileName(fileName, FileMode.Open);
@@ -117,7 +117,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             return sheets;
         }
 
-        private static ExcelSheetResult GetContent(ExcelArgument request)
+        public static ExcelSheetResult getContent(ExcelArgument request)
         {
             ExcelSheetResult result = new ExcelSheetResult();
 
@@ -220,7 +220,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         {
             try 
             {
-                return JsonConvert.SerializeObject(GetSheets(fileName));
+                return JsonConvert.SerializeObject(getSheets(fileName));
             }
             catch (Exception e)
             {
@@ -232,7 +232,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         {
             try
             {
-                return JsonConvert.SerializeObject(GetContent(JsonConvert.DeserializeObject<ExcelArgument>(excelRequestJson)));
+                return JsonConvert.SerializeObject(getContent(JsonConvert.DeserializeObject<ExcelArgument>(excelRequestJson)));
             }
             catch (Exception e)
             {
