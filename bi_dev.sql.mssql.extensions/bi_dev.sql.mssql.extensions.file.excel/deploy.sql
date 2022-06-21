@@ -29,7 +29,9 @@ where name = '@build_location'
 -- create new --------------------
 	create assembly [bi_dev.sql.mssql.extensions.file.excel] from @build_file_name with permission_set = unsafe;
 	go
-	create function dbo.f_clr_excel_get_content(@excel_request_json nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [bi_dev.sql.mssql.extensions.file.excel].[bi_dev.sql.mssql.extensions.file.excel.Utils].GetContent;
+	create function dbo.f_clr_excel_get_content(@excel_sheet_request_json nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [bi_dev.sql.mssql.extensions.file.excel].[bi_dev.sql.mssql.extensions.file.excel.Utils].GetContent;
+	go
+	create function dbo.f_clr_excel_get_contents(@excel_request_json nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [bi_dev.sql.mssql.extensions.file.excel].[bi_dev.sql.mssql.extensions.file.excel.Utils].GetContents;
 	go
 	create function dbo.f_clr_excel_get_sheets(@file_name nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [bi_dev.sql.mssql.extensions.file.excel].[bi_dev.sql.mssql.extensions.file.excel.Utils].GetSheets;
 	go

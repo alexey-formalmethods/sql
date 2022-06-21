@@ -16,9 +16,41 @@ using NPOI.SS.Util;
 
 namespace bi_dev.sql.mssql.extensions.file.excel
 {
-
-    public class ExcelArgument
+    
+    public class ExcelRequest
     {
+        [JsonProperty("file_name")]
+        public string FileName { get; set; }
+
+        [JsonProperty("sheet_requests")]
+        public IEnumerable<ExcelSheetRequest> SheetRequests { get; set; }
+    }
+    public class ExcelResults
+    {
+        [JsonProperty("results")]
+        public IEnumerable<ExcelSheetRequestResult> Results { get; set; }
+
+        [JsonProperty("success")]
+        public bool Success { get; set; }
+
+        [JsonProperty("error_message")]
+        public string ErrorMessage { get; set; }
+    }
+
+    public class ExcelSheetRequestResult
+    {
+        [JsonProperty("request")]
+        public ExcelSheetRequest Request { get; set; }
+
+        [JsonProperty("result")]
+        public ExcelSheetResult Result { get; set; }
+    }
+
+    public class ExcelSheetRequest
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; } // нужно, когда подается несколько реквестов
+
         [JsonProperty("file_name")]
         public string FileName { get; set; }
 
@@ -52,6 +84,29 @@ namespace bi_dev.sql.mssql.extensions.file.excel
         [JsonProperty("is_first_row_with_column_names")]
         public bool IsFirstRowWithColumnNames { get; set; }
     }
+
+    public class ExcelSheet
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("sheet_index")]
+        public int SheetIndex { get; set; }
+    }
+    public class ExcelSheetResult
+    {
+        [JsonProperty(PropertyName = "columns")]
+        public List<string> Columns { get; set; }
+
+        [JsonProperty(PropertyName = "values")]
+        public List<List<string>> Values { get; set; }
+
+        public ExcelSheetResult()
+        {
+            this.Columns = new List<string>();
+            this.Values = new List<List<string>>();
+        }
+    }
     public static class Utils
     {
      
@@ -83,28 +138,7 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             else throw new ArgumentException("xls or xlsx extenison must be provided");
             return workbook;
         }
-        public class ExcelSheet
-        {
-            [JsonProperty("name")]
-            public string Name { get; set; }
-
-            [JsonProperty("sheet_index")]
-            public int SheetIndex { get; set; }
-        }
-        public class ExcelSheetResult
-        {
-            [JsonProperty(PropertyName = "columns")]
-            public List<string> Columns { get; set; }
-
-            [JsonProperty(PropertyName = "values")]
-            public List<List<string>> Values { get; set; }
-
-            public ExcelSheetResult()
-            {
-                this.Columns = new List<string>();
-                this.Values = new List<List<string>>();
-            }
-        }
+        
         public static IEnumerable<ExcelSheet> getSheets(string fileName)
         {
             List<ExcelSheet> sheets = new List<ExcelSheet>();
@@ -117,11 +151,13 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             return sheets;
         }
 
-        public static ExcelSheetResult getContent(ExcelArgument request)
+
+
+        public static ExcelSheetResult getContent(ExcelSheetRequest request, IWorkbook workbook)
         {
             ExcelSheetResult result = new ExcelSheetResult();
 
-            IWorkbook workbook = GetNewWorkBookFromFileName(request.FileName, FileMode.Open);
+            // IWorkbook workbook = GetNewWorkBookFromFileName(request.FileName, FileMode.Open);
             ISheet sheet;
             if (!string.IsNullOrEmpty(request.SheetName) && !request.SheetNum.HasValue)
             {
@@ -215,6 +251,46 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             }
             return result;
         }
+        public static ExcelResults getContents(ExcelRequest request, bool messageWhenError)
+        {
+            try
+            {
+                IWorkbook workbook = GetNewWorkBookFromFileName(request.FileName, FileMode.Open);
+                ExcelResults excelResults = new ExcelResults()
+                {
+                    Success = true
+                };
+                excelResults.Results = request.SheetRequests.Select(x =>
+                    new ExcelSheetRequestResult()
+                    {
+                        Request = x,
+                        Result = getContent(x, workbook),
+                    }
+                ).ToList();
+                return excelResults;
+            }
+            catch (Exception e)
+            {
+                if (messageWhenError)
+                {
+                    return new ExcelResults()
+                    {
+                        Success = false,
+                        ErrorMessage = e.Message
+                    };
+                }
+                else
+                {
+                    throw e;
+                }
+            }
+        }
+        public static ExcelSheetResult getContent(ExcelSheetRequest request)
+        {
+            IWorkbook workbook = GetNewWorkBookFromFileName(request.FileName, FileMode.Open);
+            var excelSheetResult = getContent(request, workbook);
+            return excelSheetResult;
+        }
         [SqlFunction]
         public static string GetSheets(string fileName, bool nullWhenError)
         {
@@ -228,17 +304,22 @@ namespace bi_dev.sql.mssql.extensions.file.excel
             }
         }
         [SqlFunction]
-        public static string GetContent(string excelRequestJson, bool nullWhenError)
+        public static string GetContent(string excelSheetRequestJson, bool nullWhenError)
         {
             try
             {
-                return JsonConvert.SerializeObject(getContent(JsonConvert.DeserializeObject<ExcelArgument>(excelRequestJson)));
+                return JsonConvert.SerializeObject(getContent(JsonConvert.DeserializeObject<ExcelSheetRequest>(excelSheetRequestJson)));
             }
             catch (Exception e)
             {
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
-}
+        }
+        [SqlFunction]
+        public static string GetContents(string excelRequestJson, bool messageWhenError)
+        {
+            return JsonConvert.SerializeObject(getContents(JsonConvert.DeserializeObject<ExcelRequest>(excelRequestJson), messageWhenError));
+        }
     }
     // ------------
 
