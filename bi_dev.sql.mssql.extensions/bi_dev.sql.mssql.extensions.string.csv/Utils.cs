@@ -93,8 +93,13 @@ namespace bi_dev.sql.mssql.extensions.@string.csv
                 if (isFirstRowWithColumnNames)
                 {
                     csvResult.Columns.AddRange(result[0]);
+                    csvResult.Values.AddRange(result.Where((x, i) => i > 0).ToList());
                 }
-                csvResult.Values.AddRange(result.Where((x, i) => i > 0).ToList());
+                else
+                {
+                    csvResult.Values.AddRange(result);
+                }
+                
             }
             return csvResult;
         }
