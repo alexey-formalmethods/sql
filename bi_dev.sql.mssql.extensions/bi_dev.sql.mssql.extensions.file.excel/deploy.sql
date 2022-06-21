@@ -25,6 +25,8 @@ where name = '@build_location'
 	declare @build_file_name nvarchar(4000) = @build_location + N'\bi_dev.sql.mssql.extensions.file.excel\bin\Debug\bi_dev.sql.mssql.extensions.file.excel.dll';
 -- drop existing --------
 	if (object_id('.dbo.f_clr_excel_get_content') is not null) drop function dbo.f_clr_excel_get_content
+	if (object_id('.dbo.f_clr_excel_get_contents') is not null) drop function dbo.f_clr_excel_get_contents
+	if (object_id('.dbo.f_clr_excel_get_sheets') is not null) drop function dbo.f_clr_excel_get_sheets
 	if (exists (select 1 from sys.assemblies where name = N'bi_dev.sql.mssql.extensions.file.excel')) drop assembly [bi_dev.sql.mssql.extensions.file.excel];
 -- create new --------------------
 	create assembly [bi_dev.sql.mssql.extensions.file.excel] from @build_file_name with permission_set = unsafe;
