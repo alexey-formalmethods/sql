@@ -24,7 +24,7 @@ where t.name = '@system_runtime_serialization_location'
 if (not exists (select 1 from sys.assemblies where name = N'System.Runtime.Serialization')) create ASSEMBLY [System.Runtime.Serialization] from @system_runtime_serialization_location with permission_set = unsafe;
 else begin
 	begin try
-		alter ASSEMBLY [System.Net.Http] from @system_runtime_serialization_location with permission_set = unsafe;
+		alter ASSEMBLY [System.Runtime.Serialization] from @system_runtime_serialization_location with permission_set = unsafe;
 	end try
 	begin catch
 		declare @error_message nvarchar(max) = error_message();
