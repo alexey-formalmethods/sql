@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using bi_dev.sql.mssql.extensions.file.excel;
+
 using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.cnsl
@@ -15,22 +15,17 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            Utils.G(@"C:\a.shamshur\290522_TTI_EUR_Unibank_card1.xls");
-            var t = Utils.getContents(new ExcelRequest()
+            var e = bi_dev.sql.mssql.extensions.web2.Utils.ProcessWebRequest(new extensions.web2.WebRequestArgument()
             {
-                FileName = @"C:\a.shamshur\290522_TTI_EUR_Unibank_card1.xls",
-                SheetRequests = new List<ExcelSheetRequest>()
+                Url = "https://api.ipify.org?format=json",
+                Proxy = new extensions.web2.WebRequestArgumentProxy()
                 {
-                    new ExcelSheetRequest()
-                    {
-                        Range = "C1:C1"
-                    },
-                    new ExcelSheetRequest()
-                    {
-                        Range = "C7:C7"
-                    }
+                    Address = "zproxy.lum-superproxy.io",
+                    Port = 22225,
+                    Username = "lum-customer-c_26959815-zone-residential-country-ru",
+                    Password = "ayp5cs0n19cr"
                 }
-            }, false);
+            }, true, 0);
         }
     }
 }

@@ -51,13 +51,18 @@ namespace bi_dev.sql.mssql.extensions.web2
         public string Password { get; set; }
         public IWebProxy GetProxy()
         {
-            var proxy =  new WebProxy(this.Address, this.Port);
+
             if (!string.IsNullOrEmpty(this.Username))
             {
-                proxy.Credentials = new NetworkCredential(this.Username, this.Password);
-                proxy.UseDefaultCredentials = false;
+                ICredentials credentials = new NetworkCredential(this.Username, this.Password);
+                return new WebProxy(new Uri($@"http://{this.Address}:{this.Port}"), true, null, credentials);
+
             }
-            return proxy;
+            else
+            {
+                return new WebProxy(this.Address, this.Port);
+            }
+            
         }
     }
     public class WebRequestResult
