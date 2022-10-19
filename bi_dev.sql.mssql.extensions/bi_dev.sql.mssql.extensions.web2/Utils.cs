@@ -41,9 +41,6 @@ namespace bi_dev.sql.mssql.extensions.web2
         [JsonProperty(PropertyName="address")]
         public string Address { get; set; }
 
-        [JsonProperty(PropertyName="port")]
-        public int Port { get; set; }
-
         [JsonProperty(PropertyName="username")]
         public string Username { get; set; }
 
@@ -55,12 +52,12 @@ namespace bi_dev.sql.mssql.extensions.web2
             if (!string.IsNullOrEmpty(this.Username))
             {
                 ICredentials credentials = new NetworkCredential(this.Username, this.Password);
-                return new WebProxy(new Uri($@"http://{this.Address}:{this.Port}"), true, null, credentials);
+                return new WebProxy(new Uri(this.Address), true, null, credentials);
 
             }
             else
             {
-                return new WebProxy(this.Address, this.Port);
+                return new WebProxy(new Uri(this.Address));
             }
             
         }
@@ -176,8 +173,7 @@ namespace bi_dev.sql.mssql.extensions.web2
                 Url = "https://google.com",
                 Proxy = new WebRequestArgumentProxy()
                 {
-                    Address = "127.0.0.1",
-                    Port = 83055,
+                    Address = "http://127.0.0.1:8000/",
                     Username = "(optional) username",
                     Password = "(optional) password"
                 },

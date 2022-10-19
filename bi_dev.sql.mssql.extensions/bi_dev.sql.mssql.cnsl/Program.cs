@@ -20,8 +20,7 @@ namespace bi_dev.sql.mssql.cnsl
                 Url = "https://api.ipify.org?format=json",
                 Proxy = new extensions.web2.WebRequestArgumentProxy()
                 {
-                    Address = "zproxy.lum-superproxy.io",
-                    Port = 22225,
+                    Address = "http://zproxy.lum-superproxy.io:22225/",
                     Username = "lum-customer-c_26959815-zone-residential-country-ru",
                     Password = "ayp5cs0n19cr"
                 }
