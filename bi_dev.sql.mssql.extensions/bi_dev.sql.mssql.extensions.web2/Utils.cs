@@ -222,7 +222,8 @@ namespace bi_dev.sql.mssql.extensions.web2
             {
                 "Content-Type",
                 "User-Agent",
-                "Cookies"
+                "Cookies",
+                "Accept"
             };
              
             WebRequestResult result = new WebRequestResult(webRequestArgument);
@@ -237,8 +238,13 @@ namespace bi_dev.sql.mssql.extensions.web2
             r.Method = webRequestArgument.Method;
             r.Timeout = webRequestArgument.TimeOutMilliseconds;
             r.AllowAutoRedirect = webRequestArgument.AllowAutoRedirect;
-            r.ContentType = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "Content-Type")?.Value ?? "applicaion/json";
-            r.UserAgent = webRequestArgument.Headers?.FirstOrDefault(x => x.Name == "User-Agent")?.Value ?? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+            r.ContentType = webRequestArgument.Headers?.FirstOrDefault(x => x.Name.ToLower() == "content-type")?.Value ?? "applicaion/json";
+            r.UserAgent = webRequestArgument.Headers?.FirstOrDefault(x => x.Name.ToLower() == "user-agent")?.Value ?? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36";
+            string accept = webRequestArgument.Headers?.FirstOrDefault(x => x.Name.ToLower() == "accept")?.Value;
+            if (!string.IsNullOrWhiteSpace(accept))
+            {
+                r.Accept = accept;
+            }
             if (webRequestArgument.NetworkCredential != null)
             {
                 CredentialCache myCredentialCache = new CredentialCache();
