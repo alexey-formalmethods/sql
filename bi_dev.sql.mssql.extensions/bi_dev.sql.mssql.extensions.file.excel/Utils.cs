@@ -13,6 +13,8 @@ using System.Collections;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.SS.Util;
+using NPOI.OpenXml4Net.OPC;
+using NPOI;
 
 namespace bi_dev.sql.mssql.extensions.file.excel
 {
@@ -109,10 +111,11 @@ namespace bi_dev.sql.mssql.extensions.file.excel
     }
     public static class Utils
     {
-     
         private static IWorkbook GetNewWorkBookFromFileName(string fileName, FileMode fileMode)
         {
-            IWorkbook workbook;
+            IWorkbook workbook = WorkbookFactory.Create(fileName);
+            return workbook;
+            /*
             if (fileName.EndsWith("xlsx"))
             {
                 if (fileMode == FileMode.Open)
@@ -136,7 +139,9 @@ namespace bi_dev.sql.mssql.extensions.file.excel
                 else workbook = new HSSFWorkbook();
             }
             else throw new ArgumentException("xls or xlsx extenison must be provided");
+            
             return workbook;
+            */
         }
         
         public static IEnumerable<ExcelSheet> getSheets(string fileName)

@@ -15,9 +15,10 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
+            Utils.G(@"C:\a.shamshur\290522_TTI_EUR_Unibank_card1.xls");
             var t = Utils.getContents(new ExcelRequest()
             {
-                FileName = @"C:\a.shamshur\240422_MTT_rur_Alfa.xlsx",
+                FileName = @"C:\a.shamshur\290522_TTI_EUR_Unibank_card1.xls",
                 SheetRequests = new List<ExcelSheetRequest>()
                 {
                     new ExcelSheetRequest()
@@ -29,7 +30,7 @@ namespace bi_dev.sql.mssql.cnsl
                         Range = "C7:C7"
                     }
                 }
-            }, true);
+            }, false);
         }
     }
 }

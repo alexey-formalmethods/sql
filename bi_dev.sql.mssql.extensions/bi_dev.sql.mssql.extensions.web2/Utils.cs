@@ -223,6 +223,7 @@ namespace bi_dev.sql.mssql.extensions.web2
                 "User-Agent",
                 "Cookies"
             };
+             
             WebRequestResult result = new WebRequestResult(webRequestArgument);
             result.Request = webRequestArgument;
             ServicePointManager.Expect100Continue = true;
@@ -246,6 +247,10 @@ namespace bi_dev.sql.mssql.extensions.web2
                     webRequestArgument.NetworkCredential.Password
                 ));
                 r.Credentials = myCredentialCache;
+            }
+            if (webRequestArgument.Proxy != null)
+            {
+                r.Proxy = webRequestArgument.Proxy.GetProxy();
             }
             r.CookieContainer = new CookieContainer();
             if (webRequestArgument.Cookies != null)
