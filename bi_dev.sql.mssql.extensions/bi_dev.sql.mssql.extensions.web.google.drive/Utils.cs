@@ -48,6 +48,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
         [JsonProperty("is_directory")]
         public bool IsDirectory => this.MimeType == "application/vnd.google-apps.folder";
 
+        [JsonProperty("web_view_link")]
         public string WebViewLink { get; set; }
     }
     public static class Utils
