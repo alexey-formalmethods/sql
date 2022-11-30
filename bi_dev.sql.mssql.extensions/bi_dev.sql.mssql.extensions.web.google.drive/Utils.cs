@@ -47,6 +47,8 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
 
         [JsonProperty("is_directory")]
         public bool IsDirectory => this.MimeType == "application/vnd.google-apps.folder";
+
+        public string WebViewLink { get; set; }
     }
     public static class Utils
     {
@@ -73,9 +75,10 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
                 listRequest.PageSize = 100;
                 listRequest.Fields = "*";
                 listRequest.OrderBy = "modifiedTime";
-                for (int i = 0; i < 100; i++) // 
+                for (int i = 0; i < 100; i++) // надёжно
                 {
                     var response = listRequest.Execute();
+                   
                     if (response?.Files?.Count > 0)
                     {
                         result.Files.AddRange(response.Files.Select(x => new GoogleDriveFile()
@@ -86,7 +89,8 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
                             CreatedTime = x.CreatedTime,
                             ModifiedTime = x.ModifiedTime,
                             MimeType = x.MimeType,
-                            FullFileExtension = x.FullFileExtension
+                            FullFileExtension = x.FullFileExtension,
+                            WebViewLink = x.WebViewLink
                         }));
                         listRequest.PageToken = response.NextPageToken;
                     }

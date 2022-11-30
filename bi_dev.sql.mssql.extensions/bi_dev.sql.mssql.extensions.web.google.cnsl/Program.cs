@@ -14,6 +14,7 @@ namespace bi_dev.sql.mssql.extensions.web.google.cnsl
     {
         static void Main(string[] args)
         {
+            
         }
        
     }

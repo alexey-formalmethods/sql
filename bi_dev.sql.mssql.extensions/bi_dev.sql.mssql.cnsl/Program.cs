@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using bi_dev.sql.mssql.extensions.web.google.drive;
 using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.cnsl
@@ -15,16 +15,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            var e = bi_dev.sql.mssql.extensions.web2.Utils.ProcessWebRequest(new extensions.web2.WebRequestArgument()
-            {
-                Url = "https://api.ipify.org?format=json",
-                Proxy = new extensions.web2.WebRequestArgumentProxy()
-                {
-                    Address = "http://zproxy.lum-superproxy.io:22225/",
-                    Username = "lum-customer-c_26959815-zone-residential-country-ru",
-                    Password = "ayp5cs0n19cr"
-                }
-            }, true, 0);
+            
         }
     }
 }
