@@ -51,6 +51,9 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
         [JsonProperty("web_view_link")]
         public string WebViewLink { get; set; }
 
+        [JsonProperty("owners")]
+        public IEnumerable<GoogleDriveUser> Owners { get; set; }
+
         [JsonProperty("sharing_user")]
         public GoogleDriveUser SharingUser { get; set; }
 
@@ -106,6 +109,11 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
                             MimeType = x.MimeType,
                             FullFileExtension = x.FullFileExtension,
                             WebViewLink = x.WebViewLink,
+                            Owners = x.Owners?.Select(o=> new GoogleDriveUser()
+                            {
+                                DisplayName = o?.DisplayName,
+                                EmailAddress = o?.EmailAddress
+                            })?.ToList(), 
                             SharingUser = new GoogleDriveUser()
                             {
                                 DisplayName = x.SharingUser?.DisplayName,
