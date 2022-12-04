@@ -50,6 +50,21 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
 
         [JsonProperty("web_view_link")]
         public string WebViewLink { get; set; }
+
+        [JsonProperty("sharing_user")]
+        public GoogleDriveUser SharingUser { get; set; }
+
+        [JsonProperty("last_modifying_user")]
+        public GoogleDriveUser LastModifyingUser { get; set; }
+
+    }
+    public class GoogleDriveUser
+    {
+        [JsonProperty("display_name")]
+        public string DisplayName { get; set; }
+
+        [JsonProperty("email_address")]
+        public string EmailAddress { get; set; }
     }
     public static class Utils
     {
@@ -79,7 +94,6 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
                 for (int i = 0; i < 100; i++) // надёжно
                 {
                     var response = listRequest.Execute();
-                   
                     if (response?.Files?.Count > 0)
                     {
                         result.Files.AddRange(response.Files.Select(x => new GoogleDriveFile()
@@ -91,7 +105,17 @@ namespace bi_dev.sql.mssql.extensions.web.google.drive
                             ModifiedTime = x.ModifiedTime,
                             MimeType = x.MimeType,
                             FullFileExtension = x.FullFileExtension,
-                            WebViewLink = x.WebViewLink
+                            WebViewLink = x.WebViewLink,
+                            SharingUser = new GoogleDriveUser()
+                            {
+                                DisplayName = x.SharingUser?.DisplayName,
+                                EmailAddress = x.SharingUser?.EmailAddress
+                            },
+                            LastModifyingUser = new GoogleDriveUser()
+                            {
+                                DisplayName = x.LastModifyingUser?.DisplayName,
+                                EmailAddress = x.LastModifyingUser?.EmailAddress
+                            }
                         }));
                         listRequest.PageToken = response.NextPageToken;
                     }
