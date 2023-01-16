@@ -18,6 +18,15 @@ namespace bi_dev.sql.mssql.extensions
             if (defaultWhenError) return defaultValue;
             else throw ex;
         }
+		/// <summary>
+        /// designed to throw in user defined functions
+        /// </summary>
+        /// <param name="errorMessage"></param>
+        /// <exception cref="Exception"></exception>
+        public static void ThrowException(string errorMessage)
+        {
+            throw new Exception(errorMessage);
+        }
 
     }
 }

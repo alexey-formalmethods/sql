@@ -185,9 +185,9 @@
     <Content Include="Core\Compression\Zstandard\lib\win\libzstd.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web.google.drive\bi_dev.sql.mssql.extensions.web.google.drive.csproj">
-      <Project>{918d2bde-4e69-414c-939e-3161801731a6}</Project>
-      <Name>bi_dev.sql.mssql.extensions.web.google.drive</Name>
+    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.web2\bi_dev.sql.mssql.extensions.web2.csproj">
+      <Project>{9fca854c-b503-4330-b341-1c4079e5e2b0}</Project>
+      <Name>bi_dev.sql.mssql.extensions.web2</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
