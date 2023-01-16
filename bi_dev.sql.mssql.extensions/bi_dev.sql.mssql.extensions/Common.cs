@@ -19,11 +19,11 @@ namespace bi_dev.sql.mssql.extensions
             else throw ex;
         }
 		/// <summary>
-        /// designed to throw in user defined functions
+        /// designed to throw in user defined functions.
         /// </summary>
         /// <param name="errorMessage"></param>
         /// <exception cref="Exception"></exception>
-        public static void ThrowException(string errorMessage)
+        public static int ThrowException(string errorMessage)
         {
             throw new Exception(errorMessage);
         }
