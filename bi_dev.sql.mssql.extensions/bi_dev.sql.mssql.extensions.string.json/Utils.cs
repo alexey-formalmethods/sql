@@ -25,6 +25,18 @@ namespace bi_dev.sql.mssql.extensions.@string.json
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+        public static string JsonMinify(string json, bool nullWhenError)
+        {
+            try
+            {
+                var deserializedJson = JsonConvert.DeserializeObject(json);
+                return JsonConvert.SerializeObject(deserializedJson);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
 
     }
 }
