@@ -215,12 +215,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\bi_dev.sql.mssql.extensions.mongo\bi_dev.sql.mssql.extensions.mongo.csproj">
-      <Project>{0541edd3-1a9c-4e63-a98e-b782077db507}</Project>
-      <Name>bi_dev.sql.mssql.extensions.mongo</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Analyzer Include="..\..\solutions\bi_dev.sql.mssql.extensions\packages\AWSSDK.SecurityToken.3.7.100.14\analyzers\dotnet\cs\AWSSDK.SecurityToken.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
