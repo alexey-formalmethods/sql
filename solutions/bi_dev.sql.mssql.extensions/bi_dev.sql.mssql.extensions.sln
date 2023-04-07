@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29519.181
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.cnsl", "..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.cnsl\bi_dev.sql.mssql.cnsl.csproj", "{DD888490-F50A-489C-B54C-650502F10A44}"
 EndProject
@@ -40,6 +40,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.num", "..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.num\bi_dev.sql.mssql.extensions.num.csproj", "{BDDF263B-FD5E-47B1-9699-B515FE4F966F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.web.google.drive", "..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.web.google.drive\bi_dev.sql.mssql.extensions.web.google.drive.csproj", "{918D2BDE-4E69-414C-939E-3161801731A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bi_dev.sql.mssql.extensions.mongo", "..\..\bi_dev.sql.mssql.extensions\bi_dev.sql.mssql.extensions.mongo\bi_dev.sql.mssql.extensions.mongo.csproj", "{0541EDD3-1A9C-4E63-A98E-B782077DB507}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,6 +125,10 @@ Global
 		{918D2BDE-4E69-414C-939E-3161801731A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{918D2BDE-4E69-414C-939E-3161801731A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{918D2BDE-4E69-414C-939E-3161801731A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0541EDD3-1A9C-4E63-A98E-B782077DB507}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0541EDD3-1A9C-4E63-A98E-B782077DB507}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0541EDD3-1A9C-4E63-A98E-B782077DB507}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0541EDD3-1A9C-4E63-A98E-B782077DB507}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

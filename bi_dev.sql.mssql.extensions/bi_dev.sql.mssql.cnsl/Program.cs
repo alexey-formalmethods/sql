@@ -6,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using bi_dev.sql.mssql.extensions.@string.json;
+using Amazon.Runtime.Internal.Transform;
+using bi_dev.sql.mssql.extensions.mongo;
+
 using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.cnsl
@@ -15,7 +17,7 @@ namespace bi_dev.sql.mssql.cnsl
     {
         public static void Main()
         {
-            var e = Utils.JsonMinify("{\"a\":                \"b\"}", false);
+            
         }
     }
 }
