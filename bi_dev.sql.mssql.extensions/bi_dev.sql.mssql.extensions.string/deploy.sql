@@ -33,6 +33,7 @@ where t.name = '@build_location';
 	if (object_id('.dbo.f_clr_base64_decode') is not null) drop function dbo.f_clr_base64_decode;
 	if (object_id('.dbo.f_clr_get_sha_256_hash') is not null) drop function dbo.f_clr_get_sha_256_hash;
 	if (object_id('.dbo.f_clr_string_replace') is not null) drop function dbo.f_clr_string_replace;
+	if (object_id('.dbo.f_clr_string_replace_regexp') is not null) drop function dbo.f_clr_string_replace_regexp;
 	if (exists (select 1 from sys.assemblies where name = N'mssql.extensions.string')) drop assembly [mssql.extensions.string];
 -- create new --------------------
 	create assembly [mssql.extensions.string] from @build_file_name with permission_set = unsafe;
@@ -58,4 +59,6 @@ where t.name = '@build_location';
 	create function f_clr_get_sha_256_hash(@value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string].[bi_dev.sql.mssql.extensions.string.Utils].GetSha256Hash;
 	go
 	create function f_clr_string_replace(@value nvarchar(max), @values_to_replace nvarchar(max), @replace_value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string].[bi_dev.sql.mssql.extensions.string.Utils].[Replace];
+	go
+	create function f_clr_string_replace_regexp(@value nvarchar(max), @regexp nvarchar(max), @replace_value nvarchar(max), @null_when_error bit) returns nvarchar(max) with execute as owner as external name [mssql.extensions.string].[bi_dev.sql.mssql.extensions.string.Utils].[ReplaceRegexp];
 	go
