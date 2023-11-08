@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using bi_dev.sql.mssql.extensions;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
 using System.Security.Cryptography;
 using System.IO;
 using System.Data.SqlTypes;
@@ -192,6 +191,18 @@ namespace bi_dev.sql.mssql.extensions.@string
             try
             {
                 return replace(value, JsonConvert.DeserializeObject<IEnumerable<string>>(valuesToReplace), replaceValue);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        [SqlFunction]
+        public static string ReplaceRegexp(string value, string regexp, string replaceValue, bool nullWhenError)
+        {
+            try
+            {
+                return Regex.Replace(value, regexp, replaceValue);
             }
             catch (Exception e)
             {
