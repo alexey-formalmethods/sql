@@ -77,10 +77,17 @@ namespace bi_dev.sql.mssql.extensions.@string.web
         {
             try
             {
-                HtmlDocument doc = new HtmlDocument();
-                var node = doc.CreateElement("div");
-                node.InnerHtml = value;
-                return node.FirstChild?.InnerText;
+                if (value == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    HtmlDocument doc = new HtmlDocument();
+                    var node = doc.CreateElement("div");
+                    node.InnerHtml = value;
+                    return node?.InnerText;
+                }
             }
             catch (Exception e)
             {

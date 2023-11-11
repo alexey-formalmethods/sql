@@ -14,8 +14,18 @@ using Newtonsoft.Json;
 
 namespace bi_dev.sql.mssql.extensions.@string
 {
+
+    public class FromTo
+    {
+        [JsonProperty("from")]
+        public string FromValue { get; set; }
+
+        [JsonProperty("to")]
+        public string ToValue { get; set; }
+    }
     public static class Utils
     {
+        
         [SqlFunction]
         public static long? RemoveNonDigits(string value, bool nullWhenError)
         {
@@ -197,12 +207,46 @@ namespace bi_dev.sql.mssql.extensions.@string
                 return Common.ThrowIfNeeded<string>(e, nullWhenError);
             }
         }
+        
+
         [SqlFunction]
         public static string ReplaceRegexp(string value, string regexp, string replaceValue, bool nullWhenError)
         {
             try
             {
                 return Regex.Replace(value, regexp, replaceValue);
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e, nullWhenError);
+            }
+        }
+        
+        [SqlFunction]
+        public static string ReplaceMultiple(string value, string valuesToReplace, bool nullWhenError)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    return value;
+                }
+                else
+                {
+                    var fromTovalues = JsonConvert.DeserializeObject<IEnumerable<FromTo>>(valuesToReplace);
+                    if (fromTovalues?.Any() == true)
+                    {
+                        foreach (var fromTo in fromTovalues)
+                        {
+                            value = value.Replace(fromTo?.FromValue ?? "", fromTo?.ToValue ?? "");
+                        }
+                        return value;
+                    }
+                    else
+                    {
+                        return value;
+                    }
+                }
             }
             catch (Exception e)
             {
