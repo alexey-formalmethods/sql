@@ -14,6 +14,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace bi_dev.sql.mssql.extensions.web
 {
@@ -90,6 +91,75 @@ namespace bi_dev.sql.mssql.extensions.web
         {
                 WebClient wc = new WebClient();
                 return get(wc.AddHeaders(headersInUrlFormat), url, nullWhenError);
+        }
+        private static HttpClient AddHeaders_HC(this HttpClient client, string headersInUrlFormat)
+        {
+            if (!string.IsNullOrWhiteSpace(headersInUrlFormat))
+            {
+                var headers = HttpUtility.ParseQueryString(headersInUrlFormat);
+                foreach (var header in headers.AllKeys)
+                {
+                    if (header != "Content-Type" && !client.DefaultRequestHeaders.Contains(header))
+                    {
+                        client.DefaultRequestHeaders.Add(header, headers[header]);
+                    }
+                }
+            }
+            return client;
+        }
+
+        private static MultipartFormDataContent GetFilesContent(string filesInUrlFormat)
+        {
+            MultipartFormDataContent formData = new MultipartFormDataContent();
+
+            if (!string.IsNullOrWhiteSpace(filesInUrlFormat))
+            {
+                var files = HttpUtility.ParseQueryString(filesInUrlFormat);
+
+                if (files.Count > 0)
+                {
+                    foreach (var file in files.AllKeys)
+                    {
+                        FileStream fileStream = new FileStream(files[file], FileMode.Open, FileAccess.Read);
+                        formData.Add(new StreamContent(fileStream), file, Path.GetFileName(files[file]));
+                    }
+                }
+
+            }
+
+            return formData;
+        }
+
+        [SqlFunction]
+        public static string Post_HC(string url, string headersInUrlFormat, string filesInUrlFormat, bool nullWhenError)
+        {
+            HttpClient hc = new HttpClient();
+
+            var response = post_HC(hc.AddHeaders_HC(headersInUrlFormat), url, GetFilesContent(filesInUrlFormat), nullWhenError);
+
+            return response.Result;
+        }
+
+        private static async Task<string> post_HC(HttpClient client, string url, MultipartFormDataContent content, bool nullWhenError)
+        {
+            try
+            {
+
+                FixSecurityProtocol();
+
+                var response = await client.PostAsync(url, content);
+                if (response != null)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    return jsonString;
+                }
+
+                return null;
+            }
+            catch (Exception e)
+            {
+                return Common.ThrowIfNeeded<string>(e.AddWebException(), nullWhenError);
+            }
         }
         [SqlFunction]
         public static string GetWithProxy(string url, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
