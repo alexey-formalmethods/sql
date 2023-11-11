@@ -1,5 +1,4 @@
 ﻿using Microsoft.SqlServer.Server;
-using Mono.Web;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -11,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -92,6 +90,7 @@ namespace bi_dev.sql.mssql.extensions.web
                 WebClient wc = new WebClient();
                 return get(wc.AddHeaders(headersInUrlFormat), url, nullWhenError);
         }
+/*
         private static HttpClient AddHeaders_HC(this HttpClient client, string headersInUrlFormat)
         {
             if (!string.IsNullOrWhiteSpace(headersInUrlFormat))
@@ -161,6 +160,7 @@ namespace bi_dev.sql.mssql.extensions.web
                 return Common.ThrowIfNeeded<string>(e.AddWebException(), nullWhenError);
             }
         }
+*/
         [SqlFunction]
         public static string GetWithProxy(string url, string headersInUrlFormat, string proxyUrl, string proxyUser, string proxyPassword, bool nullWhenError)
         {
