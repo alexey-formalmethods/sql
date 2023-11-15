@@ -16,6 +16,8 @@ Instructions:
 8. run ```deploy.sql``` 
 
 
+
+
 /***************************************************************************
 
 Добавлены python-скрипты. В корне папка "py_scripts".
@@ -23,11 +25,11 @@ Instructions:
    * --task : метод, который нужно дернуть. Мэтчинг этого параметра и метода находится в функции main
    * --url : адрес rest-метода. Формат строка.
    * --headers : заголовки rest-метода. Формат json-строка, но с одинарными кавычками (!!), чтобы нормально проходила передача через командную строку.
-Пример: [{'name':'Authorization','value':'Bearer y0_AgAAAAAJ46TKAAqQ2wAAAADtwq-JDqIuC257Sz6KRiDjLFhGTOsDsVY'}]
+Пример: [{'name':'Authorization','value':'Bearer auth_token'}]
    * --file : список файлов, которые будут выгружены в вызов rest-метода. Формат json-строка, но с одинарными кавычками (!!), чтобы нормально проходила передача через командную строку.
 Пример: [{'name':'file','value':'C:\\storage\\hdd01\\files\\uploads\\yandex_audience_v2\\October 23 - Magnet iOS RU - install - ifadstech_int - 11982.tsv'}]
 
-Пример вызова: python C:\storage\hdd01\proj\sql\py_scripts\run.py --task "web_post" --url "https://api-audience.yandex.ru/v1/management/segments/upload_file?" --headers "[{'name':'Authorization','value':'Bearer y0_AgAAAAAJ46TKAAqQ2wAAAADtwq-JDqIuC257Sz6KRiDjLFhGTOsDsVY'}]" --file "[{'name':'file','value':'C:\\storage\\hdd01\\files\\uploads\\yandex_audience_v2\\October 23 - Magnet iOS RU - install - ifadstech_int - 11982.tsv'}]"
+Пример вызова: python C:\storage\hdd01\proj\sql\py_scripts\run.py --task "web_post" --url "https://api-audience.yandex.ru/v1/management/segments/upload_file?" --headers "[{'name':'Authorization','value':'Bearer auth_token'}]" --file "[{'name':'file','value':'C:\\storage\\hdd01\\files\\uploads\\yandex_audience_v2\\October 23 - Magnet iOS RU - install - ifadstech_int - 11982.tsv'}]"
 
 Пример вызова из хранилища: хранимая процедура ToptrafficBI_INT..p_call_python_script
 
