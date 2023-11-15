@@ -15,6 +15,7 @@ Instructions:
 6. Choose a database you want to deploy functions to and make it trustworthy ```alter database <<your database>> set trustworthy on;``` (I suggest that you should create a separate database for all clr functions)
 8. run ```deploy.sql``` 
 
+<<<<<<< HEAD
 /***************************************************************************
 Добавлены python-скрипты. В корне папка "py_scripts".
 Основной запускаемый скрипт: run.py, имеет следующие параметры на входе:
@@ -31,4 +32,6 @@ Instructions:
 
 Можно вызвать через нее и другие методы. Если будут добавляться входные параметры, то просто добавить строки в formatmessage.
 ***************************************************************************/
+=======
+>>>>>>> parent of 9fc939b (Added py_scriptes. Read readme v2)
 
